@@ -63,7 +63,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           content: [
             {
               type: "image_url",
-              image_url: { url: `data:image/jpeg;base64,${base64Image}`, detail: "high" },
+              image_url: { url: `data:image/png;base64,${base64Image}`, detail: "high" },
             },
             { type: "text", text: "Extract all receipt data as JSON." },
           ],
