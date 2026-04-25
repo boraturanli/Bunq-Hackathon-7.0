@@ -1,0 +1,460 @@
+[1mdiff --git a/receipt-parser/README.md b/receipt-parser/README.md[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e215bc4[m
+[1m--- /dev/null[m
+[1m+++ b/receipt-parser/README.md[m
+[36m@@ -0,0 +1,36 @@[m
+[32m+[m[32mThis is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).[m
+[32m+[m
+[32m+[m[32m## Getting Started[m
+[32m+[m
+[32m+[m[32mFirst, run the development server:[m
+[32m+[m
+[32m+[m[32m```bash[m
+[32m+[m[32mnpm run dev[m
+[32m+[m[32m# or[m
+[32m+[m[32myarn dev[m
+[32m+[m[32m# or[m
+[32m+[m[32mpnpm dev[m
+[32m+[m[32m# or[m
+[32m+[m[32mbun dev[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mOpen [http://localhost:3000](http://localhost:3000) with your browser to see the result.[m
+[32m+[m
+[32m+[m[32mYou can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.[m
+[32m+[m
+[32m+[m[32mThis project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.[m
+[32m+[m
+[32m+[m[32m## Learn More[m
+[32m+[m
+[32m+[m[32mTo learn more about Next.js, take a look at the following resources:[m
+[32m+[m
+[32m+[m[32m- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.[m
+[32m+[m[32m- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.[m
+[32m+[m
+[32m+[m[32mYou can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome![m
+[32m+[m
+[32m+[m[32m## Deploy on Vercel[m
+[32m+[m
+[32m+[m[32mThe easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.[m
+[32m+[m
+[32m+[m[32mCheck out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.[m
+[1mdiff --git a/receipt-parser/app/api/parse/route.ts b/receipt-parser/app/api/parse/route.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..08a2f29[m
+[1m--- /dev/null[m
+[1m+++ b/receipt-parser/app/api/parse/route.ts[m
+[36m@@ -0,0 +1,115 @@[m
+[32m+[m[32mimport { NextRequest, NextResponse } from "next/server";[m
+[32m+[m[32mimport OpenAI from "openai";[m
+[32m+[m[32mimport { preprocessImage } from "@/lib/image/preprocess";[m
+[32m+[m[32mimport { PARSE_RECEIPT_SYSTEM_PROMPT } from "@/lib/prompts/parseReceipt";[m
+[32m+[m[32mimport { ReceiptSchema } from "@/lib/schemas/receipt";[m
+[32m+[m[32mimport type { LineItem, Receipt } from "@/lib/types/receipt";[m
+[32m+[m
+[32m+[m[32mconst round = (n: number) => Math.round(n * 1e9) / 1e9;[m
+[32m+[m
+[32m+[m[32mfunction mergeItems(items: LineItem[]): LineItem[] {[m
+[32m+[m[32m  const map = new Map<string, LineItem>();[m
+[32m+[m[32m  for (const item of items) {[m
+[32m+[m[32m    const key = item.description.toLowerCase().trim();[m
+[32m+[m[32m    const existing = map.get(key);[m
+[32m+[m[32m    if (existing) {[m
+[32m+[m[32m      existing.quantity = round(existing.quantity + item.quantity);[m
+[32m+[m[32m      existing.line_total = round(existing.line_total + item.line_total);[m
+[32m+[m[32m      existing.unit_price = round(existing.line_total / existing.quantity);[m
+[32m+[m[32m    } else {[m
+[32m+[m[32m      map.set(key, { ...item });[m
+[32m+[m[32m    }[m
+[32m+[m[32m  }[m
+[32m+[m[32m  return Array.from(map.values()).map((item, i) => ({ ...item, id: i + 1 }));[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mconst openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });[m
+[32m+[m[32mconst VISION_MODEL = process.env.VISION_MODEL ?? "gpt-4o-2024-08-06";[m
+[32m+[m[32mconst TOTALS_TOLERANCE = 0.02;[m
+[32m+[m
+[32m+[m[32mexport async function POST(req: NextRequest): Promise<NextResponse> {[m
+[32m+[m[32m  let formData: FormData;[m
+[32m+[m[32m  try {[m
+[32m+[m[32m    formData = await req.formData();[m
+[32m+[m[32m  } catch {[m
+[32m+[m[32m    return NextResponse.json({ error: "Invalid form data" }, { status: 400 });[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const imageFile = formData.get("image");[m
+[32m+[m[32m  if (!imageFile || !(imageFile instanceof Blob)) {[m
+[32m+[m[32m    return NextResponse.json({ error: "Missing image field" }, { status: 400 });[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const rawBuffer = Buffer.from(await imageFile.arrayBuffer());[m
+[32m+[m
+[32m+[m[32m  let processedBuffer: Buffer;[m
+[32m+[m[32m  try {[m
+[32m+[m[32m    processedBuffer = await preprocessImage(rawBuffer);[m
+[32m+[m[32m  } catch {[m
+[32m+[m[32m    return NextResponse.json({ error: "Image preprocessing failed" }, { status: 400 });[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const base64Image = processedBuffer.toString("base64");[m
+[32m+[m
+[32m+[m[32m  let rawJson: string;[m
+[32m+[m[32m  try {[m
+[32m+[m[32m    const completion = await openai.chat.completions.create({[m
+[32m+[m[32m      model: VISION_MODEL,[m
+[32m+[m[32m      response_format: { type: "json_object" },[m
+[32m+[m[32m      messages: [[m
+[32m+[m[32m        { role: "system", content: PARSE_RECEIPT_SYSTEM_PROMPT },[m
+[32m+[m[32m        {[m
+[32m+[m[32m          role: "user",[m
+[32m+[m[32m          content: [[m
+[32m+[m[32m            {[m
+[32m+[m[32m              type: "image_url",[m
+[32m+[m[32m              image_url: { url: `data:image/png;base64,${base64Image}`, detail: "high" },[m
+[32m+[m[32m            },[m
+[32m+[m[32m            { type: "text", text: "Extract all receipt data as JSON." },[m
+[32m+[m[32m          ],[m
+[32m+[m[32m        },[m
+[32m+[m[32m      ],[m
+[32m+[m[32m      max_tokens: 2048,[m
+[32m+[m[32m    });[m
+[32m+[m
+[32m+[m[32m    rawJson = completion.choices[0]?.message?.content ?? "";[m
+[32m+[m[32m    if (!rawJson) throw new Error("Empty model response");[m
+[32m+[m[32m  } catch (err) {[m
+[32m+[m[32m    const message = err instanceof Error ? err.message : "Unknown model error";[m
+[32m+[m[32m    return NextResponse.json({ error: `Model failure: ${message}` }, { status: 502 });[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  let parsed: unknown;[m
+[32m+[m[32m  try {[m
+[32m+[m[32m    parsed = JSON.parse(rawJson);[m
+[32m+[m[32m  } catch {[m
+[32m+[m[32m    return NextResponse.json([m
+[32m+[m[32m      { error: "Model returned non-JSON output", raw: rawJson },[m
+[32m+[m[32m      { status: 422 }[m
+[32m+[m[32m    );[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const validation = ReceiptSchema.safeParse(parsed);[m
+[32m+[m[32m  if (!validation.success) {[m
+[32m+[m[32m    return NextResponse.json([m
+[32m+[m[32m      { error: "Schema validation failed", issues: validation.error.issues },[m
+[32m+[m[32m      { status: 422 }[m
+[32m+[m[32m    );[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  const receipt: Receipt = validation.data;[m
+[32m+[m
+[32m+[m[32m  receipt.items = mergeItems(receipt.items);[m
+[32m+[m
+[32m+[m[32m  const itemsSum = receipt.items.reduce((acc, item) => acc + item.line_total, 0);[m
+[32m+[m[32m  const computedTotal = itemsSum + receipt.tax + receipt.tip;[m
+[32m+[m[32m  const mismatch =[m
+[32m+[m[32m    receipt.total > 0 &&[m
+[32m+[m[32m    Math.abs(computedTotal - receipt.total) / receipt.total > TOTALS_TOLERANCE;[m
+[32m+[m
+[32m+[m[32m  if (mismatch) {[m
+[32m+[m[32m    receipt.warning = "totals_mismatch";[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  return NextResponse.json(receipt, { status: 200 });[m
+[32m+[m[32m}[m
+[1mdiff --git a/receipt-parser/app/favicon.ico b/receipt-parser/app/favicon.ico[m
+[1mnew file mode 100644[m
+[1mindex 0000000..718d6fe[m
+Binary files /dev/null and b/receipt-parser/app/favicon.ico differ
+[1mdiff --git a/receipt-parser/app/fonts/GeistMonoVF.woff b/receipt-parser/app/fonts/GeistMonoVF.woff[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f2ae185[m
+Binary files /dev/null and b/receipt-parser/app/fonts/GeistMonoVF.woff differ
+[1mdiff --git a/receipt-parser/app/fonts/GeistVF.woff b/receipt-parser/app/fonts/GeistVF.woff[m
+[1mnew file mode 100644[m
+[1mindex 0000000..1b62daa[m
+Binary files /dev/null and b/receipt-parser/app/fonts/GeistVF.woff differ
+[1mdiff --git a/receipt-parser/app/layout.tsx b/receipt-parser/app/layout.tsx[m
+[1mnew file mode 100644[m
+[1mindex 0000000..822a174[m
+[1m--- /dev/null[m
+[1m+++ b/receipt-parser/app/layout.tsx[m
+[36m@@ -0,0 +1,33 @@[m
+[32m+[m[32mimport type { Metadata } from "next";[m
+[32m+[m[32mimport localFont from "next/font/local";[m
+[32m+[m[32mimport "./globals.css";[m
+[32m+[m
+[32m+[m[32mconst geistSans = localFont({[m
+[32m+[m[32m  src: "./fonts/GeistVF.woff",[m
+[32m+[m[32m  variable: "--font-geist-sans",[m
+[32m+[m[32m  weight: "100 900",[m
+[32m+[m[32m});[m
+[32m+[m[32mconst geistMono = localFont({[m
+[32m+[m[32m  src: "./fonts/GeistMonoVF.woff",[m
+[32m+[m[32m  variable: "--font-geist-mono",[m
+[32m+[m[32m  weight: "100 900",[m
+[32m+[m[32m});[m
+[32m+[m
+[32m+[m[32mexport const metadata: Metadata = {[m
+[32m+[m[32m  title: "Smart Split",[m
+[32m+[m[32m  description: "Split restaurant bills instantly with bunq",[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mexport default function RootLayout({[m
+[32m+[m[32m  children,[m
+[32m+[m[32m}: Readonly<{[m
+[32m+[m[32m  children: React.ReactNode;[m
+[32m+[m[32m}>) {[m
+[32m+[m[32m  return ([m
+[32m+[m[32m    <html lang="en">[m
+[32m+[m[32m      <body className={`${geistSans.variable} ${geistMono.variable}`}>[m
+[32m+[m[32m        {children}[m
+[32m+[m[32m      </body>[m
+[32m+[m[32m    </html>[m
+[32m+[m[32m  );[m
+[32m+[m[32m}[m
+[1mdiff --git a/receipt-parser/app/page.module.css b/receipt-parser/app/page.module.css[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8a46041[m
+[1m--- /dev/null[m
+[1m+++ b/receipt-parser/app/page.module.css[m
+[36m@@ -0,0 +1,165 @@[m
+[32m+[m[32m.page {[m
+[32m+[m[32m  --gray-rgb: 0, 0, 0;[m
+[32m+[m[32m  --gray-alpha-200: rgba(var(--gray-rgb), 0.08);[m
+[32m+[m[32m  --gray-alpha-100: rgba(var(--gray-rgb), 0.05);[m
+[32m+[m
+[32m+[m[32m  --button-primary-hover: #383838;[m
+[32m+[m[32m  --button-secondary-hover: #f2f2f2;[m
+[32m+[m
+[32m+[m[32m  display: grid;[m
+[32m+[m[32m  grid-template-rows: 20px 1fr 20px;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  justify-items: center;[m
+[32m+[m[32m  min-height: 100svh;[m
+[32m+[m[32m  padding: 80px;[m
+[32m+[m[32m  gap: 64px;[m
+[32m+[m[32m  font-family: var(--font-geist-sans);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m@media (prefers-color-scheme: dark) {[m
+[32m+[m[32m  .page {[m
+[32m+[m[32m    --gray-rgb: 255, 255, 255;[m
+[32m+[m[32m    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);[m
+[32m+[m[32m    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);[m
+[32m+[m
+[32m+[m[32m    --button-primary-hover: #ccc;[m
+[32m+[m[32m    --button-secondary-hover: #1a1a1a;[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.main {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  flex-direction: column;[m
+[32m+[m[32m  gap: 32px;[m
+[32m+[m[32m  grid-row-start: 2;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.main ol {[m
+[32m+[m[32m  font-family: var(--font-geist-mono);[m
+[32m+[m[32m  padding-left: 0;[m
+[32m+[m[32m  margin: 0;[m
+[32m+[m[32m  font-size: 14px;[m
+[32m+[m[32m  line-height: 24px;[m
+[32m+[m[32m  letter-spacing: -0.01em;[m
+[32m+[m[32m  list-style-position: inside;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.main li:not(:last-of-type) {[m
+[32m+[m[32m  margin-bottom: 8px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.main code {[m
+[32m+[m[32m  font-family: inherit;[m
+[32m+[m[32m  background: var(--gray-alpha-100);[m
+[32m+[m[32m  padding: 2px 4px;[m
+[32m+[m[32m  border-radius: 4px;[m
+[32m+[m[32m  font-weight: 600;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.ctas {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  gap: 16px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.ctas a {[m
+[32m+[m[32m  appearance: none;[m
+[32m+[m[32m  border-radius: 128px;[m
+[32m+[m[32m  height: 48px;[m
+[32m+[m[32m  padding: 0 20px;[m
+[32m+[m[32m  border: none;[m
+[32m+[m[32m  border: 1px solid transparent;[m
+[32m+[m[32m  transition: background 0.2s, color 0.2s, border-color 0.2s;[m
+[32m+[m[32m  cursor: pointer;[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  justify-content: center;[m
+[32m+[m[32m  font-size: 16px;[m
+[32m+[m[32m  line-height: 20px;[m
+[32m+[m[32m  font-weight: 500;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32ma.primary {[m
+[32m+[m[32m  background: var(--foreground);[m
+[32m+[m[32m  color: var(--background);[m
+[32m+[m[32m  gap: 8px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32ma.secondary {[m
+[32m+[m[32m  border-color: var(--gray-alpha-200);[m
+[32m+[m[32m  min-width: 180px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.footer {[m
+[32m+[m[32m  grid-row-start: 3;[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  gap: 24px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.footer a {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  gap: 8px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.footer img {[m
+[32m+[m[32m  flex-shrink: 0;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Enable hover only on non-touch devices */[m
+[32m+[m[32m@media (hover: hover) and (pointer: fine) {[m
+[32m+[m[32m  a.primary:hover {[m
+[32m+[m[32m    background: var(--button-primary-hover);[m
+[32m+[m[32m    border-color: transparent;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  a.secondary:hover {[m
+[32m+[m[32m    background: var(--button-secondary-hover);[m
+[32m+[m[32m    border-color: transparent;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  .footer a:hover {[m
+[32m+[m[32m    text-decoration: underline;[m
+[32m+[m[32m    text-underline-offset: 4px;[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m@media (max-width: 600px) {[m
+[32m+[m[32m  .page {[m
+[32m+[m[32m    padding: 32px;[m
+[32m+[m[32m    padding-bottom: 80px;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  .main {[m
+[32m+[m[32m    align-items: center;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  .main ol {[m
+[32m+[m[32m    text-align: center;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  .ctas {[m
+[32m+[m[32m    flex-direction: column;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  .ctas a {[m
+[32m+[m[32m    font-size: 14px;[m
+[32m+[m[32m    height: 40px;[m
+[32m+[m[32m    padding: 0 16px;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  a.secondary {[m
+[32m+[m[32m    min-width: auto;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  .footer {[m
+[32m+[m[32m    flex-wrap: wrap;[m
+[32m+[m[32m    align-items: center;[m
+[32m+[m[32m    justify-content: center;[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m@media (prefers-color-scheme: dark) {[m
+[32m+[m[32m  .logo {[m
+[32m+[m[32m    filter: invert();[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[1mdiff --git a/receipt-parser/lib/image/preprocess.ts b/receipt-parser/lib/image/preprocess.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b867c1a[m
+[1m--- /dev/null[m
+[1m+++ b/receipt-parser/lib/image/preprocess.ts[m
+[36m@@ -0,0 +1,17 @@[m
+[32m+[m[32mimport sharp from "sharp";[m
+[32m+[m
+[32m+[m[32mconst TARGET_LONG_EDGE = 1800;[m
+[32m+[m
+[32m+[m[32mexport async function preprocessImage(buffer: Buffer): Promise<Buffer> {[m
+[32m+[m[32m  return sharp(buffer)[m
+[32m+[m[32m    .grayscale()[m
+[32m+[m[32m    .normalize()[m
+[32m+[m[32m    .sharpen({ sigma: 1.5, m1: 1.5, m2: 3.0 })[m
+[32m+[m[32m    .resize(TARGET_LONG_EDGE, TARGET_LONG_EDGE, {[m
+[32m+[m[32m      fit: "inside",[m
+[32m+[m[32m      withoutEnlargement: false, // upscale small receipts too[m
+[32m+[m[32m      kernel: "lanczos3",[m
+[32m+[m[32m    })[m
+[32m+[m[32m    .png({ compressionLevel: 6 })[m
+[32m+[m[32m    .toBuffer();[m
+[32m+[m[32m}[m
+[1mdiff --git a/receipt-parser/lib/prompts/parseReceipt.ts b/receipt-parser/lib/prompts/parseReceipt.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8e7e548[m
+[1m--- /dev/null[m
+[1m+++ b/receipt-parser/lib/prompts/parseReceipt.ts[m
+[36m@@ -0,0 +1,54 @@[m
+[32m+[m[32mexport const PARSE_RECEIPT_SYSTEM_PROMPT = `You are a receipt data extraction engine. Your only output is a single valid JSON object — no markdown, no explanation, no code fences.[m
+[32m+[m
+[32m+[m[32mExtract all fields from the receipt image and return them in this exact JSON schema:[m
+[32m+[m
+[32m+[m[32m{[m
+[32m+[m[32m  "$schema": "http://json-schema.org/draft-07/schema#",[m
+[32m+[m[32m  "type": "object",[m
+[32m+[m[32m  "required": ["merchant", "date", "currency", "items", "subtotal", "tax", "tip", "total"],[m
+[32m+[m[32m  "properties": {[m
+[32m+[m[32m    "merchant": { "type": ["string", "null"], "description": "Business name on the receipt. null if unreadable." },[m
+[32m+[m[32m    "date": { "type": ["string", "null"], "description": "Date of transaction in ISO 8601 (YYYY-MM-DD). null if unreadable." },[m
+[32m+[m[32m    "currency": { "type": "string", "description": "ISO 4217 currency code (e.g. EUR, USD, GBP). Infer from symbols if needed." },[m
+[32m+[m[32m    "items": {[m
+[32m+[m[32m      "type": "array",[m
+[32m+[m[32m      "items": {[m
+[32m+[m[32m        "type": "object",[m
+[32m+[m[32m        "required": ["id", "description", "quantity", "unit_price", "line_total"],[m
+[32m+[m[32m        "properties": {[m
+[32m+[m[32m          "id": { "type": "integer", "description": "1-based index." },[m
+[32m+[m[32m          "description": { "type": "string" },[m
+[32m+[m[32m          "quantity": { "type": "number", "description": "Quantity of this item." },[m
+[32m+[m[32m          "unit_price": { "type": "number", "description": "Price per single unit." },[m
+[32m+[m[32m          "line_total": { "type": "number", "description": "quantity * unit_price." }[m
+[32m+[m[32m        }[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "subtotal": { "type": "number", "description": "Sum of all line_totals before tax and tip." },[m
+[32m+[m[32m    "tax": { "type": "number", "description": "Tax amount. 0 if not present." },[m
+[32m+[m[32m    "tip": { "type": "number", "description": "Tip/gratuity amount. 0 if not present." },[m
+[32m+[m[32m    "total": { "type": "number", "description": "Final total charged." }[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mRules:[m
+[32m+[m
+[32m+[m[32mITEM EXTRACTION[m
+[32m+[m[32m- Return null for any top-level field you cannot confidently read (only merchant and date may be null; all numeric fields default to 0, not null).[m
+[32m+[m[32m- Bundled items (e.g. "2x Pasta €29"): set quantity=2, line_total=29, unit_price=14.5.[m
+[32m+[m[32m- If a receipt is in a foreign language, translate descriptions to English.[m
+[32m+[m[32m- All amounts are decimal numbers (no currency symbols).[m
+[32m+[m[32m- Never omit required fields. Never add extra fields.[m
+[32m+[m
+[32m+[m[32mWRAPPED ITEM NAMES (thermal receipts)[m
+[32m+[m[32m- Thermal receipt printers have a narrow column width. An item name often wraps onto the next physical line. A line that contains only text with no price/amount on the right is a CONTINUATION of the previous item's name — append it to the previous description with a space. Do NOT create a new line item for it.[m
+[32m+[m[32m- Only create a new line item when you see a quantity or price associated with a new line.[m
+[32m+[m[32m- Example: "Fever Tree" on one line followed by "Light  £2.00" means the item is "Fever Tree Light" at £2.00 — o
