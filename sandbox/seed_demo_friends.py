@@ -38,7 +38,7 @@ def sign(n: float) -> str:
 
 
 def main():
-    p = argparse.ArgumentParser(description="Seed SnapSplit demo data")
+    p = argparse.ArgumentParser(description="Seed bunqShare demo data")
     p.add_argument("--count",    type=int, default=5,  help="Number of friends (default 5)")
     p.add_argument("--payments", type=int, default=10, help="Outgoing payments per friend")
     p.add_argument("--incoming", type=int, default=2,  help="Incoming payments per friend")
@@ -46,7 +46,7 @@ def main():
 
     est = args.count * (args.payments * 0.30 + args.incoming * 0.35 + 6)
     print(f"\n{'━'*60}")
-    print(f"  SnapSplit demo seed")
+    print(f"  bunqShare demo seed")
     print(f"  {args.count} friends  ·  {args.payments} outgoing  ·  {args.incoming} incoming each")
     print(f"  Estimated time: ~{est:.0f} s")
     print(f"{'━'*60}\n")

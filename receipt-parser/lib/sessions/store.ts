@@ -45,11 +45,11 @@ interface CreateSessionInput {
 
 declare global {
   // eslint-disable-next-line no-var
-  var __snapsplitSessions: Map<string, Session> | undefined;
+  var __bunqShareSessions: Map<string, Session> | undefined;
 }
 
 const store: Map<string, Session> =
-  globalThis.__snapsplitSessions ?? (globalThis.__snapsplitSessions = new Map());
+  globalThis.__bunqShareSessions ?? (globalThis.__bunqShareSessions = new Map());
 
 export function createSession(input: CreateSessionInput): Session {
   const invitees: Invitee[] = [];

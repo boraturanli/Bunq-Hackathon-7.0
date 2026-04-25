@@ -1,8 +1,8 @@
-# SnapSplit — CLAUDE.md
+# bunqShare — CLAUDE.md
 
 ## Project Overview
 
-SnapSplit is a hackathon project for bunq Hackathon 7.0 (24-hour build, April 2026).
+bunqShare is a hackathon project for bunq Hackathon 7.0 (24-hour build, April 2026).
 
 Photograph a receipt → AI parses line items → invite friends via link → each person selects what they had → everyone pays the host automatically through bunq.
 
@@ -291,5 +291,5 @@ BUNQ_CLIENT_SECRET=
 BUNQ_REDIRECT_URI=http://localhost:3000/api/bunq/callback
 BUNQ_ENV=sandbox                  # or "production"
 RESEND_API_KEY=                   # or SENDGRID_API_KEY
-EMAIL_FROM=noreply@snapsplit.app
+EMAIL_FROM=noreply@bunqShare.app
 SESSION_TTL_HOURS=24

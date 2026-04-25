@@ -67,7 +67,7 @@ export default function InboxLobby() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: FONT_DISPLAY, fontWeight: 800, fontSize: 14, color: TOK.accentInk,
             }}>S</div>
-            <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, letterSpacing: '-0.02em' }}>SnapSplit</span>
+            <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, letterSpacing: '-0.02em' }}>bunqShare</span>
           </div>
           <a href="/" style={{ fontSize: 11, fontWeight: 700, color: TOK.textDim }}>← Host page</a>
         </div>

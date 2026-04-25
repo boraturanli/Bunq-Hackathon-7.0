@@ -222,7 +222,7 @@ export default function Home() {
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ color: TOK.accent }}>{ICN.sparkle(TOK.accent)}</div>
-          <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 16, letterSpacing: '-0.02em' }}>SnapSplit</span>
+          <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 16, letterSpacing: '-0.02em' }}>bunqShare</span>
         </div>
         <button style={{
           width: 36, height: 36, borderRadius: 12,

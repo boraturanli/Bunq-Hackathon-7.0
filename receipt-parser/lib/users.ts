@@ -25,11 +25,11 @@ export function slugify(input: string): string {
 
 declare global {
   // eslint-disable-next-line no-var
-  var __snapsplitUsers: Map<string, MockUser> | undefined;
+  var __bunqShareUsers: Map<string, MockUser> | undefined;
 }
 
 const registry: Map<string, MockUser> =
-  globalThis.__snapsplitUsers ?? (globalThis.__snapsplitUsers = new Map());
+  globalThis.__bunqShareUsers ?? (globalThis.__bunqShareUsers = new Map());
 
 export function registerUser(input: {
   name: string;

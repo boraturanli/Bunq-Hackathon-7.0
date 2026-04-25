@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SnapSplit",
+  title: "bunqShare",
   description: "Snap a receipt — friends pay you back. Powered by bunq.",
 };
 

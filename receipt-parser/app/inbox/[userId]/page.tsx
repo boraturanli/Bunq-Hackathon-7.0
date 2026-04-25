@@ -359,7 +359,7 @@ function HomeView({ user, pendingCount, onSplit, onOpenSnap, stats, lifetimePaid
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ fontSize: 14 }}>🧾</span>
-              <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: accent, fontFamily: FONT_MONO }}>SNAPSPLIT</p>
+              <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: accent, fontFamily: FONT_MONO }}>bunqShare</p>
             </div>
             <span style={{ fontSize: 10, color: TOK.textDim }}>{pendingCount} pending</span>
           </div>
@@ -436,11 +436,11 @@ function MessagesView({ user, items, onOpenSnap, onOpenItem }: {
   onOpenSnap: () => void;
   onOpenItem: (i: InboxItem) => void;
 }) {
-  const [filter, setFilter] = useState<'all' | 'snapsplit' | 'payment' | 'chat'>('all');
+  const [filter, setFilter] = useState<'all' | 'bunqShare' | 'payment' | 'chat'>('all');
 
   const snapMsgs = items.map((i) => ({
     id: 'snap-' + i.sessionId,
-    kind: 'snapsplit' as const,
+    kind: 'bunqShare' as const,
     sender: i.hostName,
     color: hashColor(i.hostName),
     title: `${i.hostName} wants to split`,
@@ -457,14 +457,14 @@ function MessagesView({ user, items, onOpenSnap, onOpenItem }: {
 
   const visible = filter === 'all' ? all : all.filter((m) => {
     if (filter === 'chat') return m.kind === 'chat' || m.kind === 'system';
-    if (filter === 'snapsplit') return m.kind === 'snapsplit';
+    if (filter === 'bunqShare') return m.kind === 'bunqShare';
     if (filter === 'payment') return m.kind === 'payment';
     return true;
   });
 
   const filters = [
     { id: 'all',       label: 'All',       count: all.length },
-    { id: 'snapsplit', label: 'SnapSplit', count: snapMsgs.length },
+    { id: 'bunqShare', label: 'bunqShare', count: snapMsgs.length },
     { id: 'payment',   label: 'Payments',  count: MOCK.filter((m) => m.kind === 'payment').length },
     { id: 'chat',      label: 'Chats',     count: MOCK.filter((m) => m.kind === 'chat' || m.kind === 'system').length },
   ] as const;
@@ -542,7 +542,7 @@ function MessagesView({ user, items, onOpenSnap, onOpenItem }: {
       <div>
         {visible.map((m) => (
           <MessageRow key={m.id} m={m as never} onClick={() => {
-            if (m.kind === 'snapsplit') {
+            if (m.kind === 'bunqShare') {
               if (m.item) onOpenItem(m.item);
             }
           }} />
@@ -559,7 +559,7 @@ function MessagesView({ user, items, onOpenSnap, onOpenItem }: {
 
 interface FeedItem {
   id: string;
-  kind: 'snapsplit' | 'payment' | 'system' | 'chat';
+  kind: 'bunqShare' | 'payment' | 'system' | 'chat';
   sender: string;
   color: string;
   title: string;
@@ -582,7 +582,7 @@ function MessageRow({ m, onClick }: { m: FeedItem; onClick?: () => void }) {
       )}
       <div style={{ position: 'relative' }}>
         <Avatar name={m.sender} color={m.color} size={44} />
-        {m.kind === 'snapsplit' && (
+        {m.kind === 'bunqShare' && (
           <div style={{ position: 'absolute', bottom: -2, right: -2, width: 18, height: 18, borderRadius: '50%', background: TOK.bg, border: `1.5px solid ${TOK.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ fontSize: 10 }}>🧾</span>
           </div>
@@ -619,7 +619,7 @@ function SnapInboxView({ user, items, onBack, onOpen }: {
     <>
       <div style={{ padding: '20px 20px 0', display: 'flex', alignItems: 'center', gap: 12 }}>
         <button onClick={onBack} style={iconBtn}>{ICN.chevL()}</button>
-        <span style={{ fontSize: 13, color: TOK.textDim }}>Messages / SnapSplit</span>
+        <span style={{ fontSize: 13, color: TOK.textDim }}>Messages / bunqShare</span>
       </div>
 
       <div style={{ padding: '14px 20px 0' }}>
@@ -627,7 +627,7 @@ function SnapInboxView({ user, items, onBack, onOpen }: {
           <div style={{ width: 28, height: 28, borderRadius: 8, background: TOK.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ fontSize: 14 }}>🧾</span>
           </div>
-          <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: TOK.accent, fontFamily: FONT_MONO }}>SNAPSPLIT INBOX</span>
+          <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: TOK.accent, fontFamily: FONT_MONO }}>bunqShare INBOX</span>
         </div>
         <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: 36, fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1.05 }}>
           {pending.length > 0 ? <>Splits waiting<br />for you</> : <>All caught up</>}

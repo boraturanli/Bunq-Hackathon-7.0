@@ -69,7 +69,7 @@ export async function POST(
     return NextResponse.json({ error: "nothing to pay — use skip instead" }, { status: 400 });
   }
 
-  const description = `${session.receipt.merchant ?? "Receipt"} · SnapSplit`;
+  const description = `${session.receipt.merchant ?? "Receipt"} · bunqShare`;
   const bunq = await fireBunqRequest(amount, description, invitee.alias);
 
   recordPayment(params.sessionId, params.inviteeId, claims, amount);

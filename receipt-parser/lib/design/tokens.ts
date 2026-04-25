@@ -1,4 +1,4 @@
-// Design tokens for SnapSplit hi-fi (dark fintech aesthetic)
+// Design tokens for bunqShare hi-fi (dark fintech aesthetic)
 // Original — not a recreation of bunq's actual UI.
 
 export const TOK = {
