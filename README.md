@@ -1,6 +1,30 @@
-# SnapSplit — bunq Hackathon 7.0
+# bunqShare
 
-Photograph a receipt → AI parses line items → share a link → each person taps what they had → everyone pays the host automatically through bunq.
+**bunqShare** is an add-on platform for bunq that makes splitting a bill at a restaurant, bar, or anywhere else as frictionless as possible — for the person picking up the tab most of all.
+
+Take a photo of the receipt. Computer vision (GPT-4o) reads every line item in seconds, no matter the language or format. You pick which friends to split with — bunqShare pulls your most frequent bunq contacts automatically so you don't have to type anything. Tap **Send Links** and each person gets a unique link by email. They open it, tap the items they had, and confirm payment. The money lands in your bunq account directly, without you chasing anyone.
+
+### How it works in plain terms
+
+```
+Host photographs receipt
+  → GPT-4o reads every line item (name, qty, price)
+  → host picks friends from their bunq contact history
+  → each friend gets a unique link by email
+
+Friend opens their link
+  → sees the full receipt
+  → taps items they had; taps again to share an item across multiple people
+  → running total updates live
+  → "Confirm & Pay" triggers a real bunq payment to the host's IBAN — no manual transfer
+
+Host sees a live dashboard
+  → green tick per friend as payments land
+  → full breakdown of who paid what
+  → done screen when everyone has settled
+```
+
+The host's effort from photo to paid: under 90 seconds. Friends need no bunq account setup beyond what they already have.
 
 ---
 
