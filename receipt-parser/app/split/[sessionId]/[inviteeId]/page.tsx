@@ -13,7 +13,7 @@ interface SessionView {
   id: string;
   receipt: Receipt;
   hostName: string;
-  invitees: { id: string; name: string; status: string }[];
+  invitees: { id: string; name: string; status: string; claims: { itemId: number }[] }[];
 }
 
 type Screen = 'loading' | 'receipt' | 'paying' | 'done' | 'skipped' | 'error' | 'expired';
@@ -58,6 +58,8 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
   const [claims, setClaims] = useState<Record<number, number>>({});
   const [error, setError] = useState<string | null>(null);
   const [paidAmount, setPaidAmount] = useState<number | null>(null);
+  const [conflicts, setConflicts] = useState<{ itemId: number; itemName: string; paidBy: string }[]>([]);
+  const [pendingSession, setPendingSession] = useState<SessionView | null>(null);
 
   const goBackToInbox = () => { if (inboxUser) router.push(`/inbox/${inboxUser}`); };
 
@@ -84,11 +86,15 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
   const total = useMemo(() => session ? computeTotal(session.receipt, claims) : 0, [session, claims]);
   const hasClaims = Object.values(claims).some((v) => v > 0);
 
-  const cycleClaim = (itemId: number) => {
+  const updateShare = (itemId: number, next: number) => {
     setClaims((prev) => {
-      const cur = prev[itemId] ?? 0;
-      const next = cur >= MAX_SHARE ? 0 : cur + 1;
-      return { ...prev, [itemId]: next };
+      const updated = { ...prev };
+      if (next <= 0) {
+        delete updated[itemId];
+      } else {
+        updated[itemId] = next;
+      }
+      return updated;
     });
   };
 
@@ -103,6 +109,20 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
         body: JSON.stringify({ claims: claimsArray }),
       });
       const data = await res.json();
+      if (res.status === 409 && data.conflicts) {
+        const conflictIds = new Set(data.conflicts.map((c: { itemId: number }) => c.itemId));
+        setClaims(prev => {
+          const next = { ...prev };
+          conflictIds.forEach(id => delete next[id as number]);
+          return next;
+        });
+        // Fetch fresh session but hold it until user dismisses the modal
+        const fresh = await fetch(`/api/session/${params.sessionId}`).then(r => r.json());
+        setPendingSession(fresh);
+        setConflicts(data.conflicts);
+        setScreen('receipt');
+        return;
+      }
       if (!res.ok) throw new Error(data?.error ?? 'Payment failed');
       setPaidAmount(data.amountPaid);
       setScreen('done');
@@ -187,6 +207,14 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
   // ─── receipt (main) ──────────────────────────────────────────────────────
 
   if (screen === 'receipt' && session && me) {
+    // Items already paid for by other invitees
+    const paidItemIds = new Set(
+      session.invitees
+        .filter(i => i.id !== me.id && i.status === 'paid')
+        .flatMap(i => i.claims.map((c: { itemId: number }) => c.itemId))
+    );
+    const visibleItems = session.receipt.items.filter(i => !paidItemIds.has(i.id));
+
     const accentColor = hashColor(session.hostName);
     return (
       <main style={{ minHeight: '100vh', background: TOK.bg, color: TOK.text, paddingBottom: 120 }}>
@@ -229,48 +257,132 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
             </span>
           </div>
 
+          {/* Conflict modal */}
+          {conflicts.length > 0 && (
+            <div style={{
+              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              zIndex: 100, padding: 24,
+            }}>
+              <div style={{
+                background: TOK.surface, borderRadius: 20, padding: 28,
+                maxWidth: 340, width: '100%', textAlign: 'center',
+              }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>⚡</div>
+                <h3 style={{ fontFamily: FONT_DISPLAY, fontSize: 18, fontWeight: 700, marginBottom: 8 }}>
+                  Just missed it
+                </h3>
+                {conflicts.map((c, i) => (
+                  <p key={i} style={{ fontSize: 14, color: TOK.textDim, marginBottom: 4 }}>
+                    <strong style={{ color: TOK.text }}>{c.paidBy}</strong> already paid for <strong style={{ color: TOK.text }}>{c.itemName}</strong>
+                  </p>
+                ))}
+                <p style={{ fontSize: 13, color: TOK.textFaint, marginTop: 12, marginBottom: 20 }}>
+                  Those items have been removed from your receipt.
+                </p>
+                <button
+                  onClick={() => {
+                    if (pendingSession) { setSession(pendingSession); setPendingSession(null); }
+                    setConflicts([]);
+                  }}
+                  style={{ ...primaryBtn, width: '100%' }}
+                >
+                  Got it
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Items */}
           <div style={{ marginTop: 16 }}>
-            {session.receipt.items.map((item: LineItem) => {
+            {visibleItems.map((item: LineItem) => {
               const share = claims[item.id] ?? 0;
               const myCost = share > 0 ? item.line_total / share : 0;
-              const claimed = share > 0;
               return (
-                <button
+                <div
                   key={item.id}
-                  onClick={() => cycleClaim(item.id)}
                   style={{
-                    display: 'block', width: '100%', textAlign: 'left',
-                    padding: '14px 16px', marginBottom: 8,
-                    borderRadius: 14,
-                    border: claimed ? `1.5px solid ${TOK.accent}` : `1px solid ${TOK.border}`,
-                    background: claimed ? `${TOK.accent}10` : TOK.surface,
-                    cursor: 'pointer', color: TOK.text,
+                    width: '100%', padding: 16, marginBottom: 10,
+                    borderRadius: 18,
+                    border: `1px solid ${share > 0 ? TOK.accent : TOK.border}`,
+                    background: share > 0 ? `${TOK.accent}08` : TOK.surface,
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <span style={{ fontSize: 15, fontWeight: 600 }}>
-                      {item.description}
-                      {item.quantity > 1 && <span style={{ color: TOK.textFaint, fontWeight: 400, fontFamily: FONT_MONO, fontSize: 12 }}> ×{item.quantity}</span>}
-                    </span>
-                    <span style={{ fontFamily: FONT_DISPLAY, fontSize: 15, fontWeight: 700 }}>
-                      {formatAmount(item.line_total, session.receipt.currency)}
-                    </span>
-                  </div>
-                  {claimed && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-                      <span style={{ fontSize: 11, color: TOK.accent, fontWeight: 800, fontFamily: FONT_MONO, letterSpacing: '0.04em' }}>
-                        {share === 1 ? 'ALL MINE' : `SHARED ${share} WAYS`}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <span style={{ fontSize: 15, fontWeight: 700, display: 'block', marginBottom: 4 }}>
+                        {item.description}
                       </span>
-                      <span style={{ fontSize: 12, color: TOK.text, fontFamily: FONT_MONO }}>
-                        Your share: <strong>{formatAmount(myCost, session.receipt.currency)}</strong>
-                      </span>
+                      <div style={{ fontSize: 12, color: TOK.textDim }}>
+                        {item.quantity > 1 ? `×${item.quantity} · ${formatAmount(item.line_total, session.receipt.currency)}` : formatAmount(item.line_total, session.receipt.currency)}
+                      </div>
                     </div>
-                  )}
-                </button>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: share > 0 ? TOK.accent : TOK.textFaint }}>
+                        {share === 0 ? 'Not claimed' : share === 1 ? 'Solo' : `Shared ${share} ways`}
+                      </div>
+                      {share > 0 && (
+                        <div style={{ fontSize: 12, color: TOK.text, marginTop: 4 }}>
+                          Your share: <strong>{formatAmount(myCost, session.receipt.currency)}</strong>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, gap: 12 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <button
+                        onClick={() => updateShare(item.id, Math.max(0, share - 1))}
+                        disabled={share <= 0}
+                        style={{
+                          width: 34, height: 34,
+                          borderRadius: 12,
+                          border: `1px solid ${TOK.border}`,
+                          background: TOK.surface,
+                          color: share > 0 ? TOK.text : TOK.textFaint,
+                          fontSize: 18, fontWeight: 700,
+                          cursor: share > 0 ? 'pointer' : 'not-allowed',
+                        }}
+                        aria-label={`Decrease share count for ${item.description}`}
+                      >
+                        –
+                      </button>
+                      <div style={{ minWidth: 32, textAlign: 'center', fontSize: 15, fontWeight: 700 }}>
+                        {share}
+                      </div>
+                      <button
+                        onClick={() => updateShare(item.id, Math.min(MAX_SHARE, share + 1))}
+                        style={{
+                          width: 34, height: 34,
+                          borderRadius: 12,
+                          border: `1px solid ${TOK.border}`,
+                          background: TOK.surface,
+                          color: TOK.text,
+                          fontSize: 18, fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                        aria-label={`Increase share count for ${item.description}`}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div style={{ fontSize: 11, color: TOK.textDim, textAlign: 'right' }}>
+                      {share === 0
+                        ? 'Tap + to claim this item'
+                        : share === 1
+                          ? '1 person pays for this item'
+                          : `${share} people share this item`}
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
+
+          {visibleItems.length === 0 && (
+            <p style={{ fontSize: 14, color: TOK.textDim, textAlign: 'center', padding: '24px 0' }}>
+              All items have been claimed. Tap &ldquo;I had nothing&rdquo; if you&apos;re done.
+            </p>
+          )}
 
           {session.receipt.tax > 0 && (
             <p style={{ fontSize: 11, color: TOK.textFaint, marginTop: 10, fontFamily: FONT_MONO }}>

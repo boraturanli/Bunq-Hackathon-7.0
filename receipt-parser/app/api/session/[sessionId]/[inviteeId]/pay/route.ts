@@ -49,6 +49,21 @@ export async function POST(
     return NextResponse.json({ error: "invalid body" }, { status: 400 });
   }
 
+  // Check if any claimed items were already paid for by another invitee
+  const conflicts: { itemId: number; itemName: string; paidBy: string }[] = [];
+  for (const inv of session.invitees) {
+    if (inv.id === params.inviteeId || inv.status !== "paid") continue;
+    for (const paidClaim of inv.claims) {
+      if (claims.some((c) => c.itemId === paidClaim.itemId)) {
+        const item = session.receipt.items.find((i) => i.id === paidClaim.itemId);
+        conflicts.push({ itemId: paidClaim.itemId, itemName: item?.description ?? "item", paidBy: inv.name });
+      }
+    }
+  }
+  if (conflicts.length > 0) {
+    return NextResponse.json({ error: "conflict", conflicts }, { status: 409 });
+  }
+
   const amount = computeAmountOwed(session.receipt, claims);
   if (amount <= 0) {
     return NextResponse.json({ error: "nothing to pay — use skip instead" }, { status: 400 });
