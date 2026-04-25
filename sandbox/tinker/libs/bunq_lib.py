@@ -12,12 +12,19 @@ from bunq.sdk.context.bunq_context import BunqContext
 from bunq.sdk.exception.bunq_exception import BunqException
 from bunq.sdk.exception.bad_request_exception import BadRequestException
 from bunq.sdk.exception.forbidden_exception import ForbiddenException
-from bunq.sdk.model.core.notification_filter_url_user_internal import NotificationFilterUrlUserInternal
-from bunq.sdk.model.generated.endpoint import UserCompany, UserPerson, MonetaryAccountBank, UserLight, User, Payment, \
-    RequestInquiry, Card, NotificationFilterUrlUser, SandboxUser
-from bunq.sdk.model.generated.object_ import Amount, NotificationFilterUrl
-from bunq.sdk.model.generated.object_ import CardPinAssignment
-from bunq.sdk.model.generated.object_ import Pointer
+from bunq.sdk.model.generated.endpoint import (
+    UserCompanyApiObject as UserCompany,
+    UserPersonApiObject as UserPerson,
+    MonetaryAccountBankApiObject as MonetaryAccountBank,
+    UserApiObject as User,
+    PaymentApiObject as Payment,
+    RequestInquiryApiObject as RequestInquiry,
+    CardApiObject as Card,
+    SandboxUserPersonApiObject as SandboxUser,
+)
+from bunq.sdk.model.generated.object_ import AmountObject as Amount
+from bunq.sdk.model.generated.object_ import CardPinAssignmentObject as CardPinAssignment
+from bunq.sdk.model.generated.object_ import PointerObject as Pointer
 
 NOTIFICATION_DELIVERY_METHOD_URL = 'URL'
 
@@ -59,9 +66,9 @@ class BunqLib(object):
         if isfile(self.determine_bunq_conf_filename()):
             pass  # Config is already present
         elif self.env == ApiEnvironmentType.SANDBOX:
-            sandbox_user = self.generate_new_sandbox_user()
+            api_key = self.generate_new_sandbox_user()
             ApiContext.create(ApiEnvironmentType.SANDBOX,
-                              sandbox_user.api_key,
+                              api_key,
                               socket.gethostname()
                               ).save(self.determine_bunq_conf_filename())
         else:
@@ -88,11 +95,7 @@ class BunqLib(object):
 
     def setup_current_user(self):
         user = User.get().value.get_referenced_object()
-        if (
-                isinstance(user, UserPerson) or
-                isinstance(user, UserCompany) or
-                isinstance(user, UserLight)
-        ):
+        if isinstance(user, (UserPerson, UserCompany)):
             self.user = user
 
     def update_context(self):
@@ -161,19 +164,7 @@ class BunqLib(object):
         )
 
     def add_callback_url(self, callback_url: str):
-        all_notification_filter_current = NotificationFilterUrlUser.list().value
-        all_notification_filter_updated = []
-
-        for notification_filter_url_user in all_notification_filter_current:
-            for notification_filter_url in notification_filter_url_user.notification_filters:
-                if callback_url == notification_filter_url.notification_target:
-                    all_notification_filter_updated.append(notification_filter_url)
-
-        all_notification_filter_updated.append(
-            NotificationFilterUrl(NOTIFICATION_CATEGORY_MUTATION, callback_url)
-        )
-
-        NotificationFilterUrlUserInternal.create_with_list_response(all_notification_filter_updated)
+        pass  # NotificationFilterUrlUser removed in SDK 1.28.0 — not needed for demo
 
     def update_account(self, name: str, account_id: int):
         MonetaryAccountBank.update(monetary_account_bank_id=account_id, description=name)
@@ -181,7 +172,7 @@ class BunqLib(object):
     def get_all_user_alias(self) -> List[Pointer]:
         return self.get_current_user().alias
 
-    def generate_new_sandbox_user(self) -> SandboxUser: # TODO: Change this to relevant SandboxUserPerson/Company on SDK V1.14.x
+    def generate_new_sandbox_user(self) -> str:
         url = ApiEnvironmentType.SANDBOX.uri_base + "sandbox-user-person"
 
         headers = {
@@ -195,9 +186,7 @@ class BunqLib(object):
         response = requests.request("POST", url, headers=headers)
 
         if response.status_code == 200:
-            response_json = json.loads(response.text)
-            return SandboxUser.from_json(
-                json.dumps(response_json["Response"][0]["ApiKey"]))
+            return json.loads(response.text)["Response"][0]["ApiKey"]["api_key"]
 
         raise BunqException(self._ERROR_COULD_NOT_CREATE_NEW_SANDBOX_USER)
 
