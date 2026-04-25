@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { Receipt, LineItem } from '@/lib/types/receipt';
 
 const TEAL = '#00E5A0';
@@ -36,6 +37,10 @@ function computeTotal(receipt: Receipt, claims: Record<number, number>): number 
 }
 
 export default function InviteePage({ params }: { params: { sessionId: string; inviteeId: string } }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const inboxUser = searchParams.get('inbox');
+
   const [screen, setScreen] = useState<Screen>('loading');
   const [session, setSession] = useState<SessionView | null>(null);
   const [me, setMe] = useState<{ id: string; name: string; status: string } | null>(null);
@@ -43,6 +48,10 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
   const [claims, setClaims] = useState<Record<number, number>>({});
   const [error, setError] = useState<string | null>(null);
   const [paidAmount, setPaidAmount] = useState<number | null>(null);
+
+  const goBackToInbox = () => {
+    if (inboxUser) router.push(`/inbox/${inboxUser}`);
+  };
 
   useEffect(() => {
     fetch(`/api/session/${params.sessionId}`)
@@ -175,7 +184,13 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
             ? `${formatAmount(paidAmount, session.receipt.currency)} sent to ${session.hostName}`
             : `Paid to ${session.hostName}`}
         </p>
-        <p style={{ fontSize: 13, color: '#aaa', marginTop: 16 }}>You can close this tab.</p>
+        {inboxUser ? (
+          <button style={{ ...s.btn, marginTop: 16 }} onClick={goBackToInbox}>
+            ← Back to inbox
+          </button>
+        ) : (
+          <p style={{ fontSize: 13, color: '#aaa', marginTop: 16 }}>You can close this tab.</p>
+        )}
       </div>
     </main>
   );
@@ -186,6 +201,11 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
         <div style={{ fontSize: 56, marginBottom: 12 }}>👋</div>
         <h2 style={s.title}>No problem</h2>
         <p style={s.sub}>You haven't been charged. Thanks!</p>
+        {inboxUser && (
+          <button style={{ ...s.btn, marginTop: 16 }} onClick={goBackToInbox}>
+            ← Back to inbox
+          </button>
+        )}
       </div>
     </main>
   );

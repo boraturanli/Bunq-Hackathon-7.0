@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import type { Receipt } from "@/lib/types/receipt";
+import { getUserById } from "@/lib/users";
 
 export interface ItemClaim {
   itemId: number;
@@ -10,8 +11,9 @@ export type InviteeStatus = "pending" | "paid" | "skipped";
 
 export interface Invitee {
   id: string;
+  userId: string; // links to MockUser
   name: string;
-  alias: string; // email or phone — used for the demo "send"
+  alias: string; // email — used for best-effort bunq integration
   status: InviteeStatus;
   claims: ItemClaim[];
   amountPaid?: number;
@@ -31,7 +33,7 @@ interface CreateSessionInput {
   receipt: Receipt;
   hostName: string;
   hostAlias: string;
-  invitees: { name: string; alias: string }[];
+  inviteeUserIds: string[];
 }
 
 declare global {
@@ -43,18 +45,25 @@ const store: Map<string, Session> =
   globalThis.__snapsplitSessions ?? (globalThis.__snapsplitSessions = new Map());
 
 export function createSession(input: CreateSessionInput): Session {
+  const invitees: Invitee[] = [];
+  for (const userId of input.inviteeUserIds) {
+    const user = getUserById(userId);
+    if (!user) continue;
+    invitees.push({
+      id: randomUUID(),
+      userId: user.id,
+      name: user.name,
+      alias: user.email,
+      status: "pending",
+      claims: [],
+    });
+  }
   const session: Session = {
     id: randomUUID(),
     receipt: input.receipt,
     hostName: input.hostName,
     hostAlias: input.hostAlias,
-    invitees: input.invitees.map((i) => ({
-      id: randomUUID(),
-      name: i.name,
-      alias: i.alias,
-      status: "pending",
-      claims: [],
-    })),
+    invitees,
     createdAt: Date.now(),
   };
   store.set(session.id, session);
@@ -63,6 +72,15 @@ export function createSession(input: CreateSessionInput): Session {
 
 export function getSession(sessionId: string): Session | undefined {
   return store.get(sessionId);
+}
+
+export function findSessionsForUser(userId: string): { session: Session; invitee: Invitee }[] {
+  const out: { session: Session; invitee: Invitee }[] = [];
+  store.forEach((session) => {
+    const invitee = session.invitees.find((i: Invitee) => i.userId === userId);
+    if (invitee) out.push({ session, invitee });
+  });
+  return out.sort((a, b) => b.session.createdAt - a.session.createdAt);
 }
 
 export function getInvitee(sessionId: string, inviteeId: string): Invitee | undefined {

@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { Receipt } from '@/lib/types/receipt';
+import { MOCK_USERS, type MockUser } from '@/lib/users';
 
 const TEAL = '#00E5A0';
 
-interface Invitee {
+interface CreatedInvitee {
   id: string;
+  userId: string;
   name: string;
-  alias: string;
 }
 
 interface InviteeStatus {
@@ -35,16 +36,13 @@ export default function Home() {
   const [screen, setScreen] = useState<Screen>('capture');
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [hostName, setHostName] = useState('');
-  const [people, setPeople] = useState<{ name: string; alias: string }[]>([]);
-  const [newName, setNewName] = useState('');
-  const [newAlias, setNewAlias] = useState('');
+  const [pickedIds, setPickedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [invitees, setInvitees] = useState<Invitee[]>([]);
+  const [invitees, setInvitees] = useState<CreatedInvitee[]>([]);
   const [statuses, setStatuses] = useState<InviteeStatus[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -54,7 +52,7 @@ export default function Home() {
     let cancelled = false;
     const tick = async () => {
       try {
-        const res = await fetch(`/api/session/${sessionId}`);
+        const res = await fetch(`/api/session/${sessionId}`, { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         if (cancelled) return;
@@ -86,19 +84,12 @@ export default function Home() {
     }
   }, []);
 
-  const addPerson = () => {
-    if (!newName.trim() || !newAlias.trim()) return;
-    setPeople(p => [...p, { name: newName.trim(), alias: newAlias.trim() }]);
-    setNewName('');
-    setNewAlias('');
+  const togglePick = (userId: string) => {
+    setPickedIds((p) => (p.includes(userId) ? p.filter((x) => x !== userId) : [...p, userId]));
   };
 
-  const removePerson = (idx: number) => {
-    setPeople(p => p.filter((_, i) => i !== idx));
-  };
-
-  const sendLinks = async () => {
-    if (!receipt || people.length === 0) return;
+  const sendInvites = async () => {
+    if (!receipt || pickedIds.length === 0) return;
     setCreating(true);
     setError(null);
     try {
@@ -108,8 +99,7 @@ export default function Home() {
         body: JSON.stringify({
           receipt,
           hostName: hostName.trim() || 'Your friend',
-          hostAlias: '',
-          invitees: people,
+          inviteeUserIds: pickedIds,
         }),
       });
       const data = await res.json();
@@ -118,30 +108,17 @@ export default function Home() {
       setInvitees(data.invitees);
       setScreen('tracking');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to send links');
+      setError(e instanceof Error ? e.message : 'Failed to send');
     } finally {
       setCreating(false);
     }
-  };
-
-  const inviteUrl = (inviteeId: string) => {
-    if (typeof window === 'undefined') return '';
-    return `${window.location.origin}/split/${sessionId}/${inviteeId}`;
-  };
-
-  const copyLink = async (inviteeId: string) => {
-    try {
-      await navigator.clipboard.writeText(inviteUrl(inviteeId));
-      setCopiedId(inviteeId);
-      setTimeout(() => setCopiedId(null), 1500);
-    } catch {/* ignore */}
   };
 
   const reset = () => {
     setScreen('capture');
     setReceipt(null);
     setHostName('');
-    setPeople([]);
+    setPickedIds([]);
     setSessionId(null);
     setInvitees([]);
     setStatuses([]);
@@ -170,13 +147,13 @@ export default function Home() {
           accept="image/*"
           capture="environment"
           style={{ display: 'none' }}
-          onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
         />
       </div>
     </main>
   );
 
-  // ── PEOPLE ────────────────────────────────────────────────────────────────
+  // ── PEOPLE (pick mock users) ──────────────────────────────────────────────
 
   if (screen === 'people' && receipt) return (
     <main style={{ ...s.page, alignItems: 'flex-start', paddingTop: 24 }}>
@@ -200,55 +177,66 @@ export default function Home() {
           style={{ ...s.input, width: '100%', marginBottom: 20 }}
           placeholder="So they know who's asking"
           value={hostName}
-          onChange={e => setHostName(e.target.value)}
+          onChange={(e) => setHostName(e.target.value)}
         />
 
-        <p style={s.label}>WHO'S SPLITTING WITH YOU</p>
-        {people.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            {people.map((p, idx) => (
-              <div key={idx} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '10px 14px', background: '#f8faf8', borderRadius: 10, marginBottom: 6,
-              }}>
-                <div>
-                  <p style={{ fontSize: 14, fontWeight: 700 }}>{p.name}</p>
-                  <p style={{ fontSize: 12, color: '#999' }}>{p.alias}</p>
+        <p style={s.label}>SPLIT WITH</p>
+        <p style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>
+          Tap to choose. They'll get a notification in their bunq inbox.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
+          {MOCK_USERS.map((u: MockUser) => {
+            const picked = pickedIds.includes(u.id);
+            return (
+              <button
+                key={u.id}
+                onClick={() => togglePick(u.id)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 14px',
+                  background: picked ? '#f0fff8' : '#fff',
+                  border: picked ? `2px solid ${TEAL}` : '2px solid #eee',
+                  borderRadius: 12,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  textAlign: 'left',
+                }}
+              >
+                <div style={{
+                  width: 38, height: 38, borderRadius: '50%',
+                  background: u.color,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 16, fontWeight: 800, color: '#000',
+                  flexShrink: 0,
+                }}>
+                  {u.name[0]}
                 </div>
-                <button
-                  onClick={() => removePerson(idx)}
-                  style={{ background: 'transparent', border: 'none', color: '#999', cursor: 'pointer', fontSize: 16 }}
-                >✕</button>
-              </div>
-            ))}
-          </div>
-        )}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-          <input style={s.input} placeholder="Name" value={newName} onChange={e => setNewName(e.target.value)} />
-          <input
-            style={s.input}
-            placeholder="Email or phone"
-            value={newAlias}
-            onChange={e => setNewAlias(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && addPerson()}
-          />
-          <button onClick={addPerson} style={{ ...s.btn, width: 'auto', padding: '0 16px', fontSize: 20 }}>+</button>
-        </div>
-
-        <div style={{ background: '#f8faf8', borderRadius: 10, padding: '10px 14px', marginBottom: 20 }}>
-          <p style={{ fontSize: 12, color: '#666', lineHeight: 1.4 }}>
-            Each person gets a unique link. They'll pick their items and pay you with bunq.
-          </p>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: 700 }}>{u.name}</p>
+                  <p style={{ fontSize: 12, color: '#999' }}>{u.email}</p>
+                </div>
+                {picked && (
+                  <span style={{
+                    fontSize: 18, color: TEAL, fontWeight: 800,
+                  }}>✓</span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {error && <p style={s.error}>{error}</p>}
 
         <button
-          style={{ ...s.btn, opacity: people.length === 0 || creating ? 0.4 : 1 }}
-          disabled={people.length === 0 || creating}
-          onClick={sendLinks}
+          style={{ ...s.btn, opacity: pickedIds.length === 0 || creating ? 0.4 : 1 }}
+          disabled={pickedIds.length === 0 || creating}
+          onClick={sendInvites}
         >
-          {creating ? 'Creating links…' : `Send Links (${people.length})`}
+          {creating
+            ? 'Notifying…'
+            : pickedIds.length === 0
+              ? 'Choose someone above'
+              : `Notify ${pickedIds.length} ${pickedIds.length === 1 ? 'friend' : 'friends'}`}
         </button>
       </div>
     </main>
@@ -263,7 +251,7 @@ export default function Home() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
           <h2 style={{ fontSize: 20, fontWeight: 800 }}>Waiting for friends</h2>
           <span style={{ fontSize: 12, color: '#888' }}>
-            {statuses.filter(s => s.status !== 'pending').length}/{statuses.length} done
+            {statuses.filter((x) => x.status !== 'pending').length}/{statuses.length} done
           </span>
         </div>
         <p style={{ fontSize: 13, color: '#888', marginBottom: 16 }}>
@@ -271,50 +259,42 @@ export default function Home() {
         </p>
 
         <div style={{
-          background: '#fffbe6', border: '1px solid #ffe58f', borderRadius: 10,
-          padding: '10px 14px', marginBottom: 16, fontSize: 12, color: '#8a6d00',
+          background: '#f0fff8', border: `1px solid ${TEAL}`, borderRadius: 10,
+          padding: '10px 14px', marginBottom: 16, fontSize: 12, color: '#006d3a',
         }}>
-          💡 Demo mode: open each link in a new tab to act as that friend.
+          ✓ Notifications sent. Updates appear here as each friend reviews and pays.
         </div>
 
-        {invitees.map(inv => {
-          const status = statuses.find(s => s.id === inv.id);
+        {invitees.map((inv) => {
+          const status = statuses.find((x) => x.id === inv.id);
           const state = status?.status ?? 'pending';
-          const url = inviteUrl(inv.id);
+          const user = MOCK_USERS.find((u) => u.id === inv.userId);
           const isExpanded = expanded === inv.id;
           return (
             <div key={inv.id} style={{
               padding: '12px 14px', marginBottom: 8,
               background: '#fff', border: '1px solid #eee', borderRadius: 12,
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: user?.color ?? '#eee',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 14, fontWeight: 800, color: '#000',
+                  flexShrink: 0,
+                }}>
+                  {inv.name[0]}
+                </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: 14, fontWeight: 700 }}>{inv.name}</p>
-                  <p style={{ fontSize: 11, color: '#999', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {inv.alias}
+                  <p style={{ fontSize: 11, color: '#999' }}>
+                    {state === 'pending' && '⏳ Waiting…'}
+                    {state === 'paid' && status?.paidAt && `Paid · just now`}
+                    {state === 'skipped' && 'Had nothing'}
                   </p>
                 </div>
                 <StatusChip state={state} amount={status?.amountPaid} currency={receipt.currency} />
               </div>
-
-              {state === 'pending' && (
-                <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-                  <button
-                    onClick={() => copyLink(inv.id)}
-                    style={s.smallBtn}
-                  >
-                    {copiedId === inv.id ? '✓ Copied' : '📋 Copy link'}
-                  </button>
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ ...s.smallBtn, textDecoration: 'none', textAlign: 'center', display: 'inline-block' }}
-                  >
-                    ↗ Open as {inv.name.split(' ')[0]}
-                  </a>
-                </div>
-              )}
 
               {state === 'paid' && status && (
                 <>
@@ -328,12 +308,12 @@ export default function Home() {
                     {isExpanded ? '▾ Hide breakdown' : '▸ See what they paid for'}
                   </button>
                   {isExpanded && (
-                    <div style={{ marginTop: 8, fontSize: 12, color: '#555' }}>
+                    <div style={{ marginTop: 8, fontSize: 12, color: '#555', paddingLeft: 4 }}>
                       {status.claims.length === 0 ? (
                         <p style={{ color: '#999' }}>No items</p>
                       ) : (
-                        status.claims.map(c => {
-                          const item = receipt.items.find(i => i.id === c.itemId);
+                        status.claims.map((c) => {
+                          const item = receipt.items.find((i) => i.id === c.itemId);
                           if (!item) return null;
                           const cost = item.line_total / Math.max(1, c.sharedWith);
                           return (
@@ -374,8 +354,8 @@ export default function Home() {
 
   if (screen === 'done' && receipt) {
     const collected = statuses
-      .filter(s => s.status === 'paid')
-      .reduce((sum, s) => sum + (s.amountPaid ?? 0), 0);
+      .filter((x) => x.status === 'paid')
+      .reduce((sum, x) => sum + (x.amountPaid ?? 0), 0);
     return (
       <main style={s.page}>
         <div style={{ ...s.card, maxWidth: 480 }}>
@@ -386,13 +366,13 @@ export default function Home() {
           </p>
 
           <div style={{ textAlign: 'left', marginTop: 16 }}>
-            {statuses.map(s => (
-              <div key={s.id} style={{
+            {statuses.map((x) => (
+              <div key={x.id} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '10px 0', borderBottom: '1px solid #f0f0f0',
               }}>
-                <span style={{ fontSize: 14, fontWeight: 600 }}>{s.name}</span>
-                <StatusChip state={s.status} amount={s.amountPaid} currency={receipt.currency} />
+                <span style={{ fontSize: 14, fontWeight: 600 }}>{x.name}</span>
+                <StatusChip state={x.status} amount={x.amountPaid} currency={receipt.currency} />
               </div>
             ))}
           </div>
@@ -433,8 +413,6 @@ function StatusChip({ state, amount, currency }: {
   );
 }
 
-// ── STYLES ────────────────────────────────────────────────────────────────────
-
 const s: Record<string, React.CSSProperties> = {
   page: {
     minHeight: '100vh',
@@ -463,13 +441,6 @@ const s: Record<string, React.CSSProperties> = {
     border: 'none', borderRadius: 12,
     fontSize: 16, fontWeight: 700, cursor: 'pointer',
     transition: 'opacity 0.15s',
-  },
-  smallBtn: {
-    flex: 1,
-    padding: '8px 10px',
-    background: '#f0f0f0', color: '#333',
-    border: 'none', borderRadius: 8,
-    fontSize: 12, fontWeight: 600, cursor: 'pointer',
   },
   input: {
     flex: 1,
