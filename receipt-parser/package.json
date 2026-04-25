@@ -1,0 +1,31 @@
+{
+  "name": "receipt-parser",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "parse": "ts-node --project tsconfig.scripts.json scripts/testParse.ts"
+  },
+  "dependencies": {
+    "next": "14.2.35",
+    "openai": "^6.34.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "sharp": "^0.34.5",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/form-data": "^2.2.1",
+    "@types/node": "^20.19.39",
+    "@types/node-fetch": "^2.6.13",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "form-data": "^4.0.5",
+    "node-fetch": "^2.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}
