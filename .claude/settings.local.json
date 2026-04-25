@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git show *)",
+      "Bash(git ls-tree *)",
+      "WebFetch(domain:www.bunq.com)",
+      "WebFetch(domain:doc.bunq.com)",
+      "WebSearch",
+      "WebFetch(domain:press.bunq.com)",
+      "WebFetch(domain:www.figma.com)",
+      "WebFetch(domain:www.branitapp.com)",
+      "WebFetch(domain:brandfetch.com)",
+      "WebFetch(domain:www.behance.net)",
+      "WebFetch(domain:help.bunq.com)"
+    ]
+  }
+}

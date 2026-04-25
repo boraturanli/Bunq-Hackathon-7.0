@@ -3,541 +3,456 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { Receipt } from '@/lib/types/receipt';
 
-const TEAL = '#00E5A0';
+// ── Palette ───────────────────────────────────────────────────────────────────
+const C = {
+  bg:        '#0A0A0A',
+  surface:   '#141414',
+  surface2:  '#1C1C1C',
+  surface3:  '#252525',
+  border:    'rgba(255,255,255,0.06)',
+  borderMd:  'rgba(255,255,255,0.10)',
+  orange:    '#FF6B00',
+  orangeDim: 'rgba(255,107,0,0.12)',
+  green:     '#00E5A0',
+  greenDim:  'rgba(0,229,160,0.10)',
+  text:      '#FFFFFF',
+  text2:     'rgba(255,255,255,0.50)',
+  text3:     'rgba(255,255,255,0.26)',
+  amber:     '#FFB347',
+  amberDim:  'rgba(255,179,71,0.12)',
+} as const;
 
-interface Invitee {
-  id: string;
-  name: string;
-  alias: string;
-}
+const BUNQ_API = process.env.NEXT_PUBLIC_BUNQ_API_URL ?? 'http://localhost:8000';
 
-<<<<<<< Updated upstream
+// ── Types ─────────────────────────────────────────────────────────────────────
+interface Invitee      { id: string; name: string; alias: string }
 interface InviteeStatus {
-  id: string;
-=======
-interface TopFriend {
-  name: string;
-  pointer_type: string;
-  pointer_value: string;
-  transaction_count: number;
-}
-
-type AssignmentMap = Record<number, string[]>;
-type Screen = 'capture' | 'assign' | 'confirm' | 'done';
-
-interface SendResult {
-  personId: string;
->>>>>>> Stashed changes
-  name: string;
+  id: string; name: string;
   status: 'pending' | 'paid' | 'skipped';
   claims: { itemId: number; sharedWith: number }[];
   amountPaid?: number;
-  paidAt?: number;
 }
-
+interface TopFriend { name: string; pointer_type: string; pointer_value: string; transaction_count: number }
 type Screen = 'capture' | 'people' | 'tracking' | 'done';
 
-function initials(name: string) {
-  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-}
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const initials = (n: string) => n.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+const fmt = (n: number, cur: string) =>
+  new Intl.NumberFormat(undefined, { style: 'currency', currency: cur, minimumFractionDigits: 2 }).format(n);
 
-function formatAmount(amount: number, currency: string): string {
-  return new Intl.NumberFormat(undefined, {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
+// ── Shared styles ─────────────────────────────────────────────────────────────
+const bigBtn: React.CSSProperties = {
+  display: 'block', width: '100%',
+  padding: '19px 24px', fontSize: 16, fontWeight: 800, letterSpacing: '-0.01em',
+  background: C.orange, color: '#000',
+  border: 'none', borderRadius: 16, cursor: 'pointer', textAlign: 'center',
+};
 
-<<<<<<< Updated upstream
+const ghostBtn: React.CSSProperties = {
+  display: 'block', width: '100%',
+  padding: '16px 24px', fontSize: 14, fontWeight: 700, letterSpacing: '-0.01em',
+  background: 'transparent', color: C.text3,
+  border: `1px solid ${C.border}`, borderRadius: 12, cursor: 'pointer', textAlign: 'center',
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', display: 'block', padding: '15px 16px',
+  background: C.surface2, color: C.text,
+  border: `1px solid ${C.border}`, borderRadius: 12,
+  fontSize: 15, outline: 'none',
+};
+
+const secLabel: React.CSSProperties = {
+  fontSize: 11, fontWeight: 800, letterSpacing: '0.1em',
+  textTransform: 'uppercase', color: C.text3, marginBottom: 14,
+};
+
+const spinStyle: React.CSSProperties = {
+  width: 17, height: 17, borderRadius: 9999,
+  border: '2px solid rgba(0,0,0,0.2)', borderTopColor: '#000',
+  display: 'inline-block', flexShrink: 0,
+};
+
+const avatarStyle: React.CSSProperties = {
+  width: 40, height: 40, borderRadius: 9999, flexShrink: 0,
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  fontSize: 13, fontWeight: 800,
+};
+
+// ── Root ──────────────────────────────────────────────────────────────────────
 export default function Home() {
-  const [screen, setScreen] = useState<Screen>('capture');
-  const [receipt, setReceipt] = useState<Receipt | null>(null);
-  const [hostName, setHostName] = useState('');
-  const [people, setPeople] = useState<{ name: string; alias: string }[]>([]);
-  const [newName, setNewName] = useState('');
-  const [newAlias, setNewAlias] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [screen,    setScreen]    = useState<Screen>('capture');
+  const [receipt,   setReceipt]   = useState<Receipt | null>(null);
+  const [hostName,  setHostName]  = useState('');
+  const [people,    setPeople]    = useState<{ name: string; alias: string }[]>([]);
+  const [loading,   setLoading]   = useState(false);
+  const [error,     setError]     = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [invitees, setInvitees] = useState<Invitee[]>([]);
-  const [statuses, setStatuses] = useState<InviteeStatus[]>([]);
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
-=======
-function personTotal(person: Person, assignments: AssignmentMap, receipt: Receipt): number {
-  let food = 0;
-  const subtotal = receipt.items.reduce((s, i) => s + i.line_total, 0);
-  for (const item of receipt.items) {
-    const assignees = assignments[item.id] ?? [];
-    if (assignees.includes(person.id)) food += item.line_total / assignees.length;
-  }
-  const extras = subtotal > 0 ? (food / subtotal) * (receipt.tax + receipt.tip) : 0;
-  return Math.round((food + extras) * 100) / 100;
-}
+  const [invitees,  setInvitees]  = useState<Invitee[]>([]);
+  const [statuses,  setStatuses]  = useState<InviteeStatus[]>([]);
+  const [expanded,  setExpanded]  = useState<string | null>(null);
+  const [copiedId,  setCopiedId]  = useState<string | null>(null);
+  const [creating,  setCreating]  = useState(false);
 
-export default function Home() {
-  const [screen, setScreen] = useState<Screen>('capture');
-  const [receipt, setReceipt] = useState<Receipt | null>(null);
-  const [people, setPeople] = useState<Person[]>([]);
-  const [assignments, setAssignments] = useState<AssignmentMap>({});
-  const [equalSplit, setEqualSplit] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [sending, setSending] = useState(false);
-  const [results, setResults] = useState<SendResult[]>([]);
-
-  // People panel state
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [topFriends, setTopFriends] = useState<TopFriend[]>([]);
+  const [panelOpen,      setPanelOpen]      = useState(false);
+  const [topFriends,     setTopFriends]     = useState<TopFriend[]>([]);
   const [friendsLoading, setFriendsLoading] = useState(false);
-  const [friendsError, setFriendsError] = useState(false);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newAlias, setNewAlias] = useState('');
+  const [friendsError,   setFriendsError]   = useState(false);
+  const [showAddForm,    setShowAddForm]    = useState(false);
+  const [newName,        setNewName]        = useState('');
+  const [newAlias,       setNewAlias]       = useState('');
 
->>>>>>> Stashed changes
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Poll status while tracking
+  // Polling
   useEffect(() => {
     if (screen !== 'tracking' || !sessionId) return;
-    let cancelled = false;
+    let dead = false;
     const tick = async () => {
       try {
-        const res = await fetch(`/api/session/${sessionId}`);
+        const res  = await fetch(`/api/session/${sessionId}`);
         if (!res.ok) return;
         const data = await res.json();
-        if (cancelled) return;
+        if (dead) return;
         setStatuses(data.invitees);
-        const allDone = data.invitees.every((i: InviteeStatus) => i.status !== 'pending');
-        if (allDone && data.invitees.length > 0) setScreen('done');
-      } catch {/* ignore */}
+        if (data.invitees.length > 0 && data.invitees.every((i: InviteeStatus) => i.status !== 'pending'))
+          setScreen('done');
+      } catch { /* ignore */ }
     };
     tick();
     const id = setInterval(tick, 3000);
-    return () => { cancelled = true; clearInterval(id); };
+    return () => { dead = true; clearInterval(id); };
   }, [screen, sessionId]);
 
   const handleFile = useCallback(async (file: File) => {
-    setLoading(true);
-    setError(null);
+    setLoading(true); setError(null);
     const form = new FormData();
     form.append('image', file);
     try {
-      const res = await fetch('/api/parse', { method: 'POST', body: form });
+      const res  = await fetch('/api/parse', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Parse failed');
-      setReceipt(data);
-      setScreen('people');
+      setReceipt(data); setScreen('people');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }, []);
 
   const openPanel = async () => {
-    setPanelOpen(true);
-    setFriendsLoading(true);
-    setFriendsError(false);
+    setPanelOpen(true); setFriendsLoading(true); setFriendsError(false);
     try {
       const res = await fetch(`${BUNQ_API}/api/contacts/top?n=5`);
       if (!res.ok) throw new Error();
       setTopFriends(await res.json());
-    } catch {
-      setFriendsError(true);
-    } finally {
-      setFriendsLoading(false);
-    }
+    } catch { setFriendsError(true); }
+    finally { setFriendsLoading(false); }
   };
 
-  const closePanel = () => {
-    setPanelOpen(false);
-    setShowAddForm(false);
-    setNewName('');
-    setNewAlias('');
-  };
+  const closePanel = () => { setPanelOpen(false); setShowAddForm(false); setNewName(''); setNewAlias(''); };
 
-  const toggleFriend = (friend: TopFriend) => {
-    const existing = people.find(p => p.alias === friend.pointer_value);
-    if (existing) {
-      removePerson(existing.id);
-    } else {
-      setPeople(p => [...p, { id: crypto.randomUUID(), name: friend.name, alias: friend.pointer_value }]);
-    }
+  const toggleFriend = (f: TopFriend) => {
+    const idx = people.findIndex(p => p.alias === f.pointer_value);
+    if (idx >= 0) setPeople(p => p.filter((_, i) => i !== idx));
+    else setPeople(p => [...p, { name: f.name, alias: f.pointer_value }]);
   };
 
   const addManual = () => {
     if (!newName.trim() || !newAlias.trim()) return;
     setPeople(p => [...p, { name: newName.trim(), alias: newAlias.trim() }]);
-    setNewName('');
-    setNewAlias('');
-    setShowAddForm(false);
+    setNewName(''); setNewAlias(''); setShowAddForm(false);
   };
 
-  const removePerson = (idx: number) => {
-    setPeople(p => p.filter((_, i) => i !== idx));
-  };
+  const removePerson = (idx: number) => setPeople(p => p.filter((_, i) => i !== idx));
 
   const sendLinks = async () => {
-    if (!receipt || people.length === 0) return;
-    setCreating(true);
-    setError(null);
+    if (!receipt || !people.length) return;
+    setCreating(true); setError(null);
     try {
-      const res = await fetch('/api/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          receipt,
-          hostName: hostName.trim() || 'Your friend',
-          hostAlias: '',
-          invitees: people,
-        }),
+      const res  = await fetch('/api/session', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ receipt, hostName: hostName.trim() || 'Your friend', hostAlias: '', invitees: people }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? 'Failed to create session');
-      setSessionId(data.sessionId);
-      setInvitees(data.invitees);
-      setScreen('tracking');
+      if (!res.ok) throw new Error(data.error ?? 'Failed');
+      setSessionId(data.sessionId); setInvitees(data.invitees); setScreen('tracking');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to send links');
-    } finally {
-      setCreating(false);
-    }
+    } finally { setCreating(false); }
   };
 
-  const inviteUrl = (inviteeId: string) => {
-    if (typeof window === 'undefined') return '';
-    return `${window.location.origin}/split/${sessionId}/${inviteeId}`;
+  const inviteUrl  = (id: string) => typeof window !== 'undefined' ? `${window.location.origin}/split/${sessionId}/${id}` : '';
+  const copyLink   = async (id: string) => {
+    try { await navigator.clipboard.writeText(inviteUrl(id)); setCopiedId(id); setTimeout(() => setCopiedId(null), 1500); }
+    catch { /* ignore */ }
   };
-
-  const copyLink = async (inviteeId: string) => {
-    try {
-      await navigator.clipboard.writeText(inviteUrl(inviteeId));
-      setCopiedId(inviteeId);
-      setTimeout(() => setCopiedId(null), 1500);
-    } catch {/* ignore */}
-  };
-
   const reset = () => {
-    setScreen('capture');
-    setReceipt(null);
-    setHostName('');
-    setPeople([]);
-    setSessionId(null);
-    setInvitees([]);
-    setStatuses([]);
-    setExpanded(null);
+    setScreen('capture'); setReceipt(null); setHostName(''); setPeople([]);
+    setSessionId(null); setInvitees([]); setStatuses([]); setExpanded(null);
   };
 
-  // ── CAPTURE ───────────────────────────────────────────────────────────────
-
+  // ─────────────────────────────────────────────────────────────────────────
+  // CAPTURE
+  // ─────────────────────────────────────────────────────────────────────────
   if (screen === 'capture') return (
-    <main style={s.page}>
-      <div style={s.card}>
-        <div style={{ fontSize: 56, marginBottom: 16 }}>🧾</div>
-        <h1 style={s.title}>SnapSplit</h1>
-        <p style={s.sub}>Snap a receipt — your friends pick what they had and pay you back</p>
-        {error && <p style={s.error}>{error}</p>}
+    <main className="app-screen" style={{ background: `linear-gradient(165deg, #131313 0%, ${C.bg} 55%)` }}>
+
+      {/* Hero */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '80px 28px 36px' }}>
+
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start',
+          background: C.orangeDim, border: `1px solid rgba(255,107,0,0.22)`,
+          borderRadius: 9999, padding: '5px 14px 5px 9px', marginBottom: 40,
+        }}>
+          <div style={{ width: 7, height: 7, borderRadius: '50%', background: C.orange }} />
+          <span style={{ fontSize: 11, fontWeight: 900, color: C.orange, letterSpacing: '0.09em' }}>SNAPSPLIT</span>
+        </div>
+
+        <h1 style={{
+          fontSize: 84, fontWeight: 900, letterSpacing: '-0.055em', lineHeight: 0.87,
+          color: C.text, marginBottom: 32,
+        }}>
+          Snap<br/>Split
+        </h1>
+
+        <p style={{ fontSize: 17, color: C.text2, lineHeight: 1.7, maxWidth: 300 }}>
+          Photograph a receipt. Friends pick what they ordered and pay you back automatically via bunq.
+        </p>
+      </div>
+
+      {/* CTA */}
+      <div style={{ padding: '0 28px 56px' }}>
+        {error && <ErrorBanner msg={error} />}
         <button
-          style={{ ...s.btn, opacity: loading ? 0.6 : 1 }}
+          style={{ ...bigBtn, marginBottom: 18, opacity: loading ? 0.6 : 1, fontSize: 17 }}
           disabled={loading}
           onClick={() => fileRef.current?.click()}
         >
-          {loading ? 'Reading receipt…' : '📷  Scan Receipt'}
+          {loading
+            ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                <span className="spin" style={spinStyle} />Reading receipt…
+              </span>
+            : '📷  Scan Receipt'}
         </button>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          style={{ display: 'none' }}
-          onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
-        />
+        <input ref={fileRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }}
+          onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+        <p style={{ fontSize: 12, color: C.text3, textAlign: 'center' }}>Powered by bunq · GPT-4o vision</p>
       </div>
     </main>
   );
 
-  // ── PEOPLE ────────────────────────────────────────────────────────────────
-
+  // ─────────────────────────────────────────────────────────────────────────
+  // PEOPLE
+  // ─────────────────────────────────────────────────────────────────────────
   if (screen === 'people' && receipt) return (
-    <main style={{ ...s.page, alignItems: 'flex-start', paddingTop: 24 }}>
-      <div style={{ ...s.card, maxWidth: 540, textAlign: 'left' }}>
+    <main className="app-screen" style={{ background: C.bg }}>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800 }}>{receipt.merchant ?? 'Receipt'}</h2>
-          <span style={{ fontSize: 22, fontWeight: 800, color: TEAL }}>
-            {formatAmount(receipt.total, receipt.currency)}
-          </span>
-        </div>
-        <p style={{ fontSize: 13, color: '#888', marginBottom: 4 }}>
-          {receipt.items.length} item{receipt.items.length === 1 ? '' : 's'}
-          {receipt.warning && <span style={{ color: '#f59e0b' }}> · totals don't match</span>}
-        </p>
-
-        <div style={s.divider} />
-
-        <p style={s.label}>YOUR NAME</p>
-        <input
-          style={{ ...s.input, width: '100%', marginBottom: 20 }}
-          placeholder="So they know who's asking"
-          value={hostName}
-          onChange={e => setHostName(e.target.value)}
-        />
-
-<<<<<<< Updated upstream
-        <p style={s.label}>WHO'S SPLITTING WITH YOU</p>
-        {people.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            {people.map((p, idx) => (
-              <div key={idx} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '10px 14px', background: '#f8faf8', borderRadius: 10, marginBottom: 6,
-              }}>
-                <div>
-                  <p style={{ fontSize: 14, fontWeight: 700 }}>{p.name}</p>
-                  <p style={{ fontSize: 12, color: '#999' }}>{p.alias}</p>
-                </div>
-                <button
-                  onClick={() => removePerson(idx)}
-                  style={{ background: 'transparent', border: 'none', color: '#999', cursor: 'pointer', fontSize: 16 }}
-                >✕</button>
-              </div>
-            ))}
+      {/* Sticky header */}
+      <div className="app-bar" style={{ padding: '18px 24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div>
+            <p style={{ ...secLabel, marginBottom: 4 }}>Receipt</p>
+            <h2 style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em', color: C.text, lineHeight: 1 }}>
+              {receipt.merchant ?? 'Untitled'}
+            </h2>
           </div>
+          <div style={{ textAlign: 'right' }}>
+            <p style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.04em', color: C.green, lineHeight: 1 }}>
+              {fmt(receipt.total, receipt.currency)}
+            </p>
+            <p style={{ fontSize: 12, color: C.text3, marginTop: 3 }}>
+              {receipt.date ?? `${receipt.items.length} items`}
+            </p>
+          </div>
+        </div>
+        {receipt.warning && (
+          <p style={{ fontSize: 12, color: C.amber, marginTop: 8 }}>⚠ Totals may not match — verify before sending.</p>
         )}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-          <input style={s.input} placeholder="Name" value={newName} onChange={e => setNewName(e.target.value)} />
-          <input
-            style={s.input}
-            placeholder="Email or phone"
-            value={newAlias}
-            onChange={e => setNewAlias(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && addPerson()}
-          />
-          <button onClick={addPerson} style={{ ...s.btn, width: 'auto', padding: '0 16px', fontSize: 20 }}>+</button>
-        </div>
+      </div>
 
-        <div style={{ background: '#f8faf8', borderRadius: 10, padding: '10px 14px', marginBottom: 20 }}>
-          <p style={{ fontSize: 12, color: '#666', lineHeight: 1.4 }}>
-            Each person gets a unique link. They'll pick their items and pay you with bunq.
-          </p>
-        </div>
+      {/* Body */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '28px 24px 140px' }}>
 
-        {error && <p style={s.error}>{error}</p>}
-=======
-        {/* People */}
-        <p style={s.label}>WHO'S AT THE TABLE</p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
-          {people.map(p => (
-            <div key={p.id} style={{ ...s.chip, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{
-                width: 22, height: 22, borderRadius: '50%', background: TEAL,
-                fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                {initials(p.name)}
+        {/* Items list */}
+        <div style={{ marginBottom: 32 }}>
+          {receipt.items.map((item, i) => (
+            <div key={item.id} style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12,
+              padding: '14px 0',
+              borderBottom: `1px solid ${C.border}`,
+            }}>
+              <span style={{ fontSize: 14, color: C.text2, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {item.description}
+                {item.quantity > 1 && <span style={{ color: C.text3 }}> ×{item.quantity}</span>}
               </span>
-              {p.name}
-              <span onClick={() => removePerson(p.id)} style={{ cursor: 'pointer', color: '#999', fontSize: 12 }}>✕</span>
+              <span style={{ fontSize: 14, fontWeight: 800, color: C.text, flexShrink: 0 }}>
+                {fmt(item.line_total, receipt.currency)}
+              </span>
             </div>
           ))}
+          {(receipt.tax > 0 || receipt.tip > 0) && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: `1px solid ${C.border}` }}>
+              <span style={{ fontSize: 13, color: C.text3 }}>Tax &amp; tip</span>
+              <span style={{ fontSize: 13, color: C.text3 }}>{fmt((receipt.tax ?? 0) + (receipt.tip ?? 0), receipt.currency)}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Host name */}
+        <div style={{ marginBottom: 32 }}>
+          <p style={secLabel}>Your Name</p>
+          <input
+            style={inputStyle}
+            placeholder="So friends know who's asking"
+            value={hostName}
+            onChange={e => setHostName(e.target.value)}
+          />
+        </div>
+
+        {/* People */}
+        <div style={{ marginBottom: 28 }}>
+          <p style={secLabel}>Splitting With</p>
+
+          {people.map((p, idx) => (
+            <div key={idx} style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '13px 0', borderBottom: `1px solid ${C.border}`,
+            }}>
+              <div style={{ ...avatarStyle, background: C.orangeDim, color: C.orange }}>{initials(p.name)}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 15, fontWeight: 700, color: C.text }}>{p.name}</p>
+                <p style={{ fontSize: 12, color: C.text3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.alias}</p>
+              </div>
+              <button onClick={() => removePerson(idx)} style={{
+                background: 'none', border: 'none', color: C.text3, fontSize: 22,
+                lineHeight: 1, padding: '4px 8px', cursor: 'pointer',
+              }}>×</button>
+            </div>
+          ))}
+
           <button onClick={openPanel} style={{
-            ...s.chip, background: TEAL, color: '#000', border: 'none', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 6,
+            display: 'flex', alignItems: 'center', gap: 12,
+            width: '100%', padding: '16px 0', marginTop: people.length ? 4 : 0,
+            background: 'none', border: 'none', cursor: 'pointer',
+            borderBottom: `1px solid ${C.border}`,
           }}>
-            <span style={{ fontSize: 16, lineHeight: 1 }}>+</span> Add People
+            <div style={{
+              ...avatarStyle,
+              width: 40, height: 40,
+              background: people.length ? C.surface3 : C.orangeDim,
+              color: people.length ? C.text3 : C.orange,
+              fontSize: 22, fontWeight: 400,
+            }}>+</div>
+            <span style={{ fontSize: 15, fontWeight: 700, color: people.length ? C.text2 : C.orange }}>
+              {people.length ? 'Add more people' : 'Add people to split with'}
+            </span>
           </button>
         </div>
 
-        <div style={s.divider} />
+        <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.65 }}>
+          Each person gets a private link — they pick their items and pay you instantly via bunq.
+        </p>
 
-        {/* Items */}
-        {!equalSplit && (
-          <>
-            <p style={{ ...s.label, marginTop: 8 }}>ASSIGN ITEMS</p>
-            {receipt.items.map(item => {
-              const assignees = assignments[item.id] ?? [];
-              return (
-                <div key={item.id} style={{ paddingBottom: 14, marginBottom: 14, borderBottom: '1px solid #f0f0f0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <span style={{ fontSize: 14, fontWeight: 600 }}>
-                      {item.description}
-                      {item.quantity > 1 && <span style={{ color: '#999', fontWeight: 400 }}> ×{item.quantity}</span>}
-                    </span>
-                    <span style={{ fontSize: 14, fontWeight: 700 }}>{formatAmount(item.line_total, receipt.currency)}</span>
-                  </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    {people.length === 0 && <span style={{ fontSize: 12, color: '#aaa' }}>Add people above to assign</span>}
-                    {people.map(p => {
-                      const on = assignees.includes(p.id);
-                      return (
-                        <button key={p.id} onClick={() => toggleAssign(item.id, p.id)} style={{
-                          ...s.chip, background: on ? TEAL : '#f0f0f0',
-                          color: on ? '#000' : '#555', border: 'none', cursor: 'pointer', fontSize: 13,
-                        }}>
-                          {p.name}
-                          {on && assignees.length > 1 && <span style={{ opacity: 0.6, fontSize: 11 }}> ÷{assignees.length}</span>}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </>
-        )}
+        {error && <div style={{ marginTop: 20 }}><ErrorBanner msg={error} /></div>}
+      </div>
 
-        {/* Per-person totals */}
-        {people.length > 0 && (
-          <div style={{ background: '#f8faf8', borderRadius: 12, padding: '12px 16px', marginBottom: 20 }}>
-            {people.map(p => {
-              const amount = equalSplit ? receipt.total / people.length : personTotal(p, assignments, receipt);
-              return (
-                <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
-                  <span>{p.name}</span>
-                  <span style={{ fontWeight: 700 }}>{formatAmount(amount, receipt.currency)}</span>
-                </div>
-              );
-            })}
-            {receipt.tax > 0 && (
-              <p style={{ fontSize: 11, color: '#aaa', marginTop: 8 }}>Tax & tip distributed proportionally</p>
-            )}
-          </div>
-        )}
->>>>>>> Stashed changes
-
+      {/* Fixed footer */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0,
+        background: 'rgba(10,10,10,0.95)', backdropFilter: 'blur(24px)',
+        borderTop: `1px solid ${C.border}`,
+        padding: '16px 24px 32px',
+      }}>
         <button
-          style={{ ...s.btn, opacity: people.length === 0 || creating ? 0.4 : 1 }}
-          disabled={people.length === 0 || creating}
+          style={{ ...bigBtn, opacity: (!people.length || creating) ? 0.38 : 1 }}
+          disabled={!people.length || creating}
           onClick={sendLinks}
         >
-          {creating ? 'Creating links…' : `Send Links (${people.length})`}
+          {creating
+            ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                <span className="spin" style={spinStyle} />Creating session…
+              </span>
+            : `Send Links to ${people.length || '?'} ${people.length === 1 ? 'person' : 'people'} →`}
         </button>
       </div>
 
-      {/* ── PEOPLE PANEL ───────────────────────────────────────────────────── */}
+      {/* ── People drawer ───────────────────────────────────────────────────── */}
       {panelOpen && (
         <>
-          {/* Overlay */}
-          <div
-            className="panel-overlay"
-            onClick={closePanel}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 40, backdropFilter: 'blur(2px)' }}
-          />
-
-          {/* Right-side drawer */}
-          <div
-            className="panel-drawer"
-            style={{
-              position: 'fixed', top: 0, right: 0, bottom: 0,
-              width: 'min(400px, 100vw)',
-              background: '#fff',
-              borderRadius: '20px 0 0 20px',
-              zIndex: 50,
-              display: 'flex', flexDirection: 'column',
-              boxShadow: '-8px 0 48px rgba(0,0,0,0.14)',
-            }}
-          >
-            {/* Panel header */}
-            <div style={{
-              padding: '28px 28px 0',
-              borderBottom: '1px solid #f0f0f0',
-              paddingBottom: 20,
-              flexShrink: 0,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                <h3 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>Add People</h3>
+          <div className="panel-overlay" onClick={closePanel} style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)',
+            backdropFilter: 'blur(8px)', zIndex: 40,
+          }} />
+          <div className="panel-drawer" style={{
+            position: 'fixed', top: 0, right: 0, bottom: 0,
+            width: 'min(400px, 100vw)',
+            background: C.surface, borderLeft: `1px solid ${C.borderMd}`,
+            zIndex: 50, display: 'flex', flexDirection: 'column',
+            boxShadow: '-32px 0 80px rgba(0,0,0,0.6)',
+          }}>
+            {/* Drawer header */}
+            <div style={{ padding: '24px 24px 20px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.03em', color: C.text, marginBottom: 3 }}>Add People</h3>
+                  <p style={{ fontSize: 13, color: C.text3 }}>Recent friends or add manually</p>
+                </div>
                 <button onClick={closePanel} style={{
-                  border: 'none', background: '#f5f5f5', borderRadius: '50%',
-                  width: 36, height: 36, cursor: 'pointer', fontSize: 16,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#666', fontWeight: 700,
-                }}>✕</button>
+                  width: 34, height: 34, borderRadius: 9999,
+                  border: `1px solid ${C.border}`, background: C.surface2,
+                  color: C.text2, fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>×</button>
               </div>
-              <p style={{ fontSize: 13, color: '#aaa' }}>Select from recent contacts or add manually</p>
             </div>
 
-            {/* Scrollable content */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px' }}>
-
-              {/* Top friends section */}
-              <p style={{ ...s.label, marginBottom: 14 }}>RECENT CONTACTS</p>
+            {/* Drawer body */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+              <p style={secLabel}>From bunq</p>
 
               {friendsLoading && (
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 20, color: '#aaa', fontSize: 13 }}>
-                  <div style={{
-                    width: 16, height: 16, borderRadius: '50%',
-                    border: '2px solid #e0e0e0', borderTopColor: TEAL,
-                    animation: 'spin 0.8s linear infinite',
-                  }} />
-                  Loading from bunq…
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: C.text3, fontSize: 13, marginBottom: 20 }}>
+                  <span className="spin" style={{ ...spinStyle, border: `2px solid ${C.surface3}`, borderTopColor: C.orange }} />
+                  Loading contacts…
                 </div>
               )}
-
               {friendsError && !friendsLoading && (
                 <div style={{
-                  background: '#fffbeb', border: '1px solid #fde68a',
-                  borderRadius: 12, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#92400e',
+                  background: C.amberDim, border: `1px solid rgba(255,179,71,0.25)`,
+                  borderRadius: 10, padding: '10px 14px', marginBottom: 16,
+                  fontSize: 13, color: C.amber,
                 }}>
-                  ⚠ Couldn't reach bunq server — add manually below.
+                  ⚠ Can't reach bunq API — add manually below.
                 </div>
               )}
-
-              {!friendsLoading && topFriends.length === 0 && !friendsError && (
-                <p style={{ fontSize: 13, color: '#bbb', marginBottom: 16 }}>No transaction history found.</p>
+              {!friendsLoading && !friendsError && topFriends.length === 0 && (
+                <p style={{ fontSize: 13, color: C.text3, marginBottom: 16 }}>No history found — add someone manually.</p>
               )}
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 }}>
+              <div style={{ marginBottom: 4 }}>
                 {topFriends.map(friend => {
-                  const selected = people.some(p => p.alias === friend.pointer_value);
+                  const sel = people.some(p => p.alias === friend.pointer_value);
                   return (
-                    <div
-                      key={friend.pointer_value}
-                      onClick={() => toggleFriend(friend)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 14,
-                        padding: '13px 16px', borderRadius: 16, cursor: 'pointer',
-                        background: selected ? '#edfff8' : '#fafafa',
-                        border: `1.5px solid ${selected ? TEAL : '#f0f0f0'}`,
-                        transition: 'all 0.15s',
-                      }}
-                    >
-                      {/* Avatar */}
+                    <div key={friend.pointer_value} onClick={() => toggleFriend(friend)} style={{
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      padding: '14px 0', cursor: 'pointer',
+                      borderBottom: `1px solid ${C.border}`,
+                      opacity: 1,
+                    }}>
                       <div style={{
-                        width: 46, height: 46, borderRadius: '50%', flexShrink: 0,
-                        background: selected ? TEAL : '#ececec',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 15, fontWeight: 800,
-                        transition: 'background 0.15s',
-                        boxShadow: selected ? `0 0 0 3px ${TEAL}33` : 'none',
-                      }}>
-                        {initials(friend.name)}
-                      </div>
-
-                      {/* Info */}
+                        ...avatarStyle,
+                        background: sel ? C.orange : C.surface3,
+                        color: sel ? '#000' : C.text2,
+                        transition: 'all 0.12s',
+                        boxShadow: sel ? `0 0 0 3px rgba(255,107,0,0.25)` : 'none',
+                      }}>{initials(friend.name)}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>{friend.name}</p>
-                        <p style={{ fontSize: 12, color: '#b0b0b0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {friend.pointer_value}
-                        </p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: C.text }}>{friend.name}</p>
+                        <p style={{ fontSize: 12, color: C.text3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{friend.pointer_value}</p>
                       </div>
-
-                      {/* Right side: tx count + checkmark */}
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
-                        <span style={{
-                          fontSize: 11, color: '#c0c0c0', background: '#f5f5f5',
-                          borderRadius: 20, padding: '2px 8px', fontWeight: 600,
-                        }}>
-                          {friend.transaction_count}×
-                        </span>
-                        {selected && (
-                          <div style={{
-                            width: 20, height: 20, borderRadius: '50%', background: TEAL,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800,
-                          }}>✓</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+                        <span style={{ fontSize: 11, color: C.text3 }}>{friend.transaction_count}×</span>
+                        {sel && (
+                          <div style={{ width: 18, height: 18, borderRadius: 9999, background: C.orange, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 900, color: '#000' }}>✓</div>
                         )}
                       </div>
                     </div>
@@ -545,75 +460,39 @@ export default function Home() {
                 })}
               </div>
 
-              <div style={{ ...s.divider, margin: '20px 0' }} />
+              <div style={{ height: 1, background: C.border, margin: '20px 0' }} />
+              <p style={secLabel}>Add Manually</p>
 
-              {/* Add someone manually */}
               {!showAddForm ? (
-                <button
-                  onClick={() => setShowAddForm(true)}
-                  style={{
-                    width: '100%', padding: '14px 16px',
-                    border: '1.5px dashed #d4d4d4',
-                    borderRadius: 16, background: 'transparent', cursor: 'pointer',
-                    fontSize: 14, fontWeight: 600, color: '#888',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  <span style={{
-                    width: 26, height: 26, borderRadius: '50%', background: '#f5f5f5',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 18, lineHeight: 1, color: '#888',
-                  }}>+</span>
-                  Add someone new
+                <button onClick={() => setShowAddForm(true)} style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  width: '100%', background: 'none', border: 'none',
+                  padding: '14px 0', cursor: 'pointer',
+                  borderBottom: `1px dashed ${C.borderMd}`,
+                }}>
+                  <div style={{ ...avatarStyle, background: C.surface3, color: C.text3, fontSize: 22, fontWeight: 400 }}>+</div>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: C.text2 }}>Add someone new</span>
                 </button>
               ) : (
-                <div style={{
-                  background: '#fafafa', borderRadius: 16, padding: 18,
-                  border: '1.5px solid #e8e8e8',
-                }}>
-                  <p style={{ ...s.label, marginBottom: 14 }}>NEW PERSON</p>
-                  <input
-                    style={{ ...s.input, display: 'block', width: '100%', marginBottom: 10 }}
-                    placeholder="Name"
-                    value={newName}
-                    autoFocus
-                    onChange={e => setNewName(e.target.value)}
-                  />
-                  <input
-                    style={{ ...s.input, display: 'block', width: '100%', marginBottom: 16 }}
-                    placeholder="Email or phone"
-                    value={newAlias}
-                    onChange={e => setNewAlias(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && addManual()}
-                  />
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button
-                      onClick={() => { setShowAddForm(false); setNewName(''); setNewAlias(''); }}
-                      style={{ ...s.btn, flex: 1, background: '#eeeeee', color: '#555', fontSize: 14 }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={addManual}
-                      disabled={!newName.trim() || !newAlias.trim()}
-                      style={{ ...s.btn, flex: 2, fontSize: 14, opacity: (!newName.trim() || !newAlias.trim()) ? 0.4 : 1 }}
-                    >
-                      Add
-                    </button>
+                <div style={{ marginTop: 8 }}>
+                  <input style={{ ...inputStyle, marginBottom: 10 }} placeholder="Name" value={newName} autoFocus
+                    onChange={e => setNewName(e.target.value)} />
+                  <input style={{ ...inputStyle, marginBottom: 16 }} placeholder="Email or phone" value={newAlias}
+                    onChange={e => setNewAlias(e.target.value)} onKeyDown={e => e.key === 'Enter' && addManual()} />
+                  <div style={{ display: 'flex', gap: 10 }}>
+                    <button onClick={() => { setShowAddForm(false); setNewName(''); setNewAlias(''); }} style={{ ...ghostBtn, flex: 1 }}>Cancel</button>
+                    <button onClick={addManual} disabled={!newName.trim() || !newAlias.trim()}
+                      style={{ ...bigBtn, flex: 2, fontSize: 14, opacity: (!newName.trim() || !newAlias.trim()) ? 0.38 : 1 }}>Add</button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Sticky footer */}
+            {/* Drawer footer */}
             {people.length > 0 && (
-              <div style={{
-                padding: '16px 28px 28px', flexShrink: 0,
-                borderTop: '1px solid #f0f0f0', background: '#fff',
-              }}>
-                <button onClick={closePanel} style={{ ...s.btn, borderRadius: 14 }}>
-                  Done — {people.length} {people.length === 1 ? 'person' : 'people'} added ✓
+              <div style={{ padding: '16px 24px 28px', borderTop: `1px solid ${C.border}`, background: C.surface, flexShrink: 0 }}>
+                <button onClick={closePanel} style={bigBtn}>
+                  Done — {people.length} {people.length === 1 ? 'person' : 'people'} selected ✓
                 </button>
               </div>
             )}
@@ -623,185 +502,204 @@ export default function Home() {
     </main>
   );
 
-  // ── TRACKING ──────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
+  // TRACKING
+  // ─────────────────────────────────────────────────────────────────────────
+  if (screen === 'tracking' && receipt && sessionId) {
+    const doneCount  = statuses.filter(st => st.status !== 'pending').length;
+    const totalCount = invitees.length;
+    const allDone    = totalCount > 0 && doneCount === totalCount;
 
-  if (screen === 'tracking' && receipt && sessionId) return (
-    <main style={{ ...s.page, alignItems: 'flex-start', paddingTop: 24 }}>
-      <div style={{ ...s.card, maxWidth: 540, textAlign: 'left' }}>
-
-<<<<<<< Updated upstream
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800 }}>Waiting for friends</h2>
-          <span style={{ fontSize: 12, color: '#888' }}>
-            {statuses.filter(s => s.status !== 'pending').length}/{statuses.length} done
-          </span>
-        </div>
-        <p style={{ fontSize: 13, color: '#888', marginBottom: 16 }}>
-          {receipt.merchant ?? 'Receipt'} · {formatAmount(receipt.total, receipt.currency)}
-        </p>
-
-        <div style={{
-          background: '#fffbe6', border: '1px solid #ffe58f', borderRadius: 10,
-          padding: '10px 14px', marginBottom: 16, fontSize: 12, color: '#8a6d00',
-        }}>
-          💡 Demo mode: open each link in a new tab to act as that friend.
-        </div>
-
-        {invitees.map(inv => {
-          const status = statuses.find(s => s.id === inv.id);
-          const state = status?.status ?? 'pending';
-          const url = inviteUrl(inv.id);
-          const isExpanded = expanded === inv.id;
-          return (
-            <div key={inv.id} style={{
-              padding: '12px 14px', marginBottom: 8,
-              background: '#fff', border: '1px solid #eee', borderRadius: 12,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 14, fontWeight: 700 }}>{inv.name}</p>
-                  <p style={{ fontSize: 11, color: '#999', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {inv.alias}
-                  </p>
-                </div>
-                <StatusChip state={state} amount={status?.amountPaid} currency={receipt.currency} />
-=======
-        {people.map(p => {
-          const amount = equalSplit ? receipt.total / people.length : personTotal(p, assignments, receipt);
-          return (
-            <div key={p.id} style={{ display: 'flex', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid #f0f0f0', textAlign: 'left' }}>
-              <div style={{
-                width: 38, height: 38, borderRadius: '50%', background: TEAL,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 13, fontWeight: 800, marginRight: 12, flexShrink: 0,
-              }}>
-                {initials(p.name)}
-              </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ fontWeight: 700, fontSize: 15 }}>{p.name}</p>
-                <p style={{ fontSize: 12, color: '#aaa' }}>{p.alias}</p>
->>>>>>> Stashed changes
-              </div>
-
-              {state === 'pending' && (
-                <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-                  <button
-                    onClick={() => copyLink(inv.id)}
-                    style={s.smallBtn}
-                  >
-                    {copiedId === inv.id ? '✓ Copied' : '📋 Copy link'}
-                  </button>
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ ...s.smallBtn, textDecoration: 'none', textAlign: 'center', display: 'inline-block' }}
-                  >
-                    ↗ Open as {inv.name.split(' ')[0]}
-                  </a>
-                </div>
-              )}
-
-              {state === 'paid' && status && (
-                <>
-                  <button
-                    onClick={() => setExpanded(isExpanded ? null : inv.id)}
-                    style={{
-                      marginTop: 8, background: 'transparent', border: 'none',
-                      color: TEAL, fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0,
-                    }}
-                  >
-                    {isExpanded ? '▾ Hide breakdown' : '▸ See what they paid for'}
-                  </button>
-                  {isExpanded && (
-                    <div style={{ marginTop: 8, fontSize: 12, color: '#555' }}>
-                      {status.claims.length === 0 ? (
-                        <p style={{ color: '#999' }}>No items</p>
-                      ) : (
-                        status.claims.map(c => {
-                          const item = receipt.items.find(i => i.id === c.itemId);
-                          if (!item) return null;
-                          const cost = item.line_total / Math.max(1, c.sharedWith);
-                          return (
-                            <div key={c.itemId} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0' }}>
-                              <span>
-                                {item.description}
-                                {c.sharedWith > 1 && <span style={{ color: '#999' }}> ÷{c.sharedWith}</span>}
-                              </span>
-                              <span>{formatAmount(cost, receipt.currency)}</span>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          );
-        })}
-
-        <button
-          onClick={reset}
-          style={{
-            display: 'block', width: '100%', marginTop: 16,
-            padding: '10px', background: 'transparent', color: '#888',
-            border: '1px solid #ddd', borderRadius: 10, fontSize: 13,
-            cursor: 'pointer',
-          }}
-        >
-          Start over
-        </button>
-      </div>
-    </main>
-  );
-
-  // ── DONE ──────────────────────────────────────────────────────────────────
-
-  if (screen === 'done' && receipt) {
-    const collected = statuses
-      .filter(s => s.status === 'paid')
-      .reduce((sum, s) => sum + (s.amountPaid ?? 0), 0);
     return (
-      <main style={s.page}>
-        <div style={{ ...s.card, maxWidth: 480 }}>
-          <div style={{ fontSize: 56, marginBottom: 12 }}>🎉</div>
-          <h2 style={{ ...s.title, fontSize: 24 }}>All done!</h2>
-          <p style={s.sub}>
-            Collected {formatAmount(collected, receipt.currency)} of {formatAmount(receipt.total, receipt.currency)}
-          </p>
+      <main className="app-screen" style={{ background: C.bg }}>
 
-<<<<<<< Updated upstream
-          <div style={{ textAlign: 'left', marginTop: 16 }}>
-            {statuses.map(s => (
-              <div key={s.id} style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '10px 0', borderBottom: '1px solid #f0f0f0',
-              }}>
-                <span style={{ fontSize: 14, fontWeight: 600 }}>{s.name}</span>
-                <StatusChip state={s.status} amount={s.amountPaid} currency={receipt.currency} />
-              </div>
-            ))}
-=======
-        {results.map(r => (
-          <div key={r.personId} style={{ display: 'flex', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f0f0f0', textAlign: 'left' }}>
-            <div style={{
-              width: 34, height: 34, borderRadius: '50%', background: r.status === 'success' ? TEAL : '#fee2e2',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 12, fontWeight: 800, marginRight: 12, flexShrink: 0,
-            }}>
-              {initials(r.name)}
+        {/* Sticky header */}
+        <div className="app-bar" style={{ padding: '20px 24px 18px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+            <div>
+              <p style={{ ...secLabel, marginBottom: 6 }}>{allDone ? 'All settled' : 'Waiting'}</p>
+              <p style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-0.045em', lineHeight: 1, color: allDone ? C.green : C.text }}>
+                {fmt(receipt.total, receipt.currency)}
+              </p>
+              <p style={{ fontSize: 13, color: C.text3, marginTop: 5 }}>{receipt.merchant ?? 'Receipt'}</p>
             </div>
-            <span style={{ flex: 1, fontSize: 14, fontWeight: 600 }}>{r.name}</span>
-            <span style={{ fontSize: 14, marginRight: 10 }}>{receipt && formatAmount(r.amount, receipt.currency)}</span>
-            <span>{r.status === 'success' ? '✅' : '❌'}</span>
->>>>>>> Stashed changes
+            <div style={{ textAlign: 'right', paddingTop: 4 }}>
+              <p style={{ fontSize: 34, fontWeight: 900, letterSpacing: '-0.04em', color: C.text, lineHeight: 1 }}>
+                {doneCount}
+                <span style={{ color: C.text3, fontSize: 20, fontWeight: 500 }}>/{totalCount}</span>
+              </p>
+              <p style={{ fontSize: 11, color: C.text3, marginTop: 4, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>settled</p>
+            </div>
           </div>
 
-          <button style={{ ...s.btn, marginTop: 20 }} onClick={reset}>
-            Split Another
-          </button>
+          {/* Progress bar */}
+          <div style={{ height: 3, background: C.surface3, borderRadius: 9999, overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', borderRadius: 9999,
+              background: allDone ? C.green : `linear-gradient(90deg, ${C.orange}, #FF9500)`,
+              width: totalCount > 0 ? `${(doneCount / totalCount) * 100}%` : '0%',
+              transition: 'width 0.6s ease, background 0.4s',
+              boxShadow: allDone ? `0 0 10px rgba(0,229,160,0.5)` : `0 0 10px rgba(255,107,0,0.5)`,
+            }} />
+          </div>
         </div>
+
+        {/* Body */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '8px 24px 40px' }}>
+
+          {/* Demo hint */}
+          <div style={{
+            display: 'flex', gap: 10, alignItems: 'flex-start',
+            padding: '14px 0', borderBottom: `1px solid ${C.border}`, marginBottom: 4,
+          }}>
+            <span style={{ fontSize: 14, flexShrink: 0 }}>💡</span>
+            <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.6 }}>
+              Demo: open each link in a new tab to act as that friend.
+            </p>
+          </div>
+
+          {/* Invitee rows */}
+          {invitees.map(inv => {
+            const stat   = statuses.find(st => st.id === inv.id);
+            const state  = stat?.status ?? 'pending';
+            const isPaid = state === 'paid';
+            const isExp  = expanded === inv.id;
+
+            return (
+              <div key={inv.id} style={{ borderBottom: `1px solid ${C.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '16px 0' }}>
+                  <div style={{
+                    ...avatarStyle,
+                    background: isPaid ? C.greenDim : state === 'skipped' ? C.surface2 : C.surface3,
+                    color: isPaid ? C.green : C.text2,
+                  }}>{initials(inv.name)}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: C.text, marginBottom: 2 }}>{inv.name}</p>
+                    <p style={{ fontSize: 12, color: C.text3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{inv.alias}</p>
+                  </div>
+                  <StatusChip state={state} amount={stat?.amountPaid} currency={receipt.currency} />
+                </div>
+
+                {state === 'pending' && (
+                  <div style={{ display: 'flex', gap: 8, paddingBottom: 14 }}>
+                    <button onClick={() => copyLink(inv.id)} style={{
+                      flex: 1, padding: '10px 12px',
+                      background: C.surface2, border: `1px solid ${C.border}`,
+                      borderRadius: 10, fontSize: 12, fontWeight: 700, color: C.text2, cursor: 'pointer',
+                    }}>
+                      {copiedId === inv.id ? '✓ Copied' : '📋 Copy link'}
+                    </button>
+                    <a href={inviteUrl(inv.id)} target="_blank" rel="noopener noreferrer" style={{
+                      flex: 1, padding: '10px 12px',
+                      background: C.surface2, border: `1px solid ${C.border}`,
+                      borderRadius: 10, fontSize: 12, fontWeight: 700, color: C.text2,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                    }}>
+                      ↗ Open as {inv.name.split(' ')[0]}
+                    </a>
+                  </div>
+                )}
+
+                {isPaid && stat && (
+                  <div style={{ paddingBottom: 14 }}>
+                    <button onClick={() => setExpanded(isExp ? null : inv.id)} style={{
+                      background: 'none', border: 'none',
+                      fontSize: 12, fontWeight: 700, color: C.green,
+                      cursor: 'pointer', padding: '0 0 10px', display: 'block',
+                    }}>
+                      {isExp ? '▾ Hide breakdown' : '▸ See breakdown'}
+                    </button>
+                    {isExp && (
+                      <div>
+                        {stat.claims.length === 0
+                          ? <p style={{ fontSize: 13, color: C.text3 }}>No items selected.</p>
+                          : stat.claims.map(cl => {
+                              const item = receipt.items.find(i => i.id === cl.itemId);
+                              if (!item) return null;
+                              const cost = item.line_total / Math.max(1, cl.sharedWith);
+                              return (
+                                <div key={cl.itemId} style={{
+                                  display: 'flex', justifyContent: 'space-between',
+                                  padding: '7px 0', borderBottom: `1px solid ${C.border}`,
+                                  fontSize: 13, color: C.text2,
+                                }}>
+                                  <span>
+                                    {item.description}
+                                    {cl.sharedWith > 1 && <span style={{ color: C.text3 }}> ÷{cl.sharedWith}</span>}
+                                  </span>
+                                  <span style={{ fontWeight: 800, color: C.text }}>{fmt(cost, receipt.currency)}</span>
+                                </div>
+                              );
+                            })}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          <div style={{ marginTop: 32 }}>
+            <button onClick={reset} style={ghostBtn}>Start over</button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // DONE
+  // ─────────────────────────────────────────────────────────────────────────
+  if (screen === 'done' && receipt) {
+    const collected  = statuses.filter(st => st.status === 'paid').reduce((s, st) => s + (st.amountPaid ?? 0), 0);
+    const paidCount  = statuses.filter(st => st.status === 'paid').length;
+
+    return (
+      <main className="app-screen" style={{
+        background: `linear-gradient(170deg, #0A0E0C 0%, ${C.bg} 50%)`,
+        alignItems: 'center', justifyContent: 'center',
+        padding: '48px 28px',
+      }}>
+
+        {/* Check ring */}
+        <div style={{
+          width: 88, height: 88, borderRadius: '50%',
+          border: `2px solid ${C.green}`,
+          background: C.greenDim,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 36, marginBottom: 32,
+          boxShadow: `0 0 40px rgba(0,229,160,0.15)`,
+        }}>✓</div>
+
+        <p style={{ fontSize: 13, color: C.text3, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>You collected</p>
+        <p style={{ fontSize: 68, fontWeight: 900, letterSpacing: '-0.055em', lineHeight: 1, color: C.green, marginBottom: 12 }}>
+          {fmt(collected, receipt.currency)}
+        </p>
+        <p style={{ fontSize: 15, color: C.text2, marginBottom: 48 }}>
+          {receipt.merchant ?? 'Receipt'} · {paidCount} payment{paidCount !== 1 ? 's' : ''}
+        </p>
+
+        {/* Summary */}
+        <div style={{ width: '100%', maxWidth: 380, marginBottom: 40 }}>
+          {statuses.map(st => (
+            <div key={st.id} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+              padding: '14px 0', borderBottom: `1px solid ${C.border}`,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  ...avatarStyle,
+                  background: st.status === 'paid' ? C.greenDim : C.surface2,
+                  color: st.status === 'paid' ? C.green : C.text3,
+                }}>{initials(st.name)}</div>
+                <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>{st.name}</span>
+              </div>
+              <StatusChip state={st.status} amount={st.amountPaid} currency={receipt.currency} />
+            </div>
+          ))}
+        </div>
+
+        <button onClick={reset} style={{ ...bigBtn, maxWidth: 380 }}>Split Another Bill</button>
       </main>
     );
   }
@@ -809,88 +707,34 @@ export default function Home() {
   return null;
 }
 
+// ── StatusChip ────────────────────────────────────────────────────────────────
 function StatusChip({ state, amount, currency }: {
   state: 'pending' | 'paid' | 'skipped';
   amount?: number;
   currency: string;
 }) {
-  const styles: Record<string, React.CSSProperties> = {
-    pending: { background: '#fff7e6', color: '#a65b00', border: '1px solid #ffd591' },
-    paid:    { background: '#f0fff8', color: '#006d3a', border: `1px solid ${TEAL}` },
-    skipped: { background: '#f5f5f5', color: '#666', border: '1px solid #ddd' },
+  const cfg = {
+    pending: { bg: 'rgba(255,179,71,0.12)', color: '#FFB347', border: 'rgba(255,179,71,0.25)', label: 'Pending' },
+    paid:    { bg: 'rgba(0,229,160,0.10)',  color: '#00E5A0', border: 'rgba(0,229,160,0.25)', label: amount != null ? fmt(amount, currency) : 'Paid' },
+    skipped: { bg: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.3)', border: 'rgba(255,255,255,0.08)', label: 'Skipped' },
   };
-  const labels: Record<string, string> = {
-    pending: 'Pending',
-    paid: amount != null ? `Paid · ${new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount)}` : 'Paid',
-    skipped: 'Skipped',
-  };
+  const { bg, color, border, label } = cfg[state];
   return (
     <span style={{
-      ...styles[state],
-      fontSize: 11, fontWeight: 700,
-      padding: '4px 10px', borderRadius: 12,
-      whiteSpace: 'nowrap',
-    }}>{labels[state]}</span>
+      fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap',
+      padding: '5px 13px', borderRadius: 9999,
+      background: bg, color, border: `1px solid ${border}`,
+    }}>{label}</span>
   );
 }
 
-// ── STYLES ────────────────────────────────────────────────────────────────────
-
-const s: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: '#f4f4f4',
-    padding: 16,
-  },
-  card: {
-    background: '#fff',
-    borderRadius: 20,
-    padding: 32,
-    width: '100%',
-    maxWidth: 440,
-    boxShadow: '0 4px 32px rgba(0,0,0,0.07)',
-    textAlign: 'center' as const,
-  },
-  title: { fontSize: 30, fontWeight: 800, marginBottom: 8 },
-  sub: { fontSize: 15, color: '#999', marginBottom: 28 },
-  error: { color: '#ef4444', fontSize: 13, marginBottom: 12, textAlign: 'left' as const },
-  btn: {
-    display: 'block', width: '100%',
-    padding: '14px 20px',
-    background: TEAL, color: '#000',
-    border: 'none', borderRadius: 12,
-    fontSize: 16, fontWeight: 700, cursor: 'pointer',
-    transition: 'opacity 0.15s',
-  },
-  smallBtn: {
-    flex: 1,
-    padding: '8px 10px',
-    background: '#f0f0f0', color: '#333',
-    border: 'none', borderRadius: 8,
-    fontSize: 12, fontWeight: 600, cursor: 'pointer',
-  },
-  input: {
-    flex: 1,
-    border: '1.5px solid #e5e5e5',
-    borderRadius: 10,
-    padding: '10px 12px',
-    fontSize: 14,
-    minWidth: 0,
-    background: '#fafafa',
-  },
-  label: {
-    fontSize: 11,
-    fontWeight: 700,
-    color: '#aaa',
-    letterSpacing: '0.08em',
-    marginBottom: 10,
-  },
-  divider: {
-    height: 1,
-    background: '#f0f0f0',
-    margin: '16px 0',
-  },
-};
+// ── ErrorBanner ───────────────────────────────────────────────────────────────
+function ErrorBanner({ msg }: { msg: string }) {
+  return (
+    <div style={{
+      background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.25)',
+      borderRadius: 10, padding: '11px 14px', marginBottom: 14,
+      fontSize: 13, color: '#FCA5A5',
+    }}>{msg}</div>
+  );
+}
