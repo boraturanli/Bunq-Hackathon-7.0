@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSession } from "@/lib/sessions/store";
-import { getUserById } from "@/lib/users";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { receipt, hostName, inviteeUserIds } = body ?? {};
+    const { receipt, hostName, invitees } = body ?? {};
 
     if (!receipt || !Array.isArray(receipt.items)) {
       return NextResponse.json({ error: "receipt is required" }, { status: 400 });
     }
-    if (!Array.isArray(inviteeUserIds) || inviteeUserIds.length === 0) {
-      return NextResponse.json({ error: "pick at least one user" }, { status: 400 });
+    if (!Array.isArray(invitees) || invitees.length === 0) {
+      return NextResponse.json({ error: "at least one invitee is required" }, { status: 400 });
     }
-    for (const id of inviteeUserIds) {
-      if (!getUserById(id)) {
-        return NextResponse.json({ error: `unknown user: ${id}` }, { status: 400 });
+    for (const inv of invitees) {
+      if (!inv?.email || typeof inv.email !== "string") {
+        return NextResponse.json({ error: "each invitee needs an email" }, { status: 400 });
       }
     }
 
@@ -23,7 +22,7 @@ export async function POST(req: NextRequest) {
       receipt,
       hostName: hostName ?? "Host",
       hostAlias: "",
-      inviteeUserIds,
+      invitees,
     });
 
     return NextResponse.json({

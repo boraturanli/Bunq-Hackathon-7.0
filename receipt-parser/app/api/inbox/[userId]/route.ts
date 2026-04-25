@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findSessionsForUser } from "@/lib/sessions/store";
-import { getUserById } from "@/lib/users";
+import { getUserById, placeholderUser } from "@/lib/users";
 
 export async function GET(_req: NextRequest, { params }: { params: { userId: string } }) {
-  const user = getUserById(params.userId);
-  if (!user) return NextResponse.json({ error: "user not found" }, { status: 404 });
+  const user = getUserById(params.userId) ?? placeholderUser(params.userId);
 
   const items = findSessionsForUser(params.userId).map(({ session, invitee }) => ({
     sessionId: session.id,

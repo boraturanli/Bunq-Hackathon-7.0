@@ -5,9 +5,19 @@ from typing import Optional, Literal
 import datetime
 import json
 import os
+import time
+import threading
 import uuid
 import requests as http_requests
 from bunq import ApiEnvironmentType
+from bunq.sdk.context.api_context import ApiContext
+from bunq.sdk.context.bunq_context import BunqContext
+from bunq.sdk.model.generated.endpoint import (
+    PaymentApiObject as Payment,
+    UserApiObject as User,
+    MonetaryAccountBankApiObject as MonetaryAccountBank,
+)
+from bunq.sdk.model.generated.object_ import AmountObject as Amount, PointerObject as Pointer
 
 from tinker.libs.bunq_lib import BunqLib
 
@@ -382,6 +392,103 @@ def create_sandbox_user():
         "sandbox_url": SANDBOX_BASE_URL,
         "note": "Delete bunq-sandbox.conf and restart the server to use this new user.",
     }
+
+
+_seed_lock = threading.Lock()
+
+_SEED_AMOUNTS = ["8.50", "14.00", "6.75", "11.20", "9.30",
+                 "13.00", "7.40", "10.50", "5.80", "12.60",
+                 "8.90", "16.00", "6.40", "9.80", "11.50"]
+
+
+def _restore_main_context():
+    conf = bunq.determine_bunq_conf_filename()
+    ctx = ApiContext.restore(conf)
+    ctx.ensure_session_active()
+    ctx.save(conf)
+    BunqContext.load_api_context(ctx)
+
+
+def _get_friend_iban(api_key: str, index: int) -> tuple[str, str | None]:
+    """Switch to friend context, grab name + IBAN, then return."""
+    tmp = f"tmp_seed_friend_{index}.conf"
+    try:
+        ctx = ApiContext.create(ApiEnvironmentType.SANDBOX, api_key, f"seed-friend-{index}")
+        ctx.save(tmp)
+        BunqContext.load_api_context(ctx)
+
+        user_obj = User.get().value.get_referenced_object()
+        name = getattr(user_obj, "display_name", None) or f"Friend {index + 1}"
+
+        iban = None
+        for alias in getattr(user_obj, "alias", []) or []:
+            if getattr(alias, "type_", None) == "IBAN":
+                iban = alias.value
+                break
+
+        if not iban:
+            accounts = MonetaryAccountBank.list().value
+            for acc in accounts:
+                for alias in getattr(acc, "alias", []) or []:
+                    if getattr(alias, "type_", None) == "IBAN":
+                        iban = alias.value
+                        break
+                if iban:
+                    break
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    return name, iban
+
+
+@app.post("/api/sandbox/seed-friends")
+def seed_demo_friends(count: int = 5, payments_each: int = 3):
+    """
+    One-time demo setup: creates `count` sandbox personas and makes
+    `payments_each` payments to each so they appear as top contacts.
+    Takes ~30 s for 5 friends. Only call this once before the demo.
+    """
+    if not _seed_lock.acquire(blocking=False):
+        raise HTTPException(status_code=409, detail="Seeding already in progress.")
+    try:
+        _restore_main_context()
+        accounts = bunq.get_all_monetary_account_active(1)
+        if not accounts:
+            raise HTTPException(status_code=500, detail="No active account found.")
+        main_account_id = accounts[0].id_
+
+        # Auto top-up if balance is low
+        if float(accounts[0].balance.value) < 50:
+            bunq.make_request("500.00", "Seed top-up", "sugardaddy@bunq.com")
+            time.sleep(2)
+            _restore_main_context()
+
+        created = []
+        for i in range(count):
+            api_key = bunq.generate_new_sandbox_user()
+            name, iban = _get_friend_iban(api_key, i)
+            _restore_main_context()
+
+            if not iban:
+                created.append({"name": name, "iban": None, "status": "skipped — no IBAN"})
+                continue
+
+            for j in range(payments_each):
+                amount = _SEED_AMOUNTS[(i * payments_each + j) % len(_SEED_AMOUNTS)]
+                Payment.create(
+                    amount=Amount(amount, "EUR"),
+                    counterparty_alias=Pointer("IBAN", iban, name),
+                    description="Dinner · Smart Split demo",
+                    monetary_account_id=main_account_id,
+                )
+                time.sleep(0.4)
+
+            created.append({"name": name, "iban": iban, "status": "ok", "payments": payments_each})
+
+        return {"seeded": len([f for f in created if f["status"] == "ok"]), "friends": created}
+    finally:
+        _seed_lock.release()
 
 
 @app.post("/api/sandbox/topup")

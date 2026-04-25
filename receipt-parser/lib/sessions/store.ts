@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import type { Receipt } from "@/lib/types/receipt";
-import { getUserById } from "@/lib/users";
+import { registerUser } from "@/lib/users";
 
 export interface ItemClaim {
   itemId: number;
@@ -29,11 +29,18 @@ export interface Session {
   createdAt: number;
 }
 
+interface InviteeInput {
+  name: string;
+  email: string;
+  color?: string;
+  source?: 'top-friend' | 'custom';
+}
+
 interface CreateSessionInput {
   receipt: Receipt;
   hostName: string;
   hostAlias: string;
-  inviteeUserIds: string[];
+  invitees: InviteeInput[];
 }
 
 declare global {
@@ -46,9 +53,13 @@ const store: Map<string, Session> =
 
 export function createSession(input: CreateSessionInput): Session {
   const invitees: Invitee[] = [];
-  for (const userId of input.inviteeUserIds) {
-    const user = getUserById(userId);
-    if (!user) continue;
+  for (const inv of input.invitees) {
+    const user = registerUser({
+      name: inv.name,
+      email: inv.email,
+      color: inv.color,
+      source: inv.source,
+    });
     invitees.push({
       id: randomUUID(),
       userId: user.id,
