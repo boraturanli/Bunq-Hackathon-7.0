@@ -1,40 +1,39 @@
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+* { box-sizing: border-box; padding: 0; margin: 0; }
 
 html, body {
   max-width: 100vw;
+  min-height: 100vh;
   overflow-x: hidden;
-  background: #f4f4f4;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #000;
+  color: #fff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
 }
 
 a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
 
-input:focus { outline: none; border-color: #00E5A0 !important; }
+input:focus { outline: none; }
 button:active { transform: scale(0.98); }
+
+::-webkit-scrollbar { width: 0; height: 0; }
 
 @keyframes slideInRight {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }
 }
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideDown {
+  from { transform: translateY(-30px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
-
-.panel-overlay {
-  animation: fadeIn 0.2s ease-out;
+@keyframes pulse {
+  0%   { opacity: 1; transform: scale(1); }
+  50%  { opacity: 0.4; transform: scale(1.4); }
+  100% { opacity: 1; transform: scale(1); }
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.panel-drawer {
-  animation: slideInRight 0.25s cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+.panel-overlay { animation: fadeIn 0.2s ease-out; }
+.panel-drawer  { animation: slideInRight 0.25s cubic-bezier(0.32, 0.72, 0, 1); }

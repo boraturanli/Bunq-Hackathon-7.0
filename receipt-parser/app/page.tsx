@@ -2,56 +2,51 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { Receipt } from '@/lib/types/receipt';
+import { TOK, FONT_DISPLAY, FONT_MONO } from '@/lib/design/tokens';
+import { ICN } from '@/lib/design/icons';
+import { Avatar, Money } from '@/lib/design/primitives';
 
-const TEAL = '#00E5A0';
+// ─── types ──────────────────────────────────────────────────────────────────
 
 interface TopFriend {
-  id: string;
-  name: string;
-  email: string;
-  color: string;
-  iban: string | null;
-  pointer_type: string;
-  pointer_value: string;
+  id: string; name: string; email: string; color: string;
+  iban: string | null; pointer_type: string; pointer_value: string;
   transaction_count: number;
 }
-
 interface PickedPerson {
-  name: string;
-  email: string;
-  color: string;
-  source: 'top-friend' | 'custom';
+  name: string; email: string; color: string; source: 'top-friend' | 'custom';
 }
-
-interface CreatedInvitee {
-  id: string;
-  userId: string;
-  name: string;
-}
-
+interface CreatedInvitee { id: string; userId: string; name: string }
 interface InviteeStatus {
-  id: string;
-  name: string;
+  id: string; name: string;
   status: 'pending' | 'paid' | 'skipped';
   claims: { itemId: number; sharedWith: number }[];
-  amountPaid?: number;
-  paidAt?: number;
+  amountPaid?: number; paidAt?: number;
 }
 
 type Screen = 'capture' | 'people' | 'tracking' | 'done';
 
-function initials(name: string) {
-  return name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
-}
+// ─── helpers ────────────────────────────────────────────────────────────────
 
 function formatAmount(amount: number, currency: string): string {
   return new Intl.NumberFormat(undefined, {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    style: 'currency', currency,
+    minimumFractionDigits: 2, maximumFractionDigits: 2,
   }).format(amount);
 }
+function splitMoney(amount: number): [string, string] {
+  const whole = Math.floor(amount).toLocaleString();
+  const cents = String(Math.round((amount % 1) * 100)).padStart(2, '0');
+  return [whole, cents];
+}
+function hashColor(s: string): string {
+  const palette = [TOK.plum, TOK.amber, TOK.teal, TOK.rose, TOK.ocean, TOK.lime, TOK.violet, TOK.mint];
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return palette[Math.abs(h) % palette.length];
+}
+
+// ─── page ──────────────────────────────────────────────────────────────────
 
 export default function Home() {
   const [screen, setScreen] = useState<Screen>('capture');
@@ -66,7 +61,6 @@ export default function Home() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
 
-  // Panel state
   const [panelOpen, setPanelOpen] = useState(false);
   const [topFriends, setTopFriends] = useState<TopFriend[]>([]);
   const [friendsLoading, setFriendsLoading] = useState(false);
@@ -77,7 +71,6 @@ export default function Home() {
 
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Poll status while tracking
   useEffect(() => {
     if (screen !== 'tracking' || !sessionId) return;
     let cancelled = false;
@@ -129,41 +122,22 @@ export default function Home() {
       setFriendsLoading(false);
     }
   };
-
-  const closePanel = () => {
-    setPanelOpen(false);
-    setShowAddForm(false);
-    setNewName('');
-    setNewEmail('');
-  };
-
+  const closePanel = () => { setPanelOpen(false); setShowAddForm(false); setNewName(''); setNewEmail(''); };
   const toggleFriend = (f: TopFriend) => {
     setPicked((prev) => {
-      const exists = prev.find((p) => p.email === f.email);
-      if (exists) return prev.filter((p) => p.email !== f.email);
+      if (prev.find((p) => p.email === f.email)) return prev.filter((p) => p.email !== f.email);
       return [...prev, { name: f.name, email: f.email, color: f.color, source: 'top-friend' }];
     });
   };
-
   const addCustom = () => {
     if (!newName.trim() || !newEmail.trim()) return;
     setPicked((prev) => {
       if (prev.find((p) => p.email === newEmail.trim())) return prev;
-      return [...prev, {
-        name: newName.trim(),
-        email: newEmail.trim(),
-        color: '',  // server-side colorFor() will assign
-        source: 'custom',
-      }];
+      return [...prev, { name: newName.trim(), email: newEmail.trim(), color: '', source: 'custom' }];
     });
-    setNewName('');
-    setNewEmail('');
-    setShowAddForm(false);
+    setNewName(''); setNewEmail(''); setShowAddForm(false);
   };
-
-  const removePicked = (email: string) => {
-    setPicked((prev) => prev.filter((p) => p.email !== email));
-  };
+  const removePicked = (email: string) => setPicked((prev) => prev.filter((p) => p.email !== email));
 
   const sendInvites = async () => {
     if (!receipt || picked.length === 0) return;
@@ -177,10 +151,8 @@ export default function Home() {
           receipt,
           hostName: hostName.trim() || 'Your friend',
           invitees: picked.map((p) => ({
-            name: p.name,
-            email: p.email,
-            color: p.color || undefined,
-            source: p.source,
+            name: p.name, email: p.email,
+            color: p.color || undefined, source: p.source,
           })),
         }),
       });
@@ -197,230 +169,339 @@ export default function Home() {
   };
 
   const reset = () => {
-    setScreen('capture');
-    setReceipt(null);
-    setHostName('');
-    setPicked([]);
-    setSessionId(null);
-    setInvitees([]);
-    setStatuses([]);
-    setExpanded(null);
+    setScreen('capture'); setReceipt(null); setHostName('');
+    setPicked([]); setSessionId(null); setInvitees([]);
+    setStatuses([]); setExpanded(null);
   };
 
-  // ── CAPTURE ───────────────────────────────────────────────────────────────
+  // ─── CAPTURE ─────────────────────────────────────────────────────────────
 
   if (screen === 'capture') return (
-    <main style={s.page}>
-      <div style={s.card}>
-        <div style={{ fontSize: 56, marginBottom: 16 }}>🧾</div>
-        <h1 style={s.title}>SnapSplit</h1>
-        <p style={s.sub}>Snap a receipt — your friends pick what they had and pay you back</p>
-        {error && <p style={s.error}>{error}</p>}
+    <main style={{ ...page, position: 'relative', overflow: 'hidden' }}>
+      {/* Atmospheric blobs */}
+      <div style={{ position: 'absolute', top: -100, left: -80,  width: 280, height: 280, borderRadius: '50%', background: TOK.accent, opacity: 0.18, filter: 'blur(80px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: 200,  right: -100, width: 240, height: 240, borderRadius: '50%', background: TOK.plum,   opacity: 0.25, filter: 'blur(80px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: 160, left: -60, width: 220, height: 220, borderRadius: '50%', background: TOK.rose,   opacity: 0.18, filter: 'blur(80px)', pointerEvents: 'none' }} />
+
+      <div style={{ maxWidth: 440, margin: '0 auto', padding: 20, position: 'relative' }}>
+        {/* Top bar */}
+        <div style={{ paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              width: 28, height: 28, borderRadius: 8, background: TOK.accent,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: FONT_DISPLAY, fontWeight: 800, fontSize: 14, color: TOK.accentInk,
+            }}>S</div>
+            <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, letterSpacing: '-0.02em' }}>SnapSplit</span>
+          </div>
+          <a href="/inbox" style={{
+            padding: '6px 12px', borderRadius: 999,
+            background: TOK.surface, border: `1px solid ${TOK.border}`,
+            color: TOK.text, fontSize: 11, fontWeight: 700,
+          }}>Demo lobby →</a>
+        </div>
+
+        {/* Hero */}
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '5px 10px', borderRadius: 999,
+          background: `${TOK.accent}18`, border: `1px solid ${TOK.accent}55`,
+          marginBottom: 18,
+        }}>
+          <div style={{ color: TOK.accent }}>{ICN.sparkle(TOK.accent)}</div>
+          <span style={{ fontSize: 10.5, fontWeight: 800, color: TOK.accent, letterSpacing: '0.06em', fontFamily: FONT_MONO }}>
+            AI · LIVE
+          </span>
+        </div>
+        <h1 style={{
+          fontFamily: FONT_DISPLAY, fontSize: 52, fontWeight: 700,
+          letterSpacing: '-0.045em', lineHeight: 0.92,
+        }}>
+          Snap the<br />receipt.<br />
+          <span style={{ color: TOK.accent, fontStyle: 'italic' }}>They</span> pay<br />you back.
+        </h1>
+        <p style={{ fontSize: 14, color: TOK.textDim, marginTop: 16, lineHeight: 1.5, maxWidth: 360 }}>
+          AI reads your bill in seconds. Friends tap what they had — money lands in your account.
+        </p>
+
+        {error && (
+          <div style={{ marginTop: 16, padding: '10px 14px', background: `${TOK.scarlet}20`, border: `1px solid ${TOK.scarlet}55`, borderRadius: 12, color: TOK.scarlet, fontSize: 13 }}>
+            {error}
+          </div>
+        )}
+
+        {/* Big CTA */}
         <button
-          style={{ ...s.btn, opacity: loading ? 0.6 : 1 }}
-          disabled={loading}
           onClick={() => fileRef.current?.click()}
+          disabled={loading}
+          style={{
+            width: '100%', marginTop: 24, padding: '18px 20px',
+            background: TOK.accent, border: 'none', borderRadius: 18,
+            color: TOK.accentInk, fontFamily: FONT_DISPLAY, fontSize: 17, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            cursor: 'pointer', opacity: loading ? 0.6 : 1,
+            boxShadow: `0 16px 40px ${TOK.accent}40`,
+          }}
         >
-          {loading ? 'Reading receipt…' : '📷  Scan Receipt'}
+          <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={TOK.accentInk} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 4h-4l-2 2H4a1 1 0 00-1 1v12a1 1 0 001 1h16a1 1 0 001-1V7a1 1 0 00-1-1h-4z" /><circle cx="12" cy="13" r="4" />
+            </svg>
+            {loading ? 'Reading receipt…' : 'Scan a receipt'}
+          </span>
+          <div style={{
+            width: 32, height: 32, borderRadius: '50%',
+            background: TOK.accentInk, color: TOK.accent,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>{ICN.arrow(TOK.accent)}</div>
+        </button>
+        <button
+          onClick={() => fileRef.current?.click()}
+          disabled={loading}
+          style={{
+            width: '100%', marginTop: 10, padding: '14px 20px',
+            background: TOK.surface, border: `1px solid ${TOK.border}`, borderRadius: 18,
+            color: TOK.text, fontSize: 14, fontWeight: 600, cursor: 'pointer',
+          }}
+        >
+          Upload an image instead
         </button>
         <input
           ref={fileRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
+          type="file" accept="image/*" capture="environment"
           style={{ display: 'none' }}
           onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
         />
-        <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #eee' }}>
-          <a href="/inbox" style={{ color: '#888', fontSize: 12, textDecoration: 'none' }}>
-            Demo lobby — set up inbox tabs →
-          </a>
+
+        {/* Live feed strip */}
+        <div style={{ marginTop: 28 }}>
+          <div style={{
+            background: TOK.surface, border: `1px solid ${TOK.border}`,
+            borderRadius: 22, padding: 16,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: TOK.textDim, fontFamily: FONT_MONO }}>RECENT · 2 ACTIVE</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: TOK.mint, fontFamily: FONT_MONO }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: TOK.mint }} />
+                LIVE
+              </span>
+            </div>
+            {[
+              { name: 'Bistro Lumière', sub: '3 friends · 1 paid', total: '€82.40', color: TOK.plum, paid: 33 },
+              { name: 'Sushi Kaito',    sub: 'Settled · 4/4',     total: '€58.00', color: TOK.teal, paid: 100 },
+            ].map((r, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '10px 0', borderTop: i ? `1px solid ${TOK.border}` : 'none',
+              }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: `${r.color}30`, border: `1px solid ${r.color}55`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>{ICN.receipt(r.color)}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700 }}>{r.name}</p>
+                  <p style={{ fontSize: 11, color: TOK.textDim }}>{r.sub}</p>
+                  <div style={{ marginTop: 6, height: 3, background: TOK.surface2, borderRadius: 2, overflow: 'hidden' }}>
+                    <div style={{ width: `${r.paid}%`, height: '100%', background: r.paid === 100 ? TOK.mint : TOK.accent }} />
+                  </div>
+                </div>
+                <span style={{ fontFamily: FONT_DISPLAY, fontSize: 14, fontWeight: 700 }}>{r.total}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </main>
   );
 
-  // ── PEOPLE ────────────────────────────────────────────────────────────────
+  // ─── PEOPLE ──────────────────────────────────────────────────────────────
 
   if (screen === 'people' && receipt) return (
-    <main style={{ ...s.page, alignItems: 'flex-start', paddingTop: 24 }}>
-      <div style={{ ...s.card, maxWidth: 540, textAlign: 'left' }}>
+    <main style={{ ...page, paddingBottom: 40 }}>
+      <div style={{ maxWidth: 540, margin: '0 auto', padding: 20 }}>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800 }}>{receipt.merchant ?? 'Receipt'}</h2>
-          <span style={{ fontSize: 22, fontWeight: 800, color: TEAL }}>
-            {formatAmount(receipt.total, receipt.currency)}
+        {/* Top bar */}
+        <div style={{ paddingTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <button onClick={reset} style={iconBtn}>{ICN.chevL()}</button>
+          <span style={{ fontSize: 11, fontWeight: 800, color: TOK.accent, letterSpacing: '0.08em', fontFamily: FONT_MONO, display: 'flex', alignItems: 'center', gap: 5 }}>
+            {ICN.sparkle(TOK.accent)} PARSED IN 2.3s
           </span>
+          <button style={iconBtn}>···</button>
         </div>
-        <p style={{ fontSize: 13, color: '#888', marginBottom: 4 }}>
-          {receipt.items.length} item{receipt.items.length === 1 ? '' : 's'}
-          {receipt.warning && <span style={{ color: '#f59e0b' }}> · totals don't match</span>}
+
+        {/* Receipt header */}
+        <p style={{ fontSize: 12, color: TOK.textDim, fontFamily: FONT_MONO, letterSpacing: '0.06em' }}>
+          {(receipt.merchant ?? 'RECEIPT').toUpperCase()} · {receipt.date ?? new Date().toLocaleDateString()}
+        </p>
+        <div style={{ display: 'flex', alignItems: 'baseline', marginTop: 4 }}>
+          {(() => { const [w, c] = splitMoney(receipt.total); return <Money whole={w} cents={c} size={48} currency={receipt.currency === 'EUR' ? '€' : receipt.currency === 'USD' ? '$' : '£'} />; })()}
+        </div>
+        <p style={{ fontSize: 12, color: TOK.textDim, marginTop: 6 }}>
+          {receipt.items.length} items
+          {receipt.warning && <span style={{ color: TOK.amber }}> · totals don't match</span>}
         </p>
 
-        <div style={s.divider} />
+        {/* Your name */}
+        <div style={{ marginTop: 24 }}>
+          <p style={mono10}>YOUR NAME</p>
+          <input
+            style={input}
+            placeholder="So they know who's asking"
+            value={hostName}
+            onChange={(e) => setHostName(e.target.value)}
+          />
+        </div>
 
-        <p style={s.label}>YOUR NAME</p>
-        <input
-          style={{ ...s.input, width: '100%', marginBottom: 20 }}
-          placeholder="So they know who's asking"
-          value={hostName}
-          onChange={(e) => setHostName(e.target.value)}
-        />
-
-        <p style={s.label}>WHO'S AT THE TABLE</p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-          {picked.map((p) => (
-            <div key={p.email} style={{
-              ...s.chip,
-              display: 'flex', alignItems: 'center', gap: 8,
-              paddingLeft: 4,
-            }}>
-              <span style={{
-                width: 24, height: 24, borderRadius: '50%',
-                background: p.color || TEAL,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 11, fontWeight: 800, color: '#000',
+        {/* Picked people */}
+        <div style={{ marginTop: 24 }}>
+          <p style={mono10}>WHO&apos;S AT THE TABLE</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {picked.map((p) => (
+              <div key={p.email} style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '5px 10px 5px 5px', borderRadius: 999,
+                background: TOK.surface, border: `1px solid ${TOK.border}`,
               }}>
-                {initials(p.name)}
-              </span>
-              {p.name}
-              <span onClick={() => removePicked(p.email)} style={{ cursor: 'pointer', color: '#999', fontSize: 12, paddingRight: 4 }}>✕</span>
-            </div>
-          ))}
-          <button onClick={openPanel} style={{
-            ...s.chip, background: TEAL, color: '#000', border: 'none', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 6,
-          }}>
-            <span style={{ fontSize: 16, lineHeight: 1 }}>+</span> Add People
-          </button>
+                <Avatar name={p.name} color={p.color || hashColor(p.email)} size={24} />
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: TOK.text }}>{p.name}</span>
+                <button onClick={() => removePicked(p.email)} style={{
+                  background: 'transparent', border: 'none', color: TOK.textFaint,
+                  fontSize: 13, cursor: 'pointer', paddingLeft: 4,
+                }}>✕</button>
+              </div>
+            ))}
+            <button onClick={openPanel} style={{
+              padding: '5px 14px', borderRadius: 999,
+              background: TOK.accent, border: 'none', color: TOK.accentInk,
+              fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              <span style={{ fontSize: 16, lineHeight: 1 }}>+</span> Add People
+            </button>
+          </div>
         </div>
 
+        {/* Hint */}
         <div style={{
-          background: '#f8faf8', borderRadius: 10, padding: '10px 14px',
-          marginBottom: 20, fontSize: 12, color: '#666',
+          marginTop: 24, padding: '12px 14px', borderRadius: 14,
+          background: `${TOK.accent}10`, border: `1px solid ${TOK.accent}30`,
+          fontSize: 12, color: TOK.textDim,
         }}>
-          They'll get a notification in their bunq inbox — open the lobby <a href="/inbox" target="_blank" style={{ color: TEAL, fontWeight: 700 }}>here</a> to pre-stage tabs.
+          They&apos;ll get a notification in their bunq inbox — open the <a href="/inbox" target="_blank" rel="noopener noreferrer" style={{ color: TOK.accent, fontWeight: 700 }}>demo lobby</a> to pre-stage tabs.
         </div>
 
-        {error && <p style={s.error}>{error}</p>}
+        {error && (
+          <div style={{ marginTop: 16, padding: '10px 14px', background: `${TOK.scarlet}20`, border: `1px solid ${TOK.scarlet}55`, borderRadius: 12, color: TOK.scarlet, fontSize: 13 }}>
+            {error}
+          </div>
+        )}
 
+        {/* Send CTA */}
         <button
-          style={{ ...s.btn, opacity: picked.length === 0 || creating ? 0.4 : 1 }}
-          disabled={picked.length === 0 || creating}
           onClick={sendInvites}
+          disabled={picked.length === 0 || creating}
+          style={{
+            width: '100%', marginTop: 24, padding: '16px',
+            background: picked.length === 0 ? TOK.surface : TOK.accent,
+            color: picked.length === 0 ? TOK.textDim : TOK.accentInk,
+            border: picked.length === 0 ? `1px solid ${TOK.border}` : 'none',
+            borderRadius: 16, fontFamily: FONT_DISPLAY, fontSize: 16, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            cursor: picked.length === 0 ? 'default' : 'pointer',
+            boxShadow: picked.length > 0 ? `0 12px 32px ${TOK.accent}30` : 'none',
+            opacity: creating ? 0.6 : 1,
+          }}
         >
           {creating
             ? 'Notifying…'
             : picked.length === 0
               ? 'Add someone above'
-              : `Notify ${picked.length} ${picked.length === 1 ? 'friend' : 'friends'}`}
+              : <>Send links to {picked.length} {picked.length === 1 ? 'friend' : 'friends'} {ICN.arrow(picked.length === 0 ? TOK.textDim : TOK.accentInk)}</>}
         </button>
       </div>
 
-      {/* ── PEOPLE PANEL ───────────────────────────────────────────────────── */}
+      {/* People panel */}
       {panelOpen && (
         <>
-          <div onClick={closePanel} style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 40, backdropFilter: 'blur(2px)',
-          }} />
-          <div style={{
+          <div className="panel-overlay" onClick={closePanel} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 40, backdropFilter: 'blur(2px)' }} />
+          <div className="panel-drawer" style={{
             position: 'fixed', top: 0, right: 0, bottom: 0,
-            width: 'min(420px, 100vw)',
-            background: '#fff',
+            width: 'min(440px, 100vw)',
+            background: TOK.surface,
             borderRadius: '20px 0 0 20px',
             zIndex: 50,
             display: 'flex', flexDirection: 'column',
-            boxShadow: '-8px 0 48px rgba(0,0,0,0.14)',
+            boxShadow: '-8px 0 48px rgba(0,0,0,0.6)',
+            color: TOK.text,
+            border: `1px solid ${TOK.border}`,
+            borderRight: 'none',
           }}>
-            <div style={{
-              padding: '28px 28px 20px',
-              borderBottom: '1px solid #f0f0f0',
-              flexShrink: 0,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                <h3 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>Add People</h3>
+            <div style={{ padding: '28px 24px 18px', borderBottom: `1px solid ${TOK.border}`, flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h3 style={{ fontFamily: FONT_DISPLAY, fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }}>Add People</h3>
                 <button onClick={closePanel} style={{
-                  border: 'none', background: '#f5f5f5', borderRadius: '50%',
-                  width: 36, height: 36, cursor: 'pointer', fontSize: 16,
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: TOK.surface2, border: `1px solid ${TOK.border}`,
+                  color: TOK.text, fontSize: 14, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#666', fontWeight: 700,
                 }}>✕</button>
               </div>
-              <p style={{ fontSize: 13, color: '#aaa' }}>Top friends from bunq, or add someone new</p>
+              <p style={{ fontSize: 12, color: TOK.textDim, marginTop: 4 }}>Top friends from bunq, or add someone new</p>
             </div>
 
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px' }}>
-
-              <p style={{ ...s.label, marginBottom: 14 }}>TOP FRIENDS</p>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+              <p style={mono10}>TOP FRIENDS</p>
 
               {friendsLoading && (
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 20, color: '#aaa', fontSize: 13 }}>
-                  <div style={{
-                    width: 16, height: 16, borderRadius: '50%',
-                    border: '2px solid #e0e0e0', borderTopColor: TEAL,
-                    animation: 'spin 0.8s linear infinite',
-                  }} />
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center', color: TOK.textDim, fontSize: 13, marginBottom: 16 }}>
+                  <div style={{ width: 16, height: 16, borderRadius: '50%', border: `2px solid ${TOK.border}`, borderTopColor: TOK.accent, animation: 'spin 0.8s linear infinite' }} />
                   Loading from bunq…
                 </div>
               )}
-
               {friendsError && !friendsLoading && (
-                <div style={{
-                  background: '#fffbeb', border: '1px solid #fde68a',
-                  borderRadius: 12, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#92400e',
-                }}>
-                  ⚠ Couldn't reach bunq server — add manually below.
+                <div style={{ background: `${TOK.amber}15`, border: `1px solid ${TOK.amber}40`, borderRadius: 12, padding: '10px 14px', marginBottom: 16, fontSize: 12.5, color: TOK.amber }}>
+                  ⚠ Couldn&apos;t reach bunq server — add manually below.
                 </div>
               )}
-
               {!friendsLoading && topFriends.length === 0 && !friendsError && (
-                <p style={{ fontSize: 13, color: '#bbb', marginBottom: 16 }}>
-                  No transaction history yet. Run <code>seed_demo_friends.py</code>.
+                <p style={{ fontSize: 12.5, color: TOK.textFaint, marginBottom: 16 }}>
+                  No transaction history yet. Run <code style={{ background: TOK.surface2, padding: '1px 5px', borderRadius: 4 }}>seed_demo_friends.py</code>.
                 </p>
               )}
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 }}>
-                {topFriends.map((friend) => {
-                  const selected = picked.some((p) => p.email === friend.email);
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {topFriends.map((f) => {
+                  const selected = picked.some((p) => p.email === f.email);
                   return (
                     <div
-                      key={friend.id}
-                      onClick={() => toggleFriend(friend)}
+                      key={f.id}
+                      onClick={() => toggleFriend(f)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 14,
-                        padding: '13px 16px', borderRadius: 16, cursor: 'pointer',
-                        background: selected ? '#edfff8' : '#fafafa',
-                        border: `1.5px solid ${selected ? TEAL : '#f0f0f0'}`,
-                        transition: 'all 0.15s',
+                        padding: '12px 14px', borderRadius: 14, cursor: 'pointer',
+                        background: selected ? `${TOK.accent}15` : TOK.surface2,
+                        border: `1.5px solid ${selected ? TOK.accent : TOK.border}`,
                       }}
                     >
-                      <div style={{
-                        width: 46, height: 46, borderRadius: '50%', flexShrink: 0,
-                        background: friend.color,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 15, fontWeight: 800, color: '#000',
-                        boxShadow: selected ? `0 0 0 3px ${TEAL}55` : 'none',
-                      }}>
-                        {initials(friend.name)}
-                      </div>
+                      <Avatar name={f.name} color={f.color} size={42} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>{friend.name}</p>
-                        <p style={{ fontSize: 12, color: '#b0b0b0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {friend.pointer_value}
+                        <p style={{ fontWeight: 700, fontSize: 14 }}>{f.name}</p>
+                        <p style={{ fontSize: 11, color: TOK.textFaint, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {f.pointer_value}
                         </p>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
                         <span style={{
-                          fontSize: 11, color: '#c0c0c0', background: '#f5f5f5',
-                          borderRadius: 20, padding: '2px 8px', fontWeight: 600,
-                        }}>
-                          {friend.transaction_count}×
-                        </span>
+                          fontSize: 10, color: TOK.textFaint, background: TOK.surface,
+                          borderRadius: 999, padding: '2px 8px', fontWeight: 700,
+                          fontFamily: FONT_MONO,
+                        }}>{f.transaction_count}×</span>
                         {selected && (
                           <div style={{
-                            width: 20, height: 20, borderRadius: '50%', background: TEAL,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800,
-                          }}>✓</div>
+                            width: 20, height: 20, borderRadius: '50%', background: TOK.accent,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>{ICN.check(TOK.accentInk)}</div>
                         )}
                       </div>
                     </div>
@@ -428,218 +509,214 @@ export default function Home() {
                 })}
               </div>
 
-              <div style={{ ...s.divider, margin: '20px 0' }} />
+              <div style={{ height: 1, background: TOK.border, margin: '20px 0' }} />
 
               {!showAddForm ? (
-                <button
-                  onClick={() => setShowAddForm(true)}
-                  style={{
-                    width: '100%', padding: '14px 16px',
-                    border: '1.5px dashed #d4d4d4',
-                    borderRadius: 16, background: 'transparent', cursor: 'pointer',
-                    fontSize: 14, fontWeight: 600, color: '#888',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  }}
-                >
-                  <span style={{
-                    width: 26, height: 26, borderRadius: '50%', background: '#f5f5f5',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 18, lineHeight: 1, color: '#888',
-                  }}>+</span>
-                  Add someone new
+                <button onClick={() => setShowAddForm(true)} style={{
+                  width: '100%', padding: '14px 16px',
+                  border: `1.5px dashed ${TOK.borderHi}`, borderRadius: 14,
+                  background: 'transparent', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 600, color: TOK.textDim,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                }}>
+                  <span style={{ fontSize: 18 }}>+</span> Add someone new
                 </button>
               ) : (
-                <div style={{ background: '#fafafa', borderRadius: 16, padding: 18, border: '1.5px solid #e8e8e8' }}>
-                  <p style={{ ...s.label, marginBottom: 14 }}>NEW PERSON</p>
-                  <input
-                    style={{ ...s.input, display: 'block', width: '100%', marginBottom: 10 }}
-                    placeholder="Name"
-                    value={newName}
-                    autoFocus
-                    onChange={(e) => setNewName(e.target.value)}
-                  />
-                  <input
-                    style={{ ...s.input, display: 'block', width: '100%', marginBottom: 16 }}
-                    placeholder="Email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && addCustom()}
-                  />
+                <div style={{ background: TOK.surface2, borderRadius: 14, padding: 16, border: `1px solid ${TOK.border}` }}>
+                  <p style={mono10}>NEW PERSON</p>
+                  <input style={{ ...input, marginBottom: 8 }} placeholder="Name" value={newName} autoFocus onChange={(e) => setNewName(e.target.value)} />
+                  <input style={{ ...input, marginBottom: 12 }} placeholder="Email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addCustom()} />
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button
-                      onClick={() => { setShowAddForm(false); setNewName(''); setNewEmail(''); }}
-                      style={{ ...s.btn, flex: 1, background: '#eeeeee', color: '#555', fontSize: 14 }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={addCustom}
-                      disabled={!newName.trim() || !newEmail.trim()}
-                      style={{ ...s.btn, flex: 2, fontSize: 14, opacity: (!newName.trim() || !newEmail.trim()) ? 0.4 : 1 }}
-                    >
-                      Add
-                    </button>
+                    <button onClick={() => { setShowAddForm(false); setNewName(''); setNewEmail(''); }} style={{
+                      flex: 1, padding: '10px', borderRadius: 10,
+                      background: TOK.surface, border: `1px solid ${TOK.border}`,
+                      color: TOK.textDim, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                    }}>Cancel</button>
+                    <button onClick={addCustom} disabled={!newName.trim() || !newEmail.trim()} style={{
+                      flex: 2, padding: '10px', borderRadius: 10,
+                      background: TOK.accent, border: 'none', color: TOK.accentInk,
+                      fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                      opacity: (!newName.trim() || !newEmail.trim()) ? 0.4 : 1,
+                    }}>Add</button>
                   </div>
                 </div>
               )}
             </div>
 
             {picked.length > 0 && (
-              <div style={{
-                padding: '16px 28px 28px', flexShrink: 0,
-                borderTop: '1px solid #f0f0f0', background: '#fff',
-              }}>
-                <button onClick={closePanel} style={{ ...s.btn, borderRadius: 14 }}>
+              <div style={{ padding: '16px 24px 24px', borderTop: `1px solid ${TOK.border}`, background: TOK.surface, flexShrink: 0 }}>
+                <button onClick={closePanel} style={{
+                  width: '100%', padding: '14px',
+                  background: TOK.accent, border: 'none', borderRadius: 14,
+                  color: TOK.accentInk, fontFamily: FONT_DISPLAY, fontSize: 15, fontWeight: 700,
+                  cursor: 'pointer',
+                }}>
                   Done — {picked.length} {picked.length === 1 ? 'person' : 'people'} added ✓
                 </button>
               </div>
             )}
           </div>
-          <style>{`
-            @keyframes spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }
-          `}</style>
         </>
       )}
     </main>
   );
 
-  // ── TRACKING ──────────────────────────────────────────────────────────────
+  // ─── TRACKING ────────────────────────────────────────────────────────────
 
-  if (screen === 'tracking' && receipt && sessionId) return (
-    <main style={{ ...s.page, alignItems: 'flex-start', paddingTop: 24 }}>
-      <div style={{ ...s.card, maxWidth: 540, textAlign: 'left' }}>
+  if (screen === 'tracking' && receipt && sessionId) {
+    const collected = statuses.filter((s) => s.status === 'paid').reduce((a, s) => a + (s.amountPaid ?? 0), 0);
+    const ringPct = receipt.total > 0 ? Math.min(1, collected / receipt.total) : 0;
+    const C = 276;
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800 }}>Waiting for friends</h2>
-          <span style={{ fontSize: 12, color: '#888' }}>
-            {statuses.filter((x) => x.status !== 'pending').length}/{statuses.length} done
-          </span>
-        </div>
-        <p style={{ fontSize: 13, color: '#888', marginBottom: 16 }}>
-          {receipt.merchant ?? 'Receipt'} · {formatAmount(receipt.total, receipt.currency)}
-        </p>
+    return (
+      <main style={{ ...page, paddingBottom: 40 }}>
+        <div style={{ maxWidth: 480, margin: '0 auto', padding: 20 }}>
+          <div style={{ paddingTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <button onClick={reset} style={iconBtn}>{ICN.chevL()}</button>
+            <span style={{ fontSize: 11, fontWeight: 800, color: TOK.textDim, letterSpacing: '0.08em', fontFamily: FONT_MONO }}>WAITING ROOM</span>
+            <div style={{ width: 36 }} />
+          </div>
 
-        <div style={{
-          background: '#f0fff8', border: `1px solid ${TEAL}`, borderRadius: 10,
-          padding: '10px 14px', marginBottom: 16, fontSize: 12, color: '#006d3a',
-        }}>
-          ✓ Notifications sent. Updates appear here as each friend reviews and pays.
-        </div>
-
-        {invitees.map((inv) => {
-          const status = statuses.find((x) => x.id === inv.id);
-          const state = status?.status ?? 'pending';
-          const stagedColor = picked.find((p) => p.name === inv.name)?.color;
-          const isExpanded = expanded === inv.id;
-          return (
-            <div key={inv.id} style={{
-              padding: '12px 14px', marginBottom: 8,
-              background: '#fff', border: '1px solid #eee', borderRadius: 12,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{
-                  width: 36, height: 36, borderRadius: '50%',
-                  background: stagedColor || TEAL,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 13, fontWeight: 800, color: '#000',
-                  flexShrink: 0,
-                }}>
-                  {initials(inv.name)}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 14, fontWeight: 700 }}>{inv.name}</p>
-                  <p style={{ fontSize: 11, color: '#999' }}>
-                    {state === 'pending' && '⏳ Waiting…'}
-                    {state === 'paid' && 'Paid · just now'}
-                    {state === 'skipped' && 'Had nothing'}
-                  </p>
-                </div>
-                <StatusChip state={state} amount={status?.amountPaid} currency={receipt.currency} />
+          {/* Hero progress ring */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+            <div style={{ position: 'relative', width: 220, height: 220 }}>
+              <svg width="220" height="220" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)' }}>
+                <circle cx="50" cy="50" r="44" fill="none" stroke={TOK.surface2} strokeWidth="6" />
+                <circle cx="50" cy="50" r="44" fill="none" stroke={TOK.accent} strokeWidth="6" strokeLinecap="round"
+                  strokeDasharray={`${ringPct * C} ${C}`}
+                  style={{ transition: 'stroke-dasharray 0.6s ease' }} />
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 11, color: TOK.textDim, fontFamily: FONT_MONO }}>COLLECTED</span>
+                {(() => { const [w, c] = splitMoney(collected); return <Money whole={w} cents={c} size={36} />; })()}
+                <span style={{ fontSize: 11, color: TOK.textFaint, marginTop: 2 }}>of {formatAmount(receipt.total, receipt.currency)}</span>
               </div>
-
-              {state === 'paid' && status && (
-                <>
-                  <button
-                    onClick={() => setExpanded(isExpanded ? null : inv.id)}
-                    style={{
-                      marginTop: 8, background: 'transparent', border: 'none',
-                      color: TEAL, fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0,
-                    }}
-                  >
-                    {isExpanded ? '▾ Hide breakdown' : '▸ See what they paid for'}
-                  </button>
-                  {isExpanded && (
-                    <div style={{ marginTop: 8, fontSize: 12, color: '#555', paddingLeft: 4 }}>
-                      {status.claims.length === 0 ? (
-                        <p style={{ color: '#999' }}>No items</p>
-                      ) : (
-                        status.claims.map((c) => {
-                          const item = receipt.items.find((i) => i.id === c.itemId);
-                          if (!item) return null;
-                          const cost = item.line_total / Math.max(1, c.sharedWith);
-                          return (
-                            <div key={c.itemId} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0' }}>
-                              <span>
-                                {item.description}
-                                {c.sharedWith > 1 && <span style={{ color: '#999' }}> ÷{c.sharedWith}</span>}
-                              </span>
-                              <span>{formatAmount(cost, receipt.currency)}</span>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
             </div>
-          );
-        })}
+          </div>
 
-        <button
-          onClick={reset}
-          style={{
-            display: 'block', width: '100%', marginTop: 16,
-            padding: '10px', background: 'transparent', color: '#888',
-            border: '1px solid #ddd', borderRadius: 10, fontSize: 13,
-            cursor: 'pointer',
-          }}
-        >
-          Start over
-        </button>
-      </div>
-    </main>
-  );
+          <div style={{ textAlign: 'center', marginTop: 16 }}>
+            <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }}>
+              {statuses.filter((s) => s.status !== 'pending').length} of {statuses.length} {statuses.filter((s) => s.status !== 'pending').length === 1 ? 'paid up' : 'paid up'}
+            </h2>
+            <p style={{ fontSize: 12.5, color: TOK.textDim, marginTop: 4 }}>
+              {statuses.some((s) => s.status === 'pending') ? 'Live updates as friends review and pay' : 'Everyone\'s done!'}
+            </p>
+          </div>
 
-  // ── DONE ──────────────────────────────────────────────────────────────────
+          <div style={{ marginTop: 20 }}>
+            {invitees.map((inv) => {
+              const status = statuses.find((x) => x.id === inv.id);
+              const state = status?.status ?? 'pending';
+              const isExpanded = expanded === inv.id;
+              return (
+                <div key={inv.id} style={{
+                  marginBottom: 8, padding: 14, borderRadius: 14,
+                  background: state === 'paid' ? `${TOK.mint}10` : TOK.surface,
+                  border: `1px solid ${state === 'paid' ? `${TOK.mint}40` : TOK.border}`,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <Avatar name={inv.name} color={hashColor(inv.name)} size={40} />
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: 14, fontWeight: 700 }}>{inv.name}</p>
+                      <p style={{ fontSize: 11, color: TOK.textDim, display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                        {state === 'paid'  && <>{ICN.check(TOK.mint)} Paid · just now</>}
+                        {state === 'pending' && <>{ICN.clock(TOK.amber)} Reviewing items…</>}
+                        {state === 'skipped' && <>Had nothing</>}
+                      </p>
+                    </div>
+                    {state === 'paid' && status?.amountPaid != null
+                      ? (() => { const [w, c] = splitMoney(status.amountPaid); return <Money whole={w} cents={c} size={16} color={TOK.mint} />; })()
+                      : state === 'pending'
+                        ? <span style={{ fontSize: 11, color: TOK.amber, fontWeight: 700, fontFamily: FONT_MONO }}>PENDING</span>
+                        : <span style={{ fontSize: 11, color: TOK.textFaint, fontWeight: 700, fontFamily: FONT_MONO }}>SKIPPED</span>}
+                  </div>
+                  {state === 'paid' && status && (
+                    <>
+                      <button onClick={() => setExpanded(isExpanded ? null : inv.id)} style={{
+                        marginTop: 10, background: 'transparent', border: 'none',
+                        color: TOK.accent, fontSize: 11, fontWeight: 800, cursor: 'pointer', padding: 0,
+                        fontFamily: FONT_MONO, letterSpacing: '0.04em',
+                      }}>
+                        {isExpanded ? '▾ HIDE BREAKDOWN' : '▸ SEE WHAT THEY PAID FOR'}
+                      </button>
+                      {isExpanded && (
+                        <div style={{ marginTop: 8, fontSize: 12, color: TOK.textDim }}>
+                          {status.claims.length === 0 ? (
+                            <p style={{ color: TOK.textFaint }}>No items</p>
+                          ) : status.claims.map((c) => {
+                            const item = receipt.items.find((i) => i.id === c.itemId);
+                            if (!item) return null;
+                            const cost = item.line_total / Math.max(1, c.sharedWith);
+                            return (
+                              <div key={c.itemId} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0' }}>
+                                <span>{item.description}{c.sharedWith > 1 && <span style={{ color: TOK.textFaint }}> ÷{c.sharedWith}</span>}</span>
+                                <span style={{ fontFamily: FONT_MONO }}>{formatAmount(cost, receipt.currency)}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <button onClick={reset} style={{
+            display: 'block', width: '100%', marginTop: 16, padding: '12px',
+            background: 'transparent', color: TOK.textDim,
+            border: `1px solid ${TOK.border}`, borderRadius: 12,
+            fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          }}>
+            Start over
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // ─── DONE ────────────────────────────────────────────────────────────────
 
   if (screen === 'done' && receipt) {
-    const collected = statuses
-      .filter((x) => x.status === 'paid')
-      .reduce((sum, x) => sum + (x.amountPaid ?? 0), 0);
+    const collected = statuses.filter((x) => x.status === 'paid').reduce((s, x) => s + (x.amountPaid ?? 0), 0);
     return (
-      <main style={s.page}>
-        <div style={{ ...s.card, maxWidth: 480 }}>
-          <div style={{ fontSize: 56, marginBottom: 12 }}>🎉</div>
-          <h2 style={{ ...s.title, fontSize: 24 }}>All done!</h2>
-          <p style={s.sub}>
-            Collected {formatAmount(collected, receipt.currency)} of {formatAmount(receipt.total, receipt.currency)}
-          </p>
+      <main style={page}>
+        <div style={{ maxWidth: 440, margin: '0 auto', padding: 24, paddingTop: 60 }}>
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <div style={{ fontSize: 64, marginBottom: 8 }}>🎉</div>
+            <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 32, fontWeight: 700, letterSpacing: '-0.03em' }}>All done!</h2>
+            <p style={{ fontSize: 14, color: TOK.textDim, marginTop: 8 }}>
+              Collected {formatAmount(collected, receipt.currency)} of {formatAmount(receipt.total, receipt.currency)}
+            </p>
+          </div>
 
-          <div style={{ textAlign: 'left', marginTop: 16 }}>
+          <div>
             {statuses.map((x) => (
               <div key={x.id} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '10px 0', borderBottom: '1px solid #f0f0f0',
+                padding: '12px 14px', marginBottom: 8,
+                background: TOK.surface, border: `1px solid ${TOK.border}`,
+                borderRadius: 12,
               }}>
-                <span style={{ fontSize: 14, fontWeight: 600 }}>{x.name}</span>
-                <StatusChip state={x.status} amount={x.amountPaid} currency={receipt.currency} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Avatar name={x.name} color={hashColor(x.name)} size={32} />
+                  <span style={{ fontSize: 14, fontWeight: 600 }}>{x.name}</span>
+                </div>
+                {x.status === 'paid' && x.amountPaid != null
+                  ? <span style={{ fontFamily: FONT_MONO, fontSize: 13, fontWeight: 700, color: TOK.mint }}>{formatAmount(x.amountPaid, receipt.currency)}</span>
+                  : <span style={{ fontSize: 11, color: TOK.textFaint, fontWeight: 700, fontFamily: FONT_MONO }}>{x.status.toUpperCase()}</span>}
               </div>
             ))}
           </div>
 
-          <button style={{ ...s.btn, marginTop: 20 }} onClick={reset}>
-            Split Another
+          <button onClick={reset} style={{
+            width: '100%', marginTop: 24, padding: '16px',
+            background: TOK.accent, border: 'none', borderRadius: 14,
+            color: TOK.accentInk, fontFamily: FONT_DISPLAY, fontSize: 15, fontWeight: 700,
+            cursor: 'pointer',
+          }}>
+            Split another
           </button>
         </div>
       </main>
@@ -649,87 +726,33 @@ export default function Home() {
   return null;
 }
 
-function StatusChip({ state, amount, currency }: {
-  state: 'pending' | 'paid' | 'skipped';
-  amount?: number;
-  currency: string;
-}) {
-  const styles: Record<string, React.CSSProperties> = {
-    pending: { background: '#fff7e6', color: '#a65b00', border: '1px solid #ffd591' },
-    paid:    { background: '#f0fff8', color: '#006d3a', border: `1px solid ${TEAL}` },
-    skipped: { background: '#f5f5f5', color: '#666', border: '1px solid #ddd' },
-  };
-  const labels: Record<string, string> = {
-    pending: 'Pending',
-    paid: amount != null ? `Paid · ${new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount)}` : 'Paid',
-    skipped: 'Skipped',
-  };
-  return (
-    <span style={{
-      ...styles[state],
-      fontSize: 11, fontWeight: 700,
-      padding: '4px 10px', borderRadius: 12,
-      whiteSpace: 'nowrap',
-    }}>{labels[state]}</span>
-  );
-}
+// ─── shared styles ──────────────────────────────────────────────────────────
 
-const s: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: '#f4f4f4',
-    padding: 16,
-  },
-  card: {
-    background: '#fff',
-    borderRadius: 20,
-    padding: 32,
-    width: '100%',
-    maxWidth: 440,
-    boxShadow: '0 4px 32px rgba(0,0,0,0.07)',
-    textAlign: 'center' as const,
-  },
-  title: { fontSize: 30, fontWeight: 800, marginBottom: 8 },
-  sub: { fontSize: 15, color: '#999', marginBottom: 28 },
-  error: { color: '#ef4444', fontSize: 13, marginBottom: 12, textAlign: 'left' as const },
-  btn: {
-    display: 'block', width: '100%',
-    padding: '14px 20px',
-    background: TEAL, color: '#000',
-    border: 'none', borderRadius: 12,
-    fontSize: 16, fontWeight: 700, cursor: 'pointer',
-    transition: 'opacity 0.15s',
-  },
-  chip: {
-    background: '#f0f0f0',
-    borderRadius: 20,
-    padding: '5px 14px',
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: 'default',
-  },
-  input: {
-    flex: 1,
-    border: '1.5px solid #e5e5e5',
-    borderRadius: 10,
-    padding: '10px 12px',
-    fontSize: 14,
-    minWidth: 0,
-    background: '#fafafa',
-  },
-  label: {
-    fontSize: 11,
-    fontWeight: 700,
-    color: '#aaa',
-    letterSpacing: '0.08em',
-    marginBottom: 10,
-  },
-  divider: {
-    height: 1,
-    background: '#f0f0f0',
-    margin: '16px 0',
-  },
+const page: React.CSSProperties = {
+  minHeight: '100vh',
+  background: TOK.bg,
+  color: TOK.text,
+};
+
+const iconBtn: React.CSSProperties = {
+  width: 36, height: 36, borderRadius: '50%',
+  background: TOK.surface, border: `1px solid ${TOK.border}`,
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  color: TOK.text, cursor: 'pointer',
+};
+
+const input: React.CSSProperties = {
+  width: '100%',
+  padding: '12px 14px',
+  background: TOK.surface,
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 12,
+  color: TOK.text,
+  fontSize: 14,
+  fontFamily: 'inherit',
+};
+
+const mono10: React.CSSProperties = {
+  fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
+  color: TOK.textDim, fontFamily: FONT_MONO, marginBottom: 10,
 };

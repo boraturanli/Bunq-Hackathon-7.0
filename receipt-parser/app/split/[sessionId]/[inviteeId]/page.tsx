@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { Receipt, LineItem } from '@/lib/types/receipt';
+import { TOK, FONT_DISPLAY, FONT_MONO } from '@/lib/design/tokens';
+import { ICN } from '@/lib/design/icons';
+import { Money, Avatar } from '@/lib/design/primitives';
 
-const TEAL = '#00E5A0';
 const MAX_SHARE = 6;
 
 interface SessionView {
@@ -18,11 +20,20 @@ type Screen = 'loading' | 'receipt' | 'paying' | 'done' | 'skipped' | 'error' | 
 
 function formatAmount(amount: number, currency: string): string {
   return new Intl.NumberFormat(undefined, {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    style: 'currency', currency,
+    minimumFractionDigits: 2, maximumFractionDigits: 2,
   }).format(amount);
+}
+function splitMoney(amount: number): [string, string] {
+  const whole = Math.floor(amount).toLocaleString();
+  const cents = String(Math.round((amount % 1) * 100)).padStart(2, '0');
+  return [whole, cents];
+}
+function hashColor(s: string): string {
+  const palette = [TOK.plum, TOK.amber, TOK.teal, TOK.rose, TOK.ocean, TOK.lime, TOK.violet, TOK.mint];
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return palette[Math.abs(h) % palette.length];
 }
 
 function computeTotal(receipt: Receipt, claims: Record<number, number>): number {
@@ -44,30 +55,21 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
   const [screen, setScreen] = useState<Screen>('loading');
   const [session, setSession] = useState<SessionView | null>(null);
   const [me, setMe] = useState<{ id: string; name: string; status: string } | null>(null);
-  // claims[itemId] = sharedWith count (0 = not claimed, 1 = solo, 2+ = shared with N)
   const [claims, setClaims] = useState<Record<number, number>>({});
   const [error, setError] = useState<string | null>(null);
   const [paidAmount, setPaidAmount] = useState<number | null>(null);
 
-  const goBackToInbox = () => {
-    if (inboxUser) router.push(`/inbox/${inboxUser}`);
-  };
+  const goBackToInbox = () => { if (inboxUser) router.push(`/inbox/${inboxUser}`); };
 
   useEffect(() => {
     fetch(`/api/session/${params.sessionId}`)
       .then(async (res) => {
-        if (res.status === 404) {
-          setScreen('expired');
-          return;
-        }
+        if (res.status === 404) { setScreen('expired'); return; }
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data: SessionView = await res.json();
         setSession(data);
         const invitee = data.invitees.find((i) => i.id === params.inviteeId);
-        if (!invitee) {
-          setScreen('expired');
-          return;
-        }
+        if (!invitee) { setScreen('expired'); return; }
         setMe(invitee);
         if (invitee.status === 'paid') setScreen('done');
         else if (invitee.status === 'skipped') setScreen('skipped');
@@ -79,11 +81,7 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
       });
   }, [params.sessionId, params.inviteeId]);
 
-  const total = useMemo(
-    () => (session ? computeTotal(session.receipt, claims) : 0),
-    [session, claims]
-  );
-
+  const total = useMemo(() => session ? computeTotal(session.receipt, claims) : 0, [session, claims]);
   const hasClaims = Object.values(claims).some((v) => v > 0);
 
   const cycleClaim = (itemId: number) => {
@@ -97,9 +95,7 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
   const submitPay = async () => {
     if (!session || !me) return;
     setScreen('paying');
-    const claimsArray = Object.entries(claims)
-      .filter(([, v]) => v > 0)
-      .map(([k, v]) => ({ itemId: Number(k), sharedWith: v }));
+    const claimsArray = Object.entries(claims).filter(([, v]) => v > 0).map(([k, v]) => ({ itemId: Number(k), sharedWith: v }));
     try {
       const res = await fetch(`/api/session/${params.sessionId}/${params.inviteeId}/pay`, {
         method: 'POST',
@@ -119,9 +115,7 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
   const submitSkip = async () => {
     if (!session || !me) return;
     try {
-      const res = await fetch(`/api/session/${params.sessionId}/${params.inviteeId}/skip`, {
-        method: 'POST',
-      });
+      const res = await fetch(`/api/session/${params.sessionId}/${params.inviteeId}/skip`, { method: 'POST' });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error ?? 'Skip failed');
@@ -133,229 +127,238 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
     }
   };
 
-  // ── LOADING / EXPIRED / ERROR ──────────────────────────────────────────────
+  // ─── states ──────────────────────────────────────────────────────────────
 
-  if (screen === 'loading') return (
-    <main style={s.page}><div style={s.card}><p style={s.sub}>Loading receipt…</p></div></main>
-  );
+  if (screen === 'loading') return <Centered text="Loading receipt…" />;
 
   if (screen === 'expired') return (
-    <main style={s.page}>
-      <div style={s.card}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>⌛</div>
-        <h2 style={s.title}>Link expired</h2>
-        <p style={s.sub}>This invite link is no longer valid.</p>
-      </div>
-    </main>
+    <Centered>
+      <div style={{ fontSize: 48, marginBottom: 12 }}>⌛</div>
+      <h2 style={titleStyle}>Link expired</h2>
+      <p style={{ fontSize: 14, color: TOK.textDim, marginTop: 8 }}>This invite link is no longer valid.</p>
+    </Centered>
   );
 
   if (screen === 'error') return (
-    <main style={s.page}>
-      <div style={s.card}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>⚠️</div>
-        <h2 style={s.title}>Something went wrong</h2>
-        <p style={s.error}>{error}</p>
-        <button style={s.btn} onClick={() => setScreen('receipt')}>Try Again</button>
-      </div>
-    </main>
+    <Centered>
+      <div style={{ fontSize: 48, marginBottom: 12 }}>⚠️</div>
+      <h2 style={titleStyle}>Something went wrong</h2>
+      <p style={{ fontSize: 13, color: TOK.scarlet, marginTop: 8 }}>{error}</p>
+      <button style={primaryBtn} onClick={() => setScreen('receipt')}>Try Again</button>
+    </Centered>
   );
-
-  // ── PAYING ────────────────────────────────────────────────────────────────
 
   if (screen === 'paying') return (
-    <main style={s.page}>
-      <div style={s.card}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>💸</div>
-        <h2 style={s.title}>Paying via bunq…</h2>
-        <p style={s.sub}>Just a moment</p>
-      </div>
-    </main>
+    <Centered>
+      <div style={{ fontSize: 48, marginBottom: 12 }}>💸</div>
+      <h2 style={titleStyle}>Paying via bunq…</h2>
+      <p style={{ fontSize: 14, color: TOK.textDim, marginTop: 8 }}>Just a moment</p>
+    </Centered>
   );
 
-  // ── DONE ──────────────────────────────────────────────────────────────────
-
   if (screen === 'done' && session && me) return (
-    <main style={s.page}>
-      <div style={s.card}>
-        <div style={{ fontSize: 56, marginBottom: 12 }}>✅</div>
-        <h2 style={s.title}>Paid!</h2>
-        <p style={s.sub}>
-          {paidAmount != null
-            ? `${formatAmount(paidAmount, session.receipt.currency)} sent to ${session.hostName}`
-            : `Paid to ${session.hostName}`}
-        </p>
-        {inboxUser ? (
-          <button style={{ ...s.btn, marginTop: 16 }} onClick={goBackToInbox}>
-            ← Back to inbox
-          </button>
-        ) : (
-          <p style={{ fontSize: 13, color: '#aaa', marginTop: 16 }}>You can close this tab.</p>
-        )}
-      </div>
-    </main>
+    <Centered>
+      <div style={{ fontSize: 56, marginBottom: 12 }}>✅</div>
+      <h2 style={titleStyle}>Paid!</h2>
+      <p style={{ fontSize: 14, color: TOK.textDim, marginTop: 8 }}>
+        {paidAmount != null
+          ? <>{formatAmount(paidAmount, session.receipt.currency)} sent to {session.hostName}</>
+          : <>Paid to {session.hostName}</>}
+      </p>
+      {inboxUser ? (
+        <button style={primaryBtn} onClick={goBackToInbox}>← Back to inbox</button>
+      ) : (
+        <p style={{ fontSize: 12, color: TOK.textFaint, marginTop: 16 }}>You can close this tab.</p>
+      )}
+    </Centered>
   );
 
   if (screen === 'skipped' && session) return (
-    <main style={s.page}>
-      <div style={s.card}>
-        <div style={{ fontSize: 56, marginBottom: 12 }}>👋</div>
-        <h2 style={s.title}>No problem</h2>
-        <p style={s.sub}>You haven't been charged. Thanks!</p>
-        {inboxUser && (
-          <button style={{ ...s.btn, marginTop: 16 }} onClick={goBackToInbox}>
-            ← Back to inbox
-          </button>
-        )}
-      </div>
-    </main>
+    <Centered>
+      <div style={{ fontSize: 56, marginBottom: 12 }}>👋</div>
+      <h2 style={titleStyle}>No problem</h2>
+      <p style={{ fontSize: 14, color: TOK.textDim, marginTop: 8 }}>You haven&apos;t been charged. Thanks!</p>
+      {inboxUser && (
+        <button style={primaryBtn} onClick={goBackToInbox}>← Back to inbox</button>
+      )}
+    </Centered>
   );
 
-  // ── RECEIPT (main) ────────────────────────────────────────────────────────
+  // ─── receipt (main) ──────────────────────────────────────────────────────
 
-  if (screen === 'receipt' && session && me) return (
-    <main style={{ ...s.page, alignItems: 'flex-start', paddingTop: 24, paddingBottom: 120 }}>
-      <div style={{ ...s.card, maxWidth: 540, textAlign: 'left' }}>
+  if (screen === 'receipt' && session && me) {
+    const accentColor = hashColor(session.hostName);
+    return (
+      <main style={{ minHeight: '100vh', background: TOK.bg, color: TOK.text, paddingBottom: 120 }}>
+        <div style={{ maxWidth: 480, margin: '0 auto', padding: 20 }}>
 
-        <p style={{ fontSize: 13, color: '#999', marginBottom: 4 }}>Hi {me.name} 👋</p>
-        <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>
-          {session.hostName} wants to split {session.receipt.merchant ?? 'a receipt'}
-        </h2>
-        <p style={{ fontSize: 14, color: '#666', marginBottom: 16 }}>
-          Tap items you had. Tap again to share with more people.
-        </p>
-
-        <div style={{
-          background: '#f8faf8', borderRadius: 10, padding: '10px 14px',
-          fontSize: 13, color: '#555', marginBottom: 16,
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>Receipt total</span>
-            <span style={{ fontWeight: 700 }}>{formatAmount(session.receipt.total, session.receipt.currency)}</span>
+          {/* Top bar */}
+          <div style={{ paddingTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            {inboxUser ? (
+              <button onClick={goBackToInbox} style={iconBtn}>{ICN.chevL()}</button>
+            ) : <div style={{ width: 36 }} />}
+            <span style={{ fontSize: 11, fontWeight: 800, color: accentColor, letterSpacing: '0.08em', fontFamily: FONT_MONO, display: 'flex', alignItems: 'center', gap: 5 }}>
+              {ICN.sparkle(accentColor)} {session.hostName.toUpperCase()}
+            </span>
+            <div style={{ width: 36 }} />
           </div>
+
+          {/* Hero */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <Avatar name={session.hostName} color={accentColor} size={36} />
+            <p style={{ fontSize: 12, color: TOK.textDim }}>
+              <strong style={{ color: TOK.text }}>{session.hostName}</strong> wants to split
+            </p>
+          </div>
+          <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: 30, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.05 }}>
+            {session.receipt.merchant ?? 'a receipt'}
+          </h1>
+          <p style={{ fontSize: 13, color: TOK.textDim, marginTop: 8 }}>
+            Tap items you had. Tap again to share with more people.
+          </p>
+
+          {/* Total summary */}
+          <div style={{
+            marginTop: 16, padding: '10px 14px', borderRadius: 12,
+            background: TOK.surface, border: `1px solid ${TOK.border}`,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <span style={{ fontSize: 12, color: TOK.textDim, fontFamily: FONT_MONO }}>RECEIPT TOTAL</span>
+            <span style={{ fontFamily: FONT_DISPLAY, fontSize: 16, fontWeight: 700 }}>
+              {formatAmount(session.receipt.total, session.receipt.currency)}
+            </span>
+          </div>
+
+          {/* Items */}
+          <div style={{ marginTop: 16 }}>
+            {session.receipt.items.map((item: LineItem) => {
+              const share = claims[item.id] ?? 0;
+              const myCost = share > 0 ? item.line_total / share : 0;
+              const claimed = share > 0;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => cycleClaim(item.id)}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '14px 16px', marginBottom: 8,
+                    borderRadius: 14,
+                    border: claimed ? `1.5px solid ${TOK.accent}` : `1px solid ${TOK.border}`,
+                    background: claimed ? `${TOK.accent}10` : TOK.surface,
+                    cursor: 'pointer', color: TOK.text,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                    <span style={{ fontSize: 15, fontWeight: 600 }}>
+                      {item.description}
+                      {item.quantity > 1 && <span style={{ color: TOK.textFaint, fontWeight: 400, fontFamily: FONT_MONO, fontSize: 12 }}> ×{item.quantity}</span>}
+                    </span>
+                    <span style={{ fontFamily: FONT_DISPLAY, fontSize: 15, fontWeight: 700 }}>
+                      {formatAmount(item.line_total, session.receipt.currency)}
+                    </span>
+                  </div>
+                  {claimed && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                      <span style={{ fontSize: 11, color: TOK.accent, fontWeight: 800, fontFamily: FONT_MONO, letterSpacing: '0.04em' }}>
+                        {share === 1 ? 'ALL MINE' : `SHARED ${share} WAYS`}
+                      </span>
+                      <span style={{ fontSize: 12, color: TOK.text, fontFamily: FONT_MONO }}>
+                        Your share: <strong>{formatAmount(myCost, session.receipt.currency)}</strong>
+                      </span>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {session.receipt.tax > 0 && (
+            <p style={{ fontSize: 11, color: TOK.textFaint, marginTop: 10, fontFamily: FONT_MONO }}>
+              Tax & tip distributed proportionally to what you claim.
+            </p>
+          )}
+
+          <button onClick={submitSkip} style={{
+            display: 'block', width: '100%', marginTop: 16, padding: '12px',
+            background: 'transparent', color: TOK.textDim,
+            border: `1px solid ${TOK.border}`, borderRadius: 12,
+            fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          }}>
+            I had nothing
+          </button>
         </div>
 
-        {session.receipt.items.map((item: LineItem) => {
-          const share = claims[item.id] ?? 0;
-          const myCost = share > 0 ? item.line_total / share : 0;
-          const claimed = share > 0;
-          return (
+        {/* Sticky bottom pay bar */}
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.98) 70%, rgba(0,0,0,0))',
+          padding: '20px 16px 28px',
+          backdropFilter: 'blur(20px)',
+          borderTop: `1px solid ${TOK.border}`,
+          zIndex: 10,
+        }}>
+          <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 10, color: TOK.textDim, fontFamily: FONT_MONO, fontWeight: 700, letterSpacing: '0.08em' }}>YOU OWE</p>
+              {(() => { const [w, c] = splitMoney(total); return <Money whole={w} cents={c} size={26} color={total > 0 ? TOK.text : TOK.textFaint} />; })()}
+            </div>
             <button
-              key={item.id}
-              onClick={() => cycleClaim(item.id)}
+              disabled={!hasClaims}
+              onClick={submitPay}
               style={{
-                display: 'block',
-                width: '100%',
-                textAlign: 'left',
-                padding: '14px 16px',
-                marginBottom: 8,
-                borderRadius: 12,
-                border: claimed ? `2px solid ${TEAL}` : '2px solid #eee',
-                background: claimed ? '#f0fff8' : '#fff',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
+                flex: 1.4, padding: '14px 20px',
+                background: hasClaims ? TOK.accent : TOK.surface,
+                color: hasClaims ? TOK.accentInk : TOK.textFaint,
+                border: hasClaims ? 'none' : `1px solid ${TOK.border}`,
+                borderRadius: 14,
+                fontFamily: FONT_DISPLAY, fontSize: 15, fontWeight: 700,
+                cursor: hasClaims ? 'pointer' : 'not-allowed',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                boxShadow: hasClaims ? `0 12px 32px ${TOK.accent}30` : 'none',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <span style={{ fontSize: 15, fontWeight: 600 }}>
-                  {item.description}
-                  {item.quantity > 1 && <span style={{ color: '#999', fontWeight: 400 }}> ×{item.quantity}</span>}
-                </span>
-                <span style={{ fontSize: 15, fontWeight: 700 }}>{formatAmount(item.line_total, session.receipt.currency)}</span>
-              </div>
-              {claimed && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
-                  <span style={{ fontSize: 12, color: TEAL, fontWeight: 700 }}>
-                    {share === 1 ? 'All mine' : `Shared ${share} ways`}
-                  </span>
-                  <span style={{ fontSize: 13, color: '#333' }}>
-                    Your share: <strong>{formatAmount(myCost, session.receipt.currency)}</strong>
-                  </span>
-                </div>
-              )}
+              Pay with bunq {hasClaims && ICN.arrow(TOK.accentInk)}
             </button>
-          );
-        })}
-
-        {session.receipt.tax > 0 && (
-          <p style={{ fontSize: 11, color: '#aaa', marginTop: 10 }}>
-            Tax & tip distributed proportionally to what you claim.
-          </p>
-        )}
-
-        <button
-          onClick={submitSkip}
-          style={{
-            display: 'block', width: '100%', marginTop: 16,
-            padding: '10px', background: 'transparent', color: '#888',
-            border: '1px solid #ddd', borderRadius: 10, fontSize: 13,
-            cursor: 'pointer',
-          }}
-        >
-          I had nothing
-        </button>
-      </div>
-
-      {/* Sticky bottom pay bar */}
-      <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        background: '#fff', borderTop: '1px solid #eee',
-        padding: '14px 16px', boxShadow: '0 -4px 16px rgba(0,0,0,0.06)',
-      }}>
-        <div style={{ maxWidth: 540, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ flex: 1 }}>
-            <p style={{ fontSize: 11, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.06em' }}>You owe</p>
-            <p style={{ fontSize: 22, fontWeight: 800 }}>{formatAmount(total, session.receipt.currency)}</p>
           </div>
-          <button
-            disabled={!hasClaims}
-            onClick={submitPay}
-            style={{
-              flex: 1.4,
-              padding: '14px 20px',
-              background: hasClaims ? TEAL : '#ddd',
-              color: hasClaims ? '#000' : '#999',
-              border: 'none', borderRadius: 12, fontSize: 16, fontWeight: 700,
-              cursor: hasClaims ? 'pointer' : 'not-allowed',
-            }}
-          >
-            Pay with bunq
-          </button>
         </div>
-      </div>
-    </main>
-  );
+      </main>
+    );
+  }
 
   return null;
 }
 
-// ── STYLES ────────────────────────────────────────────────────────────────────
+// ─── helpers ────────────────────────────────────────────────────────────────
 
-const s: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: '#f4f4f4',
-    padding: 16,
-  },
-  card: {
-    background: '#fff',
-    borderRadius: 20,
-    padding: 28,
-    width: '100%',
-    maxWidth: 440,
-    boxShadow: '0 4px 32px rgba(0,0,0,0.07)',
-    textAlign: 'center' as const,
-  },
-  title: { fontSize: 24, fontWeight: 800, marginBottom: 8 },
-  sub: { fontSize: 14, color: '#888', marginBottom: 16 },
-  error: { color: '#ef4444', fontSize: 13, marginBottom: 16 },
-  btn: {
-    display: 'block', width: '100%',
-    padding: '14px 20px',
-    background: TEAL, color: '#000',
-    border: 'none', borderRadius: 12,
-    fontSize: 16, fontWeight: 700, cursor: 'pointer',
-  },
+function Centered({ children, text }: { children?: React.ReactNode; text?: string }) {
+  return (
+    <main style={{
+      minHeight: '100vh', background: TOK.bg, color: TOK.text,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: 24,
+    }}>
+      <div style={{ textAlign: 'center', maxWidth: 360 }}>
+        {text ? <p style={{ fontSize: 14, color: TOK.textDim }}>{text}</p> : children}
+      </div>
+    </main>
+  );
+}
+
+const titleStyle: React.CSSProperties = {
+  fontFamily: FONT_DISPLAY, fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em',
+};
+
+const primaryBtn: React.CSSProperties = {
+  display: 'inline-block', marginTop: 20,
+  padding: '14px 24px',
+  background: TOK.accent, color: TOK.accentInk,
+  border: 'none', borderRadius: 12,
+  fontFamily: FONT_DISPLAY, fontSize: 14, fontWeight: 700, cursor: 'pointer',
+};
+
+const iconBtn: React.CSSProperties = {
+  width: 36, height: 36, borderRadius: '50%',
+  background: TOK.surface, border: `1px solid ${TOK.border}`,
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  color: TOK.text, cursor: 'pointer',
 };
