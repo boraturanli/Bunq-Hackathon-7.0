@@ -22,6 +22,15 @@ interface SendResult {
 const BUNQ_API = process.env.NEXT_PUBLIC_BUNQ_API_URL ?? 'http://localhost:8000';
 const TEAL = '#00E5A0';
 
+function formatAmount(amount: number, currency: string): string {
+  return new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
 function personTotal(person: Person, assignments: AssignmentMap, receipt: Receipt): number {
   let food = 0;
   const subtotal = receipt.items.reduce((s, i) => s + i.line_total, 0);
@@ -158,7 +167,7 @@ export default function Home() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
           <h2 style={{ fontSize: 20, fontWeight: 800 }}>{receipt.merchant ?? 'Receipt'}</h2>
-          <span style={{ fontSize: 22, fontWeight: 800, color: TEAL }}>€{receipt.total.toFixed(2)}</span>
+          <span style={{ fontSize: 22, fontWeight: 800, color: TEAL }}>{formatAmount(receipt.total, receipt.currency)}</span>
         </div>
         {receipt.warning && (
           <p style={{ fontSize: 12, color: '#f59e0b', marginBottom: 8 }}>⚠ Totals don't match — check items below</p>
@@ -217,7 +226,7 @@ export default function Home() {
                       {item.description}
                       {item.quantity > 1 && <span style={{ color: '#999', fontWeight: 400 }}> ×{item.quantity}</span>}
                     </span>
-                    <span style={{ fontSize: 14, fontWeight: 700 }}>€{item.line_total.toFixed(2)}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700 }}>{formatAmount(item.line_total, receipt.currency)}</span>
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                     {people.length === 0 && <span style={{ fontSize: 12, color: '#aaa' }}>Add people above to assign</span>}
@@ -254,7 +263,7 @@ export default function Home() {
               return (
                 <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 4 }}>
                   <span>{p.name}</span>
-                  <span style={{ fontWeight: 700 }}>€{amount.toFixed(2)}</span>
+                  <span style={{ fontWeight: 700 }}>{formatAmount(amount, receipt.currency)}</span>
                 </div>
               );
             })}
@@ -293,7 +302,7 @@ export default function Home() {
                 <p style={{ fontWeight: 700, fontSize: 15 }}>{p.name}</p>
                 <p style={{ fontSize: 12, color: '#aaa' }}>{p.alias}</p>
               </div>
-              <span style={{ fontWeight: 800, fontSize: 18 }}>€{amount.toFixed(2)}</span>
+              <span style={{ fontWeight: 800, fontSize: 18 }}>{formatAmount(amount, receipt.currency)}</span>
             </div>
           );
         })}
@@ -322,7 +331,7 @@ export default function Home() {
         {results.map(r => (
           <div key={r.personId} style={{ display: 'flex', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f0f0f0', textAlign: 'left' }}>
             <span style={{ flex: 1, fontSize: 14, fontWeight: 600 }}>{r.name}</span>
-            <span style={{ fontSize: 14, marginRight: 10 }}>€{r.amount.toFixed(2)}</span>
+            <span style={{ fontSize: 14, marginRight: 10 }}>{receipt && formatAmount(r.amount, receipt.currency)}</span>
             <span>{r.status === 'success' ? '✅' : '❌'}</span>
           </div>
         ))}
