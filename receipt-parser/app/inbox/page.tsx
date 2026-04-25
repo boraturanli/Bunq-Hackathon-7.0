@@ -38,7 +38,8 @@ export default function InboxLobby() {
   }, []);
 
   const openInbox = (id: string) => {
-    window.open(`/inbox/${id}`, '_blank', 'noopener,noreferrer');
+    const tab = window.open(`/inbox/${id}`, '_blank', 'noopener,noreferrer');
+    if (tab) window.focus();
   };
 
   const openCustom = async () => {
@@ -52,7 +53,8 @@ export default function InboxLobby() {
       });
       if (!res.ok) throw new Error('Failed to register');
       const user = await res.json();
-      window.open(`/inbox/${user.id}`, '_blank', 'noopener,noreferrer');
+      const tab = window.open(`/inbox/${user.id}`, '_blank', 'noopener,noreferrer');
+      if (tab) window.focus();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed');
     } finally {

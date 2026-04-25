@@ -232,7 +232,7 @@ export default function Home() {
           onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
         />
         <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #eee' }}>
-          <a href="/inbox" style={{ color: '#888', fontSize: 12, textDecoration: 'none' }}>
+          <a href="/inbox" target="_blank" rel="noopener noreferrer" style={{ color: '#888', fontSize: 12, textDecoration: 'none' }}>
             Demo lobby — set up inbox tabs →
           </a>
         </div>

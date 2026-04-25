@@ -86,11 +86,15 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
 
   const hasClaims = Object.values(claims).some((v) => v > 0);
 
-  const cycleClaim = (itemId: number) => {
+  const updateShare = (itemId: number, next: number) => {
     setClaims((prev) => {
-      const cur = prev[itemId] ?? 0;
-      const next = cur >= MAX_SHARE ? 0 : cur + 1;
-      return { ...prev, [itemId]: next };
+      const updated = { ...prev };
+      if (next <= 0) {
+        delete updated[itemId];
+      } else {
+        updated[itemId] = next;
+      }
+      return updated;
     });
   };
 
@@ -237,42 +241,86 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
         {session.receipt.items.map((item: LineItem) => {
           const share = claims[item.id] ?? 0;
           const myCost = share > 0 ? item.line_total / share : 0;
-          const claimed = share > 0;
           return (
-            <button
+            <div
               key={item.id}
-              onClick={() => cycleClaim(item.id)}
               style={{
-                display: 'block',
                 width: '100%',
-                textAlign: 'left',
-                padding: '14px 16px',
+                padding: '16px',
                 marginBottom: 8,
-                borderRadius: 12,
-                border: claimed ? `2px solid ${TEAL}` : '2px solid #eee',
-                background: claimed ? '#f0fff8' : '#fff',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
+                borderRadius: 14,
+                border: `2px solid ${share > 0 ? TEAL : '#eee'}`,
+                background: share > 0 ? '#f0fff8' : '#fff',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <span style={{ fontSize: 15, fontWeight: 600 }}>
-                  {item.description}
-                  {item.quantity > 1 && <span style={{ color: '#999', fontWeight: 400 }}> ×{item.quantity}</span>}
-                </span>
-                <span style={{ fontSize: 15, fontWeight: 700 }}>{formatAmount(item.line_total, session.receipt.currency)}</span>
-              </div>
-              {claimed && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
-                  <span style={{ fontSize: 12, color: TEAL, fontWeight: 700 }}>
-                    {share === 1 ? 'All mine' : `Shared ${share} ways`}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
+                <div style={{ minWidth: 0 }}>
+                  <span style={{ fontSize: 15, fontWeight: 700, display: 'block', marginBottom: 4 }}>
+                    {item.description}
                   </span>
-                  <span style={{ fontSize: 13, color: '#333' }}>
-                    Your share: <strong>{formatAmount(myCost, session.receipt.currency)}</strong>
-                  </span>
+                  <div style={{ fontSize: 12, color: '#666' }}>
+                    {item.quantity > 1 ? `×${item.quantity} · ${formatAmount(item.line_total, session.receipt.currency)}` : formatAmount(item.line_total, session.receipt.currency)}
+                  </div>
                 </div>
-              )}
-            </button>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: share > 0 ? TEAL : '#999' }}>
+                    {share === 0 ? 'Not claimed' : share === 1 ? 'Solo' : `Shared ${share} ways`}
+                  </div>
+                  {share > 0 && (
+                    <div style={{ fontSize: 12, color: '#333', marginTop: 4 }}>
+                      Your share: <strong>{formatAmount(myCost, session.receipt.currency)}</strong>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, gap: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button
+                    onClick={() => updateShare(item.id, Math.max(0, share - 1))}
+                    style={{
+                      width: 32, height: 32,
+                      borderRadius: 10,
+                      border: '1px solid #ddd',
+                      background: '#fff',
+                      fontSize: 18,
+                      fontWeight: 700,
+                      color: share > 0 ? '#000' : '#ccc',
+                      cursor: share > 0 ? 'pointer' : 'not-allowed',
+                    }}
+                    disabled={share <= 0}
+                    aria-label={`Decrease share count for ${item.description}`}
+                  >
+                    –
+                  </button>
+                  <div style={{ minWidth: 30, textAlign: 'center', fontSize: 15, fontWeight: 700 }}>
+                    {share}
+                  </div>
+                  <button
+                    onClick={() => updateShare(item.id, Math.min(MAX_SHARE, share + 1))}
+                    style={{
+                      width: 32, height: 32,
+                      borderRadius: 10,
+                      border: '1px solid #ddd',
+                      background: '#fff',
+                      fontSize: 18,
+                      fontWeight: 700,
+                      color: '#000',
+                      cursor: 'pointer',
+                    }}
+                    aria-label={`Increase share count for ${item.description}`}
+                  >
+                    +
+                  </button>
+                </div>
+                <div style={{ fontSize: 11, color: '#888', textAlign: 'right' }}>
+                  {share === 0
+                    ? 'Tap + to claim this item'
+                    : share === 1
+                      ? '1 person pays for this item'
+                      : `${share} people share this item`}
+                </div>
+              </div>
+            </div>
           );
         })}
 
