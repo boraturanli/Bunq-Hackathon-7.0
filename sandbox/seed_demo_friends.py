@@ -97,9 +97,7 @@ def main():
             print(f"  👤 Main user: {ev['name']}{iban_str}\n")
 
         elif kind == "topup_start":
-            shortage = ev["needed"] - ev["have"]
-            print(f"  ⬆  Balance low (€{ev['have']:.0f} / €{ev['needed']:.0f} needed) "
-                  f"— topping up {ev['rounds']}× €500 …")
+            print(f"  ⬆  Balance low — topping up {ev['rounds']}× €500 …")
 
         elif kind == "topup_round":
             print(f"     top-up {ev['round']}/{ev['of']} ✓")

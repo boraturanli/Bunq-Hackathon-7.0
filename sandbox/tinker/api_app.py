@@ -1,13 +1,16 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from typing import Optional, Literal
+from typing import Optional, Literal, Generator
 import datetime
 import json
 import os
+import re
 import time
 import threading
 import uuid
+import random
 import requests as http_requests
 from bunq import ApiEnvironmentType
 from bunq.sdk.context.api_context import ApiContext
@@ -140,10 +143,22 @@ def _derive_contacts_from_history(limit: int) -> dict:
 
 @app.get("/api/contacts/top")
 def get_top_contacts(n: int = 5, limit: int = 100):
-    """Top N contacts by transaction frequency, derived from history."""
+    """Top N contacts by transaction frequency. Includes id/email/color for inbox navigation."""
     seen = _derive_contacts_from_history(limit)
     ranked = sorted(seen.values(), key=lambda c: c["transaction_count"], reverse=True)
-    return ranked[:n]
+    result = []
+    for c in ranked[:n]:
+        pv = c["pointer_value"] or ""
+        contact_id = _slugify(pv)
+        if not contact_id:
+            continue
+        result.append({
+            **c,
+            "id":    contact_id,
+            "email": pv,
+            "color": _avatar_color(pv),
+        })
+    return result
 
 
 @app.get("/api/contacts")
@@ -396,9 +411,145 @@ def create_sandbox_user():
 
 _seed_lock = threading.Lock()
 
-_SEED_AMOUNTS = ["8.50", "14.00", "6.75", "11.20", "9.30",
-                 "13.00", "7.40", "10.50", "5.80", "12.60",
-                 "8.90", "16.00", "6.40", "9.80", "11.50"]
+DEMO_DATA_FILE = os.path.join(os.path.dirname(__file__), "demo_data.json")
+
+_AVATAR_COLORS = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#A8DADC", "#B388EB", "#F4845F", "#9DCD5A", "#5DB7DE"]
+
+def _slugify(s: str) -> str:
+    return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
+
+def _avatar_color(key: str) -> str:
+    h = 0
+    for c in key:
+        h = (h * 31 + ord(c)) & 0xFFFFFFFF
+    return _AVATAR_COLORS[h % len(_AVATAR_COLORS)]
+
+_TX = [
+    ("Dinner McDonalds",       8,  18, "food",          "McDonalds"),
+    ("Sushi Umami",           22,  58, "food",          "Umami"),
+    ("Café Cortado",           4,  12, "food",          "Café Cortado"),
+    ("Pizza Napoli",          14,  32, "food",          "Pizza Napoli"),
+    ("Broodje Ben",            6,  14, "food",          "Broodje Ben"),
+    ("Albert Heijn",          18,  65, "groceries",     "Albert Heijn"),
+    ("Jumbo Supermarket",     15,  55, "groceries",     "Jumbo"),
+    ("Lidl",                  12,  40, "groceries",     "Lidl"),
+    ("Netflix",               14,  18, "entertainment", "Netflix"),
+    ("Spotify",                9,  12, "entertainment", "Spotify"),
+    ("Cinema Pathé",          10,  22, "entertainment", "Pathé"),
+    ("Steam Games",            8,  55, "entertainment", "Steam"),
+    ("NS Trein",               6,  22, "transport",     "NS"),
+    ("GVB OV-chipkaart",       5,  20, "transport",     "GVB"),
+    ("Uber",                   8,  25, "transport",     "Uber"),
+    ("Shell Tankstation",     40,  90, "transport",     "Shell"),
+    ("Apotheek",               8,  35, "health",        "Apotheek"),
+    ("Gym Basic-Fit",         20,  30, "health",        "Basic-Fit"),
+    ("Huisarts eigen bijdrage",15, 30, "health",        "Huisarts"),
+    ("Zara",                  25,  80, "shopping",      "Zara"),
+    ("H&M",                   20,  65, "shopping",      "H&M"),
+    ("Bol.com",               15,  90, "shopping",      "Bol.com"),
+    ("IKEA",                  30, 120, "shopping",      "IKEA"),
+    ("Booking.com hotel",     80, 220, "travel",        "Booking.com"),
+    ("Ryanair vlucht",        45, 180, "travel",        "Ryanair"),
+    ("Airbnb verblijf",       60, 200, "travel",        "Airbnb"),
+    ("Baggage fees",          15,  45, "travel",        "Ryanair"),
+]
+
+_INCOMING_DESCS = [
+    "Dinner reimbursement", "Drinks last night", "Shared Uber",
+    "Groceries split", "Movie tickets", "Birthday gift back",
+    "Concert tickets split", "Holiday share",
+]
+
+_MONTHS = [
+    ("2025-05", "May 2025"), ("2025-06", "Jun 2025"), ("2025-07", "Jul 2025"),
+    ("2025-08", "Aug 2025"), ("2025-09", "Sep 2025"), ("2025-10", "Oct 2025"),
+    ("2025-11", "Nov 2025"), ("2025-12", "Dec 2025"), ("2026-01", "Jan 2026"),
+    ("2026-02", "Feb 2026"), ("2026-03", "Mar 2026"), ("2026-04", "Apr 2026"),
+]
+
+_SEASONAL = [0.85, 0.90, 0.95, 0.88, 0.82, 0.93, 1.00, 1.35, 0.75, 0.80, 0.92, 1.05]
+_CATEGORIES = ["food", "groceries", "entertainment", "transport", "health", "shopping", "travel"]
+_BASE_BUDGETS = {
+    "food": 280, "groceries": 200, "entertainment": 150,
+    "transport": 100, "health": 80, "shopping": 150, "travel": 120,
+}
+
+_STOCKS = [
+    {"symbol": "AAPL",  "name": "Apple Inc.",     "sector": "Technology",  "price": 175.20, "range": (3, 15),  "buy_factor": (0.75, 0.98)},
+    {"symbol": "MSFT",  "name": "Microsoft",      "sector": "Technology",  "price": 378.50, "range": (1, 8),   "buy_factor": (0.70, 0.95)},
+    {"symbol": "AMZN",  "name": "Amazon",         "sector": "E-commerce",  "price": 185.30, "range": (2, 12),  "buy_factor": (0.72, 0.97)},
+    {"symbol": "GOOGL", "name": "Alphabet",       "sector": "Technology",  "price": 165.40, "range": (3, 10),  "buy_factor": (0.78, 0.96)},
+    {"symbol": "NVDA",  "name": "NVIDIA",         "sector": "Technology",  "price": 875.00, "range": (1, 5),   "buy_factor": (0.45, 0.85)},
+    {"symbol": "TSLA",  "name": "Tesla",          "sector": "Automotive",  "price": 185.60, "range": (5, 20),  "buy_factor": (0.60, 1.10)},
+    {"symbol": "META",  "name": "Meta Platforms", "sector": "Social Media","price": 495.00, "range": (1, 8),   "buy_factor": (0.65, 0.90)},
+    {"symbol": "ASML",  "name": "ASML Holding",   "sector": "Technology",  "price": 850.00, "range": (1, 4),   "buy_factor": (0.75, 0.95)},
+    {"symbol": "ADYEN", "name": "Adyen N.V.",     "sector": "Fintech",     "price": 1420.00,"range": (1, 3),   "buy_factor": (0.80, 0.98)},
+    {"symbol": "PHIA",  "name": "Philips",        "sector": "Healthcare",  "price": 22.50,  "range": (10, 50), "buy_factor": (0.85, 1.05)},
+    {"symbol": "HEIA",  "name": "Heineken",       "sector": "Consumer",    "price": 82.00,  "range": (5, 20),  "buy_factor": (0.88, 1.02)},
+    {"symbol": "ING",   "name": "ING Groep",      "sector": "Finance",     "price": 14.50,  "range": (20, 80), "buy_factor": (0.82, 1.00)},
+]
+
+_SAVINGS_POOL = [
+    ("New MacBook Pro",    2499,  (0.55, 0.85)),
+    ("Summer Vacation",    2000,  (0.40, 0.90)),
+    ("Emergency fund",     5000,  (0.60, 0.95)),
+    ("House deposit",     20000,  (0.20, 0.55)),
+    ("New bike",            800,  (0.65, 0.95)),
+    ("Wedding fund",       8000,  (0.30, 0.70)),
+    ("Masters degree",    15000,  (0.15, 0.50)),
+    ("Gaming setup",       1800,  (0.70, 0.95)),
+    ("Car down payment",   4000,  (0.45, 0.80)),
+    ("World trip",         6000,  (0.25, 0.65)),
+    ("Music equipment",    1200,  (0.60, 0.90)),
+    ("Home renovation",   10000,  (0.20, 0.60)),
+]
+
+_MESSAGE_THREADS = [
+    [("friend", "Hey! I just sent the money for dinner 💸"),
+     ("me", "Got it, thanks! That was a fun night"),
+     ("friend", "Definitely! We should do it again soon"),
+     ("me", "100% — how about next Friday?")],
+    [("friend", "Did you get my bunq payment?"),
+     ("me", "Yes! Just saw it, all good 👌"),
+     ("friend", "Great. Worth every cent 😄"),
+     ("me", "Haha agreed. The pizza was amazing")],
+    [("me", "Hey, splitting the Uber from last night?"),
+     ("friend", "Oh right! Sending now…"),
+     ("me", "No rush 😊"),
+     ("friend", "Done! Check your bunq ✅")],
+    [("friend", "Can I owe you the concert tickets?"),
+     ("me", "Of course, just bunq me next week"),
+     ("friend", "Will do! Tonight was insane btw"),
+     ("me", "Best gig in ages 🔥")],
+    [("me", "Groceries came to €43 total"),
+     ("friend", "Splitting evenly?"),
+     ("me", "Yeah, €21.50 each"),
+     ("friend", "On its way!")],
+]
+
+_OCCUPATIONS = [
+    "UX Designer", "Software Engineer", "Marketing Lead", "Data Analyst",
+    "Product Manager", "Freelance Consultant", "PhD Student", "Finance Analyst",
+    "DevOps Engineer", "Graphic Designer",
+]
+
+_BIOS = [
+    "Coffee addict & weekend hiker. Splits everything fairly.",
+    "Tech nerd who loves sushi. Always early for payments.",
+    "Foodie and amateur chef. Lives for concert weekends.",
+    "Numbers person by day, DJ by night. Very punctual.",
+    "Outdoor enthusiast. Venmo? No — bunq only.",
+    "Minimalist. Pays instantly, asks questions later.",
+    "Serial side-project launcher. Splits even snacks.",
+    "Bookworm and board-game host. Fair-pay evangelist.",
+    "Cyclist & flat-white connoisseur. 0 pending splits.",
+    "Startup founder. Pays in rounds, always fair.",
+]
+
+_SPENDING_PATTERNS = [
+    "Consistent spender", "Weekend splurger", "Frugal weekdays",
+    "Subscription heavy", "Impulse buyer", "Planned saver",
+]
 
 
 def _restore_main_context():
@@ -442,68 +593,374 @@ def _get_friend_iban(api_key: str, index: int) -> tuple[str, str | None]:
     return name, iban
 
 
+def _friend_pays_main(api_key: str, index: int, main_iban: str, main_name: str,
+                      amount: str, description: str) -> bool:
+    tmp = f"tmp_pay_main_{index}.conf"
+    try:
+        ctx = ApiContext.create(ApiEnvironmentType.SANDBOX, api_key, f"pay-main-{index}")
+        ctx.save(tmp)
+        BunqContext.load_api_context(ctx)
+        Payment.create(
+            amount=Amount(amount, "EUR"),
+            counterparty_alias=Pointer("IBAN", main_iban, main_name),
+            description=description,
+        )
+        return True
+    except Exception:
+        return False
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+
+def _friend_dashboard_stats(f: dict, frng: random.Random) -> dict:
+    """Compute HomeView dashboard stats for a single seeded friend."""
+    monthly = f.get("monthly_history", [])
+    by_cat = monthly[-1]["by_category"] if monthly else {}
+
+    # Category mapping → frontend labels with fixed hex colours
+    food   = round(by_cat.get("food", 0) + by_cat.get("groceries", 0), 2)
+    transp = round(by_cat.get("transport", 0), 2)
+    shop   = round(by_cat.get("shopping", 0) + by_cat.get("entertainment", 0) + by_cat.get("health", 0), 2)
+    bills  = round(by_cat.get("travel", 0), 2)
+    splits = round(f.get("total_received", 0), 2)
+    categories = [
+        {"label": "Food & drink", "value": int(food),   "color": "#F59E0B"},
+        {"label": "Transport",    "value": int(transp),  "color": "#06B6D4"},
+        {"label": "Shopping",     "value": int(shop),    "color": "#FB7185"},
+        {"label": "Bills",        "value": int(bills),   "color": "#A78BFA"},
+        {"label": "Splits",       "value": int(splits),  "color": "#00E5A0"},
+    ]
+
+    # Weekly (7 days), derived from current-month total
+    month_total = monthly[-1]["spent"] if monthly else 500
+    daily_avg   = month_total / 30
+    day_labels  = ["M", "T", "W", "T", "F", "S", "S"]
+    weekly      = [{"label": day_labels[i], "value": int(frng.uniform(0.3, 2.5) * daily_avg)} for i in range(7)]
+    weekly_total = sum(w["value"] for w in weekly)
+
+    # Savings goals
+    goal_icons = ["🏝️", "🏠", "🚗", "💻", "✈️", "🎸", "🎓", "💰"]
+    goal_colors = ["#14B8A6", "#A78BFA", "#F59E0B", "#FB7185"]
+    goals_data = []
+    for gi, g in enumerate((f.get("savings_goals") or [])[:2]):
+        goals_data.append({
+            "label": f"{goal_icons[gi % len(goal_icons)]} {g['name']}",
+            "cur":   int(g["saved"]),
+            "goal":  g["target"],
+            "color": goal_colors[gi % len(goal_colors)],
+        })
+    goals_on_track = sum(1 for g in goals_data if g["goal"] > 0 and g["cur"] / g["goal"] >= 0.5)
+
+    # Balance tiers
+    savings_total  = sum(g["cur"] for g in goals_data)
+    main_bal       = round(frng.uniform(400, 1500), 0)
+    vacay_bal      = goals_data[0]["cur"] if goals_data else round(frng.uniform(200, 800), 0)
+    total_balance  = main_bal + vacay_bal + savings_total
+    balance_whole  = f"{int(total_balance):,}"
+    balance_cents  = str(int(round((total_balance % 1) * 100))).zfill(2)
+
+    # Month-over-month change
+    if len(monthly) >= 2:
+        prev = monthly[-2]["spent"]
+        curr = monthly[-1]["spent"]
+        change     = round(curr - prev, 2)
+        change_pct = round((change / prev * 100) if prev else 0, 1)
+    else:
+        change     = round(frng.uniform(-200, 400), 2)
+        change_pct = round(frng.uniform(-10, 25), 1)
+
+    # Sparkline: 11 weekly balance snapshots ending at total_balance
+    running  = total_balance - frng.uniform(300, 700)
+    sparkline = []
+    for _ in range(10):
+        running = max(running + frng.uniform(-100, 150), 500)
+        sparkline.append(int(round(running)))
+    sparkline.append(int(round(total_balance)))
+
+    accounts = [
+        {"label": "Main",    "amt": f"€{int(main_bal):,}",    "bg": "linear-gradient(135deg,#B45309,#F59E0B)"},
+        {"label": "Vacay",   "amt": f"€{int(vacay_bal):,}",   "bg": "linear-gradient(135deg,#0F766E,#14B8A6)"},
+        {"label": "Savings", "amt": f"€{int(savings_total):,}","bg": "linear-gradient(135deg,#047857,#10B981)"},
+    ]
+
+    # Cashflow (current month)
+    cashflow_out = round(monthly[-1]["spent"] if monthly else month_total, 2)
+    cashflow_in  = round(cashflow_out + frng.uniform(0, 900), 2)
+    cashflow_net = round(cashflow_in - cashflow_out, 2)
+    cashflow_label = datetime.date.today().strftime("%B").upper()
+
+    return {
+        "balance_total":    round(total_balance, 2),
+        "balance_whole":    balance_whole,
+        "balance_cents":    balance_cents,
+        "balance_change":   change,
+        "balance_change_pct": change_pct,
+        "sparkline":        sparkline,
+        "accounts":         accounts,
+        "categories":       categories,
+        "weekly":           weekly,
+        "weekly_total":     weekly_total,
+        "cashflow_in":      cashflow_in,
+        "cashflow_out":     cashflow_out,
+        "cashflow_net":     cashflow_net,
+        "cashflow_label":   cashflow_label,
+        "goals":            goals_data,
+        "goals_on_track":   goals_on_track,
+        "goals_total":      len(goals_data),
+    }
+
+
+def _build_demo_data(friends: list) -> dict:
+    ok = [f for f in friends if f.get("status") == "ok"]
+    enriched = []
+    for i, f in enumerate(ok):
+        frng = random.Random(42 + i)
+
+        # 12-month spending history
+        monthly = []
+        for idx, (month_key, month_label) in enumerate(_MONTHS):
+            mult = _SEASONAL[idx] * frng.uniform(0.8, 1.2)
+            by_cat = {cat: round(_BASE_BUDGETS.get(cat, 100) * mult * frng.uniform(0.5, 1.5), 2)
+                      for cat in _CATEGORIES}
+            spent    = round(sum(by_cat.values()), 2)
+            received = round(frng.uniform(0, f.get("total_received", 0)), 2)
+            merchants = {desc.split()[0]: round(frng.uniform(lo, hi), 2)
+                         for desc, lo, hi, cat, _ in frng.choices(_TX, k=5)}
+            monthly.append({
+                "month": month_key, "label": month_label,
+                "spent": spent, "received": received, "net": round(received - spent, 2),
+                "by_category": by_cat,
+                "budgets": _BASE_BUDGETS.copy(),
+                "top_merchants": [{"name": m, "amount": a} for m, a in merchants.items()],
+            })
+
+        # Portfolio
+        picked = frng.sample(_STOCKS, frng.randint(3, 5))
+        portfolio = []
+        for s in picked:
+            shares     = frng.randint(*s["range"])
+            buy_price  = round(s["price"] * frng.uniform(*s["buy_factor"]), 2)
+            value      = round(shares * s["price"], 2)
+            invested   = round(shares * buy_price, 2)
+            gain       = round(value - invested, 2)
+            portfolio.append({
+                "symbol": s["symbol"], "name": s["name"], "sector": s["sector"],
+                "shares": shares, "price": s["price"], "avg_buy_price": buy_price,
+                "value": value, "gain": gain,
+                "gain_pct":      round((gain / invested * 100) if invested else 0, 2),
+                "change_1d_pct": round(frng.uniform(-3.5, 4.5), 2),
+            })
+
+        # Savings goals
+        goal_pool = frng.sample(_SAVINGS_POOL, frng.randint(2, 3))
+        savings_goals = []
+        for goal_name, target, prog_range in goal_pool:
+            progress = round(frng.uniform(*prog_range), 2)
+            savings_goals.append({
+                "name": goal_name, "target": target,
+                "saved": round(target * progress, 2),
+                "progress": progress,
+                "monthly_contribution": round(frng.uniform(50, 300), 2),
+            })
+
+        # Messages
+        thread = frng.choice(_MESSAGE_THREADS)
+        messages = [{"from": s, "text": t,
+                     "time": f"{frng.randint(9, 22)}:{frng.randint(0, 59):02d}",
+                     "date": frng.choice(["Today", "Yesterday", "Mon", "Fri"])}
+                    for s, t in thread]
+
+        balance = round(f.get("total_sent", 0) - f.get("total_received", 0), 2)
+
+        ef = {
+            "id":               _slugify(f.get("iban") or f["name"]),
+            "name":             f["name"],
+            "iban":             f.get("iban"),
+            "avatar_color":     _AVATAR_COLORS[i % len(_AVATAR_COLORS)],
+            "occupation":       _OCCUPATIONS[i % len(_OCCUPATIONS)],
+            "bio":              _BIOS[i % len(_BIOS)],
+            "spending_pattern": _SPENDING_PATTERNS[i % len(_SPENDING_PATTERNS)],
+            "top_categories":   [c for c, _ in sorted(monthly[-1]["by_category"].items(), key=lambda x: -x[1])[:3]],
+            "transaction_count": f.get("payments", 0) + f.get("incoming", 0),
+            "total_sent":       round(f.get("total_sent", 0), 2),
+            "total_received":   round(f.get("total_received", 0), 2),
+            "balance":          balance,
+            "portfolio":        portfolio,
+            "savings_goals":    savings_goals,
+            "messages":         messages,
+            "monthly_history":  monthly,
+            "dashboard_stats":  _friend_dashboard_stats({**f, "monthly_history": monthly, "savings_goals": savings_goals}, frng),
+        }
+        enriched.append(ef)
+
+    return {"friends": enriched, "generated_at": datetime.datetime.utcnow().isoformat()}
+
+
 @app.post("/api/sandbox/seed-friends")
-def seed_demo_friends(count: int = 5, payments_each: int = 3):
-    """
-    One-time demo setup: creates `count` sandbox personas and makes
-    `payments_each` payments to each so they appear as top contacts.
-    Takes ~30 s for 5 friends. Only call this once before the demo.
-    """
+def seed_demo_friends(count: int = 5, payments_each: int = 10, incoming_each: int = 2):
+    """Streaming seed — yields NDJSON progress lines, then writes demo_data.json."""
     if not _seed_lock.acquire(blocking=False):
         raise HTTPException(status_code=409, detail="Seeding already in progress.")
-    try:
-        _restore_main_context()
-        accounts = bunq.get_all_monetary_account_active(1)
-        if not accounts:
-            raise HTTPException(status_code=500, detail="No active account found.")
-        main_account_id = accounts[0].id_
 
-        # Auto top-up if balance is low
-        if float(accounts[0].balance.value) < 50:
-            bunq.make_request("500.00", "Seed top-up", "sugardaddy@bunq.com")
-            time.sleep(2)
+    def _emit(event: str, **kw) -> str:
+        return json.dumps({"event": event, **kw}) + "\n"
+
+    def _stream() -> Generator[str, None, None]:
+        try:
+            yield _emit("start", count=count, payments_each=payments_each, incoming_each=incoming_each)
             _restore_main_context()
 
-        created = []
-        for i in range(count):
-            api_key = bunq.generate_new_sandbox_user()
-            name, iban = _get_friend_iban(api_key, i)
-            _restore_main_context()
+            accounts = bunq.get_all_monetary_account_active(1)
+            if not accounts:
+                yield _emit("error", message="No active account found."); return
+            main_account_id = accounts[0].id_
+            main_balance    = float(accounts[0].balance.value)
+            yield _emit("balance", eur=main_balance)
 
-            if not iban:
-                created.append({"name": name, "iban": None, "status": "skipped — no IBAN"})
-                continue
+            main_iban = None; main_name = "Demo User"
+            try:
+                for alias in bunq.get_all_user_alias():
+                    if getattr(alias, "type_", None) == "IBAN":
+                        main_iban = alias.value; break
+                main_name = bunq.get_current_user().display_name or main_name
+            except Exception:
+                pass
+            yield _emit("main_user", name=main_name, iban=main_iban)
 
-            for j in range(payments_each):
-                amount = _SEED_AMOUNTS[(i * payments_each + j) % len(_SEED_AMOUNTS)]
-                Payment.create(
-                    amount=Amount(amount, "EUR"),
-                    counterparty_alias=Pointer("IBAN", iban, name),
-                    description="Dinner · Smart Split demo",
-                    monetary_account_id=main_account_id,
-                )
-                time.sleep(0.4)
+            # Top-up in 500 EUR rounds
+            needed = count * payments_each * 60
+            if main_balance < needed:
+                rounds = max(1, int((needed - main_balance) // 500) + 2)
+                yield _emit("topup_start", rounds=rounds)
+                for r in range(rounds):
+                    try:
+                        bunq.make_request("500.00", "Seed top-up", "sugardaddy@bunq.com")
+                        yield _emit("topup_round", round=r + 1, of=rounds)
+                        time.sleep(2)
+                    except Exception as e:
+                        yield _emit("topup_warn", round=r + 1, error=str(e))
+                        time.sleep(1)
+                _restore_main_context(); time.sleep(1)
+                yield _emit("topup_done")
 
-            created.append({"name": name, "iban": iban, "status": "ok", "payments": payments_each})
+            created = []
+            for i in range(count):
+                frng = random.Random(2025 + i)
+                yield _emit("friend_start", index=i + 1, of=count)
+                api_key    = bunq.generate_new_sandbox_user()
+                name, iban = _get_friend_iban(api_key, i)
+                _restore_main_context()
 
-        return {"seeded": len([f for f in created if f["status"] == "ok"]), "friends": created}
-    finally:
-        _seed_lock.release()
+                if not iban:
+                    created.append({"name": name, "iban": None, "status": "skipped — no IBAN"})
+                    yield _emit("friend_skip", name=name); continue
+
+                yield _emit("friend_created", name=name, iban=iban)
+
+                # Outgoing
+                total_sent = 0.0
+                templates  = frng.choices(_TX, k=payments_each)
+                for j, (desc, lo, hi, _cat, _merchant) in enumerate(templates):
+                    amt = round(frng.uniform(lo, hi), 2)
+                    Payment.create(
+                        amount=Amount(f"{amt:.2f}", "EUR"),
+                        counterparty_alias=Pointer("IBAN", iban, name),
+                        description=desc, monetary_account_id=main_account_id,
+                    )
+                    total_sent += amt
+                    yield _emit("payment_out", friend=name, n=j + 1, of=payments_each, desc=desc, eur=amt)
+                    time.sleep(0.3)
+
+                # Incoming
+                total_received = 0.0; inc_count = 0
+                if main_iban:
+                    for k in range(incoming_each):
+                        inc_desc = frng.choice(_INCOMING_DESCS)
+                        inc_amt  = round(frng.uniform(5, 32), 2)
+                        ok = _friend_pays_main(api_key, i, main_iban, main_name, f"{inc_amt:.2f}", inc_desc)
+                        _restore_main_context()
+                        if ok:
+                            total_received += inc_amt; inc_count += 1
+                            yield _emit("payment_in", friend=name, n=k + 1, eur=inc_amt)
+                        else:
+                            yield _emit("payment_in_fail", friend=name, n=k + 1)
+                        time.sleep(0.35)
+
+                created.append({
+                    "name": name, "iban": iban, "status": "ok",
+                    "payments": payments_each, "incoming": inc_count,
+                    "total_sent": round(total_sent, 2), "total_received": round(total_received, 2),
+                })
+                yield _emit("friend_done", name=name, sent=round(total_sent, 2), received=round(total_received, 2))
+
+            yield _emit("building_demo_data")
+            demo = _build_demo_data(created)
+            with open(DEMO_DATA_FILE, "w") as fh:
+                json.dump(demo, fh, indent=2)
+
+            ok_count = sum(1 for f in created if f.get("status") == "ok")
+            yield _emit("done", seeded=ok_count, friends=created, demo_data=DEMO_DATA_FILE)
+
+        except Exception as e:
+            yield _emit("error", message=str(e))
+        finally:
+            _seed_lock.release()
+
+    return StreamingResponse(_stream(), media_type="application/x-ndjson")
 
 
 @app.post("/api/sandbox/topup")
 def sandbox_topup(req: TopupRequest = None):
-    """
-    Request money from sugardaddy@bunq.com (bunq's sandbox faucet).
-    The request is auto-approved within ~1 second.
-    """
+    """Request money from sugardaddy@bunq.com (auto-approved within ~1 s)."""
     if req is None:
         req = TopupRequest()
     try:
         bunq.make_request(req.amount, "Sandbox top-up", "sugardaddy@bunq.com")
-        return {
-            "status": "success",
-            "message": f"Requested {req.amount} EUR from sugardaddy@bunq.com — funds arrive within seconds.",
-        }
+        return {"status": "success", "message": f"Requested {req.amount} EUR — funds arrive within seconds."}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+# ── Demo-data read endpoints ───────────────────────────────────────────────────
+
+def _load_demo() -> dict:
+    if not os.path.exists(DEMO_DATA_FILE):
+        raise HTTPException(status_code=404, detail="demo_data.json not found — run seed first.")
+    with open(DEMO_DATA_FILE) as fh:
+        return json.load(fh)
+
+
+@app.get("/api/demo")
+def get_demo_data():
+    return _load_demo()
+
+
+@app.get("/api/demo/profiles")
+def get_demo_profiles():
+    return _load_demo()["friends"]
+
+
+@app.get("/api/demo/profiles/{name}")
+def get_demo_profile(name: str):
+    friends = _load_demo()["friends"]
+    match = next((f for f in friends if f["name"].lower() == name.lower()), None)
+    if not match:
+        raise HTTPException(status_code=404, detail=f"Profile '{name}' not found.")
+    return match
+
+
+@app.get("/api/demo/stats/{contact_id}")
+def get_demo_stats(contact_id: str):
+    """Dashboard stats for a contact. Strips bunq sandbox @bunq.demo suffix before matching."""
+    friends = _load_demo()["friends"]
+    # bunq sandbox uses IBAN@bunq.demo as email alias; slugify turns that into
+    # nl66bunq2106258720-bunq-demo — strip the trailing -bunq-* to get the raw IBAN slug
+    stripped = re.sub(r'-bunq-.*$', '', contact_id)
+    match = next(
+        (f for f in friends if f.get("id") in (contact_id, stripped)),
+        None,
+    )
+    if not match:
+        raise HTTPException(status_code=404, detail=f"No stats for contact '{contact_id}'.")
+    return match.get("dashboard_stats", {})

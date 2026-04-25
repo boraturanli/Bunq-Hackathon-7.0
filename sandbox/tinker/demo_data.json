@@ -1,2425 +1,3869 @@
 {
-  "generated_at": "2026-04-25T08:15:22.486696",
-  "monthly_history": [
-    {
-      "month": "2025-05",
-      "label": "May 2025",
-      "spent": 751.43,
-      "received": 97.65,
-      "net": -653.78,
-      "closing_balance": 2041.42,
-      "transaction_count": 37,
-      "by_category": {
-        "food": 147.56,
-        "groceries": 131.73,
-        "entertainment": 77.16,
-        "transport": 73.89,
-        "health": 80.5,
-        "shopping": 148.37,
-        "travel": 92.22
-      },
-      "budgets": {
-        "food": 238.0,
-        "groceries": 170.0,
-        "entertainment": 127.5,
-        "transport": 85.0,
-        "health": 68.0,
-        "shopping": 127.5,
-        "travel": 102.0
-      },
-      "top_merchants": [
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 674.51,
-          "visits": 3
-        },
-        {
-          "name": "Booking.com",
-          "category": "travel",
-          "amount": 255.59,
-          "visits": 3
-        },
-        {
-          "name": "Bol.com",
-          "category": "shopping",
-          "amount": 204.63,
-          "visits": 2
-        },
-        {
-          "name": "MOJO Concerts",
-          "category": "entertainment",
-          "amount": 170.18,
-          "visits": 3
-        },
-        {
-          "name": "Lidl",
-          "category": "groceries",
-          "amount": 135.42,
-          "visits": 3
-        },
-        {
-          "name": "HEMA",
-          "category": "shopping",
-          "amount": 133.54,
-          "visits": 3
-        }
-      ]
-    },
-    {
-      "month": "2025-06",
-      "label": "Jun 2025",
-      "spent": 1133.39,
-      "received": 227.75,
-      "net": -905.64,
-      "closing_balance": 1135.78,
-      "transaction_count": 44,
-      "by_category": {
-        "food": 298.19,
-        "groceries": 229.37,
-        "entertainment": 182.83,
-        "transport": 82.76,
-        "health": 52.0,
-        "shopping": 185.88,
-        "travel": 102.36
-      },
-      "budgets": {
-        "food": 252.0,
-        "groceries": 180.0,
-        "entertainment": 135.0,
-        "transport": 90.0,
-        "health": 72.0,
-        "shopping": 135.0,
-        "travel": 108.0
-      },
-      "top_merchants": [
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 752.13,
-          "visits": 3
-        },
-        {
-          "name": "Ticketmaster",
-          "category": "entertainment",
-          "amount": 162.29,
-          "visits": 4
-        },
-        {
-          "name": "Albert Heijn",
-          "category": "groceries",
-          "amount": 140.56,
-          "visits": 3
-        },
-        {
-          "name": "Booking.com",
-          "category": "travel",
-          "amount": 135.98,
-          "visits": 2
-        },
-        {
-          "name": "Neni",
-          "category": "food",
-          "amount": 125.25,
-          "visits": 3
-        },
-        {
-          "name": "Airbnb",
-          "category": "travel",
-          "amount": 115.03,
-          "visits": 1
-        }
-      ]
-    },
-    {
-      "month": "2025-07",
-      "label": "Jul 2025",
-      "spent": 1058.21,
-      "received": 101.85,
-      "net": -956.36,
-      "closing_balance": 179.42,
-      "transaction_count": 51,
-      "by_category": {
-        "food": 274.38,
-        "groceries": 257.94,
-        "entertainment": 104.32,
-        "transport": 74.08,
-        "health": 49.91,
-        "shopping": 139.42,
-        "travel": 158.16
-      },
-      "budgets": {
-        "food": 266.0,
-        "groceries": 190.0,
-        "entertainment": 142.5,
-        "transport": 95.0,
-        "health": 76.0,
-        "shopping": 142.5,
-        "travel": 114.0
-      },
-      "top_merchants": [
-        {
-          "name": "Airbnb",
-          "category": "travel",
-          "amount": 328.94,
-          "visits": 3
-        },
-        {
-          "name": "Albert Heijn",
-          "category": "groceries",
-          "amount": 290.01,
-          "visits": 4
-        },
-        {
-          "name": "Bol.com",
-          "category": "shopping",
-          "amount": 214.63,
-          "visits": 4
-        },
-        {
-          "name": "Ticketmaster",
-          "category": "entertainment",
-          "amount": 157.04,
-          "visits": 4
-        },
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 141.0,
-          "visits": 1
-        },
-        {
-          "name": "Rituals",
-          "category": "health",
-          "amount": 123.74,
-          "visits": 4
-        }
-      ]
-    },
-    {
-      "month": "2025-08",
-      "label": "Aug 2025",
-      "spent": 1016.9,
-      "received": 196.66,
-      "net": -820.24,
-      "closing_balance": -640.82,
-      "transaction_count": 33,
-      "by_category": {
-        "food": 236.27,
-        "groceries": 246.3,
-        "entertainment": 121.55,
-        "transport": 108.07,
-        "health": 45.46,
-        "shopping": 178.63,
-        "travel": 80.62
-      },
-      "budgets": {
-        "food": 246.4,
-        "groceries": 176.0,
-        "entertainment": 132.0,
-        "transport": 88.0,
-        "health": 70.4,
-        "shopping": 132.0,
-        "travel": 105.6
-      },
-      "top_merchants": [
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 538.76,
-          "visits": 3
-        },
-        {
-          "name": "Bol.com",
-          "category": "shopping",
-          "amount": 326.39,
-          "visits": 3
-        },
-        {
-          "name": "Airbnb",
-          "category": "travel",
-          "amount": 199.44,
-          "visits": 2
-        },
-        {
-          "name": "Umami",
-          "category": "food",
-          "amount": 106.96,
-          "visits": 2
-        },
-        {
-          "name": "Lidl",
-          "category": "groceries",
-          "amount": 94.78,
-          "visits": 4
-        },
-        {
-          "name": "Albert Heijn",
-          "category": "groceries",
-          "amount": 94.2,
-          "visits": 2
-        }
-      ]
-    },
-    {
-      "month": "2025-09",
-      "label": "Sep 2025",
-      "spent": 958.74,
-      "received": 224.89,
-      "net": -733.85,
-      "closing_balance": -1374.67,
-      "transaction_count": 41,
-      "by_category": {
-        "food": 241.17,
-        "groceries": 213.97,
-        "entertainment": 170.94,
-        "transport": 88.88,
-        "health": 79.83,
-        "shopping": 88.37,
-        "travel": 75.58
-      },
-      "budgets": {
-        "food": 229.6,
-        "groceries": 164.0,
-        "entertainment": 123.0,
-        "transport": 82.0,
-        "health": 65.6,
-        "shopping": 123.0,
-        "travel": 98.4
-      },
-      "top_merchants": [
-        {
-          "name": "Airbnb",
-          "category": "travel",
-          "amount": 491.94,
-          "visits": 4
-        },
-        {
-          "name": "Booking.com",
-          "category": "travel",
-          "amount": 363.93,
-          "visits": 3
-        },
-        {
-          "name": "Bol.com",
-          "category": "shopping",
-          "amount": 316.21,
-          "visits": 3
-        },
-        {
-          "name": "Albert Heijn",
-          "category": "groceries",
-          "amount": 170.25,
-          "visits": 3
-        },
-        {
-          "name": "NS",
-          "category": "transport",
-          "amount": 147.52,
-          "visits": 4
-        },
-        {
-          "name": "Rituals",
-          "category": "health",
-          "amount": 138.64,
-          "visits": 3
-        }
-      ]
-    },
-    {
-      "month": "2025-10",
-      "label": "Oct 2025",
-      "spent": 1157.46,
-      "received": 205.95,
-      "net": -951.51,
-      "closing_balance": -2326.18,
-      "transaction_count": 38,
-      "by_category": {
-        "food": 349.1,
-        "groceries": 249.16,
-        "entertainment": 88.02,
-        "transport": 76.53,
-        "health": 51.51,
-        "shopping": 193.54,
-        "travel": 149.6
-      },
-      "budgets": {
-        "food": 260.4,
-        "groceries": 186.0,
-        "entertainment": 139.5,
-        "transport": 93.0,
-        "health": 74.4,
-        "shopping": 139.5,
-        "travel": 111.6
-      },
-      "top_merchants": [
-        {
-          "name": "Booking.com",
-          "category": "travel",
-          "amount": 323.9,
-          "visits": 3
-        },
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 270.54,
-          "visits": 1
-        },
-        {
-          "name": "NS",
-          "category": "transport",
-          "amount": 134.36,
-          "visits": 4
-        },
-        {
-          "name": "Albert Heijn",
-          "category": "groceries",
-          "amount": 130.01,
-          "visits": 2
-        },
-        {
-          "name": "Zara",
-          "category": "shopping",
-          "amount": 124.65,
-          "visits": 3
-        },
-        {
-          "name": "NS",
-          "category": "transport",
-          "amount": 120.53,
-          "visits": 3
-        }
-      ]
-    },
-    {
-      "month": "2025-11",
-      "label": "Nov 2025",
-      "spent": 1055.75,
-      "received": 256.11,
-      "net": -799.64,
-      "closing_balance": -3125.82,
-      "transaction_count": 43,
-      "by_category": {
-        "food": 195.92,
-        "groceries": 270.46,
-        "entertainment": 159.6,
-        "transport": 136.16,
-        "health": 78.41,
-        "shopping": 119.28,
-        "travel": 95.92
-      },
-      "budgets": {
-        "food": 280.0,
-        "groceries": 200.0,
-        "entertainment": 150.0,
-        "transport": 100.0,
-        "health": 80.0,
-        "shopping": 150.0,
-        "travel": 120.0
-      },
-      "top_merchants": [
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 874.01,
-          "visits": 4
-        },
-        {
-          "name": "Airbnb",
-          "category": "travel",
-          "amount": 363.46,
-          "visits": 3
-        },
-        {
-          "name": "Rituals",
-          "category": "health",
-          "amount": 168.99,
-          "visits": 4
-        },
-        {
-          "name": "Zara",
-          "category": "shopping",
-          "amount": 168.07,
-          "visits": 4
-        },
-        {
-          "name": "Ticketmaster",
-          "category": "entertainment",
-          "amount": 125.34,
-          "visits": 2
-        },
-        {
-          "name": "Albert Heijn",
-          "category": "groceries",
-          "amount": 96.41,
-          "visits": 2
-        }
-      ]
-    },
-    {
-      "month": "2025-12",
-      "label": "Dec 2025",
-      "spent": 1514.03,
-      "received": 269.26,
-      "net": -1244.77,
-      "closing_balance": -4370.59,
-      "transaction_count": 62,
-      "by_category": {
-        "food": 412.07,
-        "groceries": 274.6,
-        "entertainment": 173.29,
-        "transport": 103.34,
-        "health": 147.18,
-        "shopping": 250.8,
-        "travel": 152.75
-      },
-      "budgets": {
-        "food": 378.0,
-        "groceries": 270.0,
-        "entertainment": 202.5,
-        "transport": 135.0,
-        "health": 108.0,
-        "shopping": 202.5,
-        "travel": 162.0
-      },
-      "top_merchants": [
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 585.91,
-          "visits": 4
-        },
-        {
-          "name": "Booking.com",
-          "category": "travel",
-          "amount": 331.13,
-          "visits": 4
-        },
-        {
-          "name": "Airbnb",
-          "category": "travel",
-          "amount": 292.82,
-          "visits": 4
-        },
-        {
-          "name": "MOJO Concerts",
-          "category": "entertainment",
-          "amount": 256.14,
-          "visits": 4
-        },
-        {
-          "name": "Proeflokaal Wynand",
-          "category": "entertainment",
-          "amount": 120.17,
-          "visits": 4
-        },
-        {
-          "name": "Neni",
-          "category": "food",
-          "amount": 115.21,
-          "visits": 4
-        }
-      ]
-    },
-    {
-      "month": "2026-01",
-      "label": "Jan 2026",
-      "spent": 799.13,
-      "received": 241.66,
-      "net": -557.47,
-      "closing_balance": -4928.06,
-      "transaction_count": 41,
-      "by_category": {
-        "food": 196.82,
-        "groceries": 98.23,
-        "entertainment": 110.12,
-        "transport": 81.43,
-        "health": 73.08,
-        "shopping": 125.78,
-        "travel": 113.67
-      },
-      "budgets": {
-        "food": 210.0,
-        "groceries": 150.0,
-        "entertainment": 112.5,
-        "transport": 75.0,
-        "health": 60.0,
-        "shopping": 112.5,
-        "travel": 90.0
-      },
-      "top_merchants": [
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 626.83,
-          "visits": 3
-        },
-        {
-          "name": "Airbnb",
-          "category": "travel",
-          "amount": 335.18,
-          "visits": 4
-        },
-        {
-          "name": "Albert Heijn",
-          "category": "groceries",
-          "amount": 134.89,
-          "visits": 2
-        },
-        {
-          "name": "Rituals",
-          "category": "health",
-          "amount": 131.92,
-          "visits": 3
-        },
-        {
-          "name": "HEMA",
-          "category": "shopping",
-          "amount": 98.92,
-          "visits": 3
-        },
-        {
-          "name": "One Fitness",
-          "category": "health",
-          "amount": 77.07,
-          "visits": 3
-        }
-      ]
-    },
-    {
-      "month": "2026-02",
-      "label": "Feb 2026",
-      "spent": 927.03,
-      "received": 213.43,
-      "net": -713.6,
-      "closing_balance": -5641.66,
-      "transaction_count": 55,
-      "by_category": {
-        "food": 240.57,
-        "groceries": 159.27,
-        "entertainment": 156.51,
-        "transport": 49.1,
-        "health": 76.59,
-        "shopping": 123.44,
-        "travel": 121.55
-      },
-      "budgets": {
-        "food": 224.0,
-        "groceries": 160.0,
-        "entertainment": 120.0,
-        "transport": 80.0,
-        "health": 64.0,
-        "shopping": 120.0,
-        "travel": 96.0
-      },
-      "top_merchants": [
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 291.5,
-          "visits": 2
-        },
-        {
-          "name": "MOJO Concerts",
-          "category": "entertainment",
-          "amount": 263.01,
-          "visits": 4
-        },
-        {
-          "name": "Bol.com",
-          "category": "shopping",
-          "amount": 185.07,
-          "visits": 4
-        },
-        {
-          "name": "Airbnb",
-          "category": "travel",
-          "amount": 147.27,
-          "visits": 3
-        },
-        {
-          "name": "HEMA",
-          "category": "shopping",
-          "amount": 133.07,
-          "visits": 3
-        },
-        {
-          "name": "De Tulp",
-          "category": "food",
-          "amount": 106.19,
-          "visits": 3
-        }
-      ]
-    },
-    {
-      "month": "2026-03",
-      "label": "Mar 2026",
-      "spent": 988.5,
-      "received": 267.39,
-      "net": -721.11,
-      "closing_balance": -6362.77,
-      "transaction_count": 52,
-      "by_category": {
-        "food": 180.58,
-        "groceries": 237.25,
-        "entertainment": 172.35,
-        "transport": 87.78,
-        "health": 68.21,
-        "shopping": 169.78,
-        "travel": 72.55
-      },
-      "budgets": {
-        "food": 257.6,
-        "groceries": 184.0,
-        "entertainment": 138.0,
-        "transport": 92.0,
-        "health": 73.6,
-        "shopping": 138.0,
-        "travel": 110.4
-      },
-      "top_merchants": [
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 472.02,
-          "visits": 4
-        },
-        {
-          "name": "Booking.com",
-          "category": "travel",
-          "amount": 343.43,
-          "visits": 3
-        },
-        {
-          "name": "Bol.com",
-          "category": "shopping",
-          "amount": 295.59,
-          "visits": 3
-        },
-        {
-          "name": "MOJO Concerts",
-          "category": "entertainment",
-          "amount": 263.51,
-          "visits": 4
-        },
-        {
-          "name": "Zara",
-          "category": "shopping",
-          "amount": 179.62,
-          "visits": 2
-        },
-        {
-          "name": "Albert Heijn",
-          "category": "groceries",
-          "amount": 125.93,
-          "visits": 4
-        }
-      ]
-    },
-    {
-      "month": "2026-04",
-      "label": "Apr 2026",
-      "spent": 1145.06,
-      "received": 120.15,
-      "net": -1024.91,
-      "closing_balance": -7387.68,
-      "transaction_count": 50,
-      "by_category": {
-        "food": 294.11,
-        "groceries": 287.6,
-        "entertainment": 117.37,
-        "transport": 142.4,
-        "health": 63.01,
-        "shopping": 155.57,
-        "travel": 85.0
-      },
-      "budgets": {
-        "food": 294.0,
-        "groceries": 210.0,
-        "entertainment": 157.5,
-        "transport": 105.0,
-        "health": 84.0,
-        "shopping": 157.5,
-        "travel": 126.0
-      },
-      "top_merchants": [
-        {
-          "name": "KLM",
-          "category": "travel",
-          "amount": 374.4,
-          "visits": 2
-        },
-        {
-          "name": "Albert Heijn",
-          "category": "groceries",
-          "amount": 284.22,
-          "visits": 4
-        },
-        {
-          "name": "Airbnb",
-          "category": "travel",
-          "amount": 261.55,
-          "visits": 3
-        },
-        {
-          "name": "MOJO Concerts",
-          "category": "entertainment",
-          "amount": 232.55,
-          "visits": 3
-        },
-        {
-          "name": "NS",
-          "category": "transport",
-          "amount": 151.79,
-          "visits": 4
-        },
-        {
-          "name": "One Fitness",
-          "category": "health",
-          "amount": 135.23,
-          "visits": 4
-        }
-      ]
-    }
-  ],
-  "balance_history": [
-    {
-      "date": "2026-01-31",
-      "balance": 2335.35
-    },
-    {
-      "date": "2026-02-07",
-      "balance": 2233.34
-    },
-    {
-      "date": "2026-02-14",
-      "balance": 2229.74
-    },
-    {
-      "date": "2026-02-21",
-      "balance": 2172.49
-    },
-    {
-      "date": "2026-02-28",
-      "balance": 2287.49
-    },
-    {
-      "date": "2026-03-07",
-      "balance": 2270.13
-    },
-    {
-      "date": "2026-03-14",
-      "balance": 2371.51
-    },
-    {
-      "date": "2026-03-21",
-      "balance": 2468.0
-    },
-    {
-      "date": "2026-03-28",
-      "balance": 2376.4
-    },
-    {
-      "date": "2026-04-04",
-      "balance": 2449.2
-    },
-    {
-      "date": "2026-04-11",
-      "balance": 2401.98
-    },
-    {
-      "date": "2026-04-18",
-      "balance": 2520.94
-    },
-    {
-      "date": "2026-04-25",
-      "balance": 2503.42
-    }
-  ],
-  "portfolio": [
-    {
-      "symbol": "AAPL",
-      "name": "Apple Inc.",
-      "sector": "Technology",
-      "shares": 11,
-      "price": 175.2,
-      "avg_buy_price": 150.92,
-      "value": 1927.2,
-      "invested": 1660.12,
-      "gain": 267.08,
-      "gain_pct": 16.09,
-      "change_1d_pct": -0.84,
-      "change_1w_pct": 5.97,
-      "change_1m_pct": 0.83
-    },
-    {
-      "symbol": "NVDA",
-      "name": "Nvidia Corp.",
-      "sector": "Technology",
-      "shares": 6,
-      "price": 875.4,
-      "avg_buy_price": 654.66,
-      "value": 5252.4,
-      "invested": 3927.96,
-      "gain": 1324.44,
-      "gain_pct": 33.72,
-      "change_1d_pct": 4.35,
-      "change_1w_pct": -2.94,
-      "change_1m_pct": 1.02
-    },
-    {
-      "symbol": "SBUX",
-      "name": "Starbucks Corp.",
-      "sector": "Food & Bev",
-      "shares": 15,
-      "price": 78.4,
-      "avg_buy_price": 78.8,
-      "value": 1176.0,
-      "invested": 1182.0,
-      "gain": -6.0,
-      "gain_pct": -0.51,
-      "change_1d_pct": -3.15,
-      "change_1w_pct": 5.66,
-      "change_1m_pct": 11.98
-    },
-    {
-      "symbol": "ING",
-      "name": "ING Groep NV",
-      "sector": "Finance",
-      "shares": 71,
-      "price": 15.8,
-      "avg_buy_price": 13.72,
-      "value": 1121.8,
-      "invested": 974.12,
-      "gain": 147.68,
-      "gain_pct": 15.16,
-      "change_1d_pct": 4.41,
-      "change_1w_pct": 6.47,
-      "change_1m_pct": 10.17
-    },
-    {
-      "symbol": "GOOGL",
-      "name": "Alphabet Inc.",
-      "sector": "Technology",
-      "shares": 2,
-      "price": 168.5,
-      "avg_buy_price": 141.35,
-      "value": 337.0,
-      "invested": 282.7,
-      "gain": 54.3,
-      "gain_pct": 19.21,
-      "change_1d_pct": -3.2,
-      "change_1w_pct": 1.54,
-      "change_1m_pct": 8.07
-    },
-    {
-      "symbol": "TSLA",
-      "name": "Tesla Inc.",
-      "sector": "Automotive",
-      "shares": 5,
-      "price": 172.3,
-      "avg_buy_price": 177.61,
-      "value": 861.5,
-      "invested": 888.05,
-      "gain": -26.55,
-      "gain_pct": -2.99,
-      "change_1d_pct": 0.02,
-      "change_1w_pct": 1.94,
-      "change_1m_pct": 3.54
-    }
-  ],
-  "portfolio_summary": {
-    "total_value": 10675.9,
-    "total_invested": 8914.95,
-    "total_gain": 1760.95,
-    "total_gain_pct": 19.75,
-    "by_sector": {
-      "Technology": {
-        "value": 7516.599999999999,
-        "gain": 1645.82
-      },
-      "Food & Bev": {
-        "value": 1176.0,
-        "gain": -6.0
-      },
-      "Finance": {
-        "value": 1121.8,
-        "gain": 147.68
-      },
-      "Automotive": {
-        "value": 861.5,
-        "gain": -26.55
-      }
-    }
-  },
-  "insights": {
-    "avg_monthly_spend": 1042.14,
-    "max_monthly_spend": 1514.03,
-    "min_monthly_spend": 751.43,
-    "spend_trend_pct": 15.8,
-    "spend_trend": "up",
-    "top_category_this_month": "food",
-    "top_category_amount": 294.11,
-    "top_merchants": [
-      {
-        "name": "KLM",
-        "category": "travel",
-        "amount": 5601.609999999999,
-        "visits": 30
-      },
-      {
-        "name": "Airbnb",
-        "category": "travel",
-        "amount": 2535.63,
-        "visits": 27
-      },
-      {
-        "name": "Booking.com",
-        "category": "travel",
-        "amount": 1753.9600000000003,
-        "visits": 18
-      },
-      {
-        "name": "Bol.com",
-        "category": "shopping",
-        "amount": 1542.5199999999998,
-        "visits": 19
-      },
-      {
-        "name": "Albert Heijn",
-        "category": "groceries",
-        "amount": 1466.48,
-        "visits": 26
-      },
-      {
-        "name": "MOJO Concerts",
-        "category": "entertainment",
-        "amount": 1185.3899999999999,
-        "visits": 18
-      },
-      {
-        "name": "Rituals",
-        "category": "health",
-        "amount": 563.29,
-        "visits": 14
-      },
-      {
-        "name": "NS",
-        "category": "transport",
-        "amount": 554.1999999999999,
-        "visits": 15
-      }
-    ],
-    "savings_rate": 0.22
-  },
   "friends": [
     {
-      "name": "M. Sutton",
-      "iban": "NL48BUNQ2106251866",
-      "avatar_color": "#FF6B00",
+      "id": "nl66bunq2106258720",
+      "name": "A. Doyle",
+      "iban": "NL66BUNQ2106258720",
+      "avatar_color": "#FF6B6B",
       "occupation": "UX Designer",
-      "bio": "Coffee enthusiast & design nerd based in Amsterdam",
-      "spending_pattern": "balanced",
+      "bio": "Coffee addict & weekend hiker. Splits everything fairly.",
+      "spending_pattern": "Consistent spender",
       "top_categories": [
-        "food",
-        "entertainment",
-        "transport"
+        "groceries",
+        "shopping",
+        "food"
       ],
       "transaction_count": 10,
-      "payments_out": 10,
-      "payments_in": 0,
-      "total_sent": 300.1,
+      "total_sent": 328.45,
       "total_received": 0.0,
-      "balance": 300.1,
+      "balance": 328.45,
       "portfolio": [
-        {
-          "symbol": "MSFT",
-          "name": "Microsoft Corp.",
-          "sector": "Technology",
-          "shares": 3,
-          "price": 415.8,
-          "avg_buy_price": 367.62,
-          "value": 1247.4,
-          "gain": 144.54,
-          "gain_pct": 13.11,
-          "change_1d_pct": 1.91
-        },
         {
           "symbol": "AAPL",
           "name": "Apple Inc.",
           "sector": "Technology",
-          "shares": 11,
+          "shares": 5,
           "price": 175.2,
-          "avg_buy_price": 134.9,
-          "value": 1927.2,
-          "gain": 443.3,
-          "gain_pct": 29.87,
-          "change_1d_pct": -0.12
+          "avg_buy_price": 134.16,
+          "value": 876.0,
+          "gain": 205.2,
+          "gain_pct": 30.59,
+          "change_1d_pct": -2.96
         },
         {
-          "symbol": "NVDA",
-          "name": "Nvidia Corp.",
-          "sector": "Technology",
+          "symbol": "ADYEN",
+          "name": "Adyen N.V.",
+          "sector": "Fintech",
           "shares": 1,
-          "price": 875.4,
-          "avg_buy_price": 382.97,
-          "value": 875.4,
-          "gain": 492.43,
-          "gain_pct": 128.58,
-          "change_1d_pct": -1.64
+          "price": 1420.0,
+          "avg_buy_price": 1239.21,
+          "value": 1420.0,
+          "gain": 180.79,
+          "gain_pct": 14.59,
+          "change_1d_pct": 4.03
         },
         {
-          "symbol": "TSLA",
-          "name": "Tesla Inc.",
-          "sector": "Automotive",
-          "shares": 2,
-          "price": 172.3,
-          "avg_buy_price": 147.95,
-          "value": 344.6,
-          "gain": 48.7,
-          "gain_pct": 16.46,
-          "change_1d_pct": 2.23
-        },
-        {
-          "symbol": "PHIA",
-          "name": "Philips NV",
-          "sector": "Healthcare",
-          "shares": 44,
-          "price": 8.9,
-          "avg_buy_price": 8.04,
-          "value": 391.6,
-          "gain": 37.84,
-          "gain_pct": 10.7,
-          "change_1d_pct": 0.09
-        }
-      ],
-      "savings_goals": [
-        {
-          "name": "New MacBook Pro",
-          "target": 2499,
-          "saved": 1624.35,
-          "progress": 0.65,
-          "monthly_contribution": 88.87
-        },
-        {
-          "name": "Emergency fund",
-          "target": 5000,
-          "saved": 4700.0,
-          "progress": 0.94,
-          "monthly_contribution": 134.15
-        },
-        {
-          "name": "Car fund",
-          "target": 8000,
-          "saved": 560.0,
-          "progress": 0.07,
-          "monthly_contribution": 74.18
-        }
-      ],
-      "messages": [
-        {
-          "from": "me",
-          "text": "Groceries split?",
-          "time": "14:38",
-          "date": "Mon"
-        },
-        {
-          "from": "them",
-          "text": "\u20ac32.50 my half",
-          "time": "21:02",
-          "date": "Fri"
-        },
-        {
-          "from": "me",
-          "text": "Done \u2713",
-          "time": "17:07",
-          "date": "Fri"
-        },
-        {
-          "from": "them",
-          "text": "You're the best \ud83d\ude4c",
-          "time": "10:35",
-          "date": "Mon"
-        }
-      ],
-      "monthly_spending": [
-        {
-          "month": "2025-05",
-          "label": "May 2025",
-          "spent": 1135.22,
-          "by_category": {
-            "food": 318.82,
-            "groceries": 277.24,
-            "entertainment": 164.51,
-            "transport": 122.62,
-            "health": 44.45,
-            "shopping": 111.15,
-            "travel": 96.43
-          }
-        },
-        {
-          "month": "2025-06",
-          "label": "Jun 2025",
-          "spent": 565.75,
-          "by_category": {
-            "food": 138.11,
-            "groceries": 80.91,
-            "entertainment": 78.55,
-            "transport": 76.44,
-            "health": 46.57,
-            "shopping": 87.86,
-            "travel": 57.31
-          }
-        },
-        {
-          "month": "2025-07",
-          "label": "Jul 2025",
-          "spent": 955.05,
-          "by_category": {
-            "food": 328.72,
-            "groceries": 187.63,
-            "entertainment": 135.95,
-            "transport": 54.84,
-            "health": 80.35,
-            "shopping": 81.32,
-            "travel": 86.24
-          }
-        },
-        {
-          "month": "2025-08",
-          "label": "Aug 2025",
-          "spent": 1272.64,
-          "by_category": {
-            "food": 363.4,
-            "groceries": 240.66,
-            "entertainment": 202.3,
-            "transport": 152.88,
-            "health": 116.21,
-            "shopping": 124.5,
-            "travel": 72.69
-          }
-        },
-        {
-          "month": "2025-09",
-          "label": "Sep 2025",
-          "spent": 770.92,
-          "by_category": {
-            "food": 156.75,
-            "groceries": 103.69,
-            "entertainment": 157.83,
-            "transport": 100.37,
-            "health": 47.53,
-            "shopping": 126.38,
-            "travel": 78.37
-          }
-        },
-        {
-          "month": "2025-10",
-          "label": "Oct 2025",
-          "spent": 1197.35,
-          "by_category": {
-            "food": 311.79,
-            "groceries": 177.65,
-            "entertainment": 130.06,
-            "transport": 123.26,
-            "health": 70.86,
-            "shopping": 188.93,
-            "travel": 194.8
-          }
-        },
-        {
-          "month": "2025-11",
-          "label": "Nov 2025",
-          "spent": 922.68,
-          "by_category": {
-            "food": 189.25,
-            "groceries": 281.43,
-            "entertainment": 142.29,
-            "transport": 55.52,
-            "health": 41.13,
-            "shopping": 85.93,
-            "travel": 127.13
-          }
-        },
-        {
-          "month": "2025-12",
-          "label": "Dec 2025",
-          "spent": 1775.46,
-          "by_category": {
-            "food": 409.66,
-            "groceries": 178.82,
-            "entertainment": 209.81,
-            "transport": 237.37,
-            "health": 130.62,
-            "shopping": 350.1,
-            "travel": 259.08
-          }
-        },
-        {
-          "month": "2026-01",
-          "label": "Jan 2026",
-          "spent": 586.12,
-          "by_category": {
-            "food": 181.21,
-            "groceries": 125.3,
-            "entertainment": 82.47,
-            "transport": 40.65,
-            "health": 48.39,
-            "shopping": 48.63,
-            "travel": 59.47
-          }
-        },
-        {
-          "month": "2026-02",
-          "label": "Feb 2026",
-          "spent": 1032.47,
-          "by_category": {
-            "food": 316.61,
-            "groceries": 214.02,
-            "entertainment": 89.06,
-            "transport": 77.82,
-            "health": 42.23,
-            "shopping": 164.81,
-            "travel": 127.92
-          }
-        },
-        {
-          "month": "2026-03",
-          "label": "Mar 2026",
-          "spent": 940.93,
-          "by_category": {
-            "food": 257.91,
-            "groceries": 179.37,
-            "entertainment": 79.2,
-            "transport": 102.1,
-            "health": 67.25,
-            "shopping": 155.11,
-            "travel": 99.99
-          }
-        },
-        {
-          "month": "2026-04",
-          "label": "Apr 2026",
-          "spent": 721.76,
-          "by_category": {
-            "food": 169.69,
-            "groceries": 76.4,
-            "entertainment": 157.64,
-            "transport": 101.39,
-            "health": 78.34,
-            "shopping": 89.07,
-            "travel": 49.23
-          }
-        }
-      ]
-    },
-    {
-      "name": "D. Sepper",
-      "iban": "NL08BUNQ2106248997",
-      "avatar_color": "#00E5A0",
-      "occupation": "Software Engineer",
-      "bio": "Building the future, one commit at a time",
-      "spending_pattern": "weekend-heavy",
-      "top_categories": [
-        "food",
-        "groceries",
-        "entertainment"
-      ],
-      "transaction_count": 10,
-      "payments_out": 10,
-      "payments_in": 0,
-      "total_sent": 369.41,
-      "total_received": 0.0,
-      "balance": 369.41,
-      "portfolio": [
-        {
-          "symbol": "NVDA",
-          "name": "Nvidia Corp.",
-          "sector": "Technology",
-          "shares": 6,
-          "price": 875.4,
-          "avg_buy_price": 585.34,
-          "value": 5252.4,
-          "gain": 1740.36,
-          "gain_pct": 49.55,
-          "change_1d_pct": 2.84
-        },
-        {
-          "symbol": "GOOGL",
-          "name": "Alphabet Inc.",
+          "symbol": "MSFT",
+          "name": "Microsoft",
           "sector": "Technology",
           "shares": 4,
-          "price": 168.5,
-          "avg_buy_price": 145.54,
-          "value": 674.0,
-          "gain": 91.84,
-          "gain_pct": 15.78,
-          "change_1d_pct": 1.37
-        },
-        {
-          "symbol": "ING",
-          "name": "ING Groep NV",
-          "sector": "Finance",
-          "shares": 52,
-          "price": 15.8,
-          "avg_buy_price": 13.87,
-          "value": 821.6,
-          "gain": 100.36,
-          "gain_pct": 13.91,
-          "change_1d_pct": -0.52
+          "price": 378.5,
+          "avg_buy_price": 319.73,
+          "value": 1514.0,
+          "gain": 235.08,
+          "gain_pct": 18.38,
+          "change_1d_pct": -3.18
         }
       ],
       "savings_goals": [
         {
-          "name": "Car fund",
-          "target": 8000,
-          "saved": 2080.0,
-          "progress": 0.26,
-          "monthly_contribution": 255.05
+          "name": "Masters degree",
+          "target": 15000,
+          "saved": 5250.0,
+          "progress": 0.35,
+          "monthly_contribution": 180.7
         },
         {
-          "name": "Emergency fund",
-          "target": 5000,
-          "saved": 3650.0,
-          "progress": 0.73,
-          "monthly_contribution": 73.94
-        },
-        {
-          "name": "New MacBook Pro",
-          "target": 2499,
-          "saved": 1749.3,
-          "progress": 0.7,
-          "monthly_contribution": 173.99
+          "name": "Music equipment",
+          "target": 1200,
+          "saved": 1056.0,
+          "progress": 0.88,
+          "monthly_contribution": 101.06
         }
       ],
       "messages": [
         {
           "from": "me",
-          "text": "Groceries split?",
-          "time": "15:38",
-          "date": "Mon"
-        },
-        {
-          "from": "them",
-          "text": "\u20ac32.50 my half",
-          "time": "18:11",
+          "text": "Hey, splitting the Uber from last night?",
+          "time": "12:16",
           "date": "Fri"
         },
         {
+          "from": "friend",
+          "text": "Oh right! Sending now\u2026",
+          "time": "11:42",
+          "date": "Mon"
+        },
+        {
           "from": "me",
-          "text": "Done \u2713",
-          "time": "10:03",
+          "text": "No rush \ud83d\ude0a",
+          "time": "16:20",
           "date": "Today"
         },
         {
-          "from": "them",
-          "text": "You're the best \ud83d\ude4c",
-          "time": "11:03",
-          "date": "Yesterday"
+          "from": "friend",
+          "text": "Done! Check your bunq \u2705",
+          "time": "9:29",
+          "date": "Today"
         }
       ],
-      "monthly_spending": [
+      "monthly_history": [
         {
           "month": "2025-05",
           "label": "May 2025",
-          "spent": 941.88,
+          "spent": 814.42,
+          "received": 0.0,
+          "net": -814.42,
           "by_category": {
-            "food": 290.1,
-            "groceries": 152.53,
-            "entertainment": 67.48,
-            "transport": 101.14,
-            "health": 64.72,
-            "shopping": 160.34,
-            "travel": 105.57
-          }
+            "food": 131.92,
+            "groceries": 139.1,
+            "entertainment": 97.35,
+            "transport": 110.96,
+            "health": 84.48,
+            "shopping": 187.4,
+            "travel": 63.21
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Dinner",
+              "amount": 13.89
+            },
+            {
+              "name": "Albert",
+              "amount": 56.04
+            },
+            {
+              "name": "GVB",
+              "amount": 8.31
+            }
+          ]
         },
         {
           "month": "2025-06",
           "label": "Jun 2025",
-          "spent": 821.89,
+          "spent": 801.83,
+          "received": 0.0,
+          "net": -801.83,
           "by_category": {
-            "food": 214.03,
-            "groceries": 175.23,
-            "entertainment": 142.86,
-            "transport": 56.59,
-            "health": 56.04,
-            "shopping": 122.66,
-            "travel": 54.48
-          }
+            "food": 264.11,
+            "groceries": 173.09,
+            "entertainment": 91.04,
+            "transport": 47.35,
+            "health": 84.21,
+            "shopping": 90.65,
+            "travel": 51.38
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "IKEA",
+              "amount": 117.58
+            },
+            {
+              "name": "Apotheek",
+              "amount": 18.22
+            },
+            {
+              "name": "Bol.com",
+              "amount": 56.4
+            },
+            {
+              "name": "Zara",
+              "amount": 70.62
+            },
+            {
+              "name": "Uber",
+              "amount": 18.51
+            }
+          ]
         },
         {
           "month": "2025-07",
           "label": "Jul 2025",
-          "spent": 1281.82,
+          "spent": 1017.07,
+          "received": 0.0,
+          "net": -1017.07,
           "by_category": {
-            "food": 411.92,
-            "groceries": 126.36,
-            "entertainment": 188.03,
-            "transport": 99.7,
-            "health": 63.03,
-            "shopping": 190.29,
-            "travel": 202.49
-          }
+            "food": 328.04,
+            "groceries": 261.98,
+            "entertainment": 89.03,
+            "transport": 79.16,
+            "health": 68.67,
+            "shopping": 94.57,
+            "travel": 95.62
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Lidl",
+              "amount": 19.48
+            },
+            {
+              "name": "Gym",
+              "amount": 29.37
+            },
+            {
+              "name": "Spotify",
+              "amount": 10.83
+            },
+            {
+              "name": "Albert",
+              "amount": 26.04
+            }
+          ]
         },
         {
           "month": "2025-08",
           "label": "Aug 2025",
-          "spent": 964.17,
+          "spent": 1078.29,
+          "received": 0.0,
+          "net": -1078.29,
           "by_category": {
-            "food": 155.83,
-            "groceries": 180.57,
-            "entertainment": 174.11,
-            "transport": 132.05,
-            "health": 88.22,
-            "shopping": 73.69,
-            "travel": 159.7
-          }
+            "food": 178.44,
+            "groceries": 168.97,
+            "entertainment": 214.64,
+            "transport": 109.51,
+            "health": 81.23,
+            "shopping": 170.7,
+            "travel": 154.8
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Jumbo",
+              "amount": 52.72
+            },
+            {
+              "name": "Dinner",
+              "amount": 16.76
+            },
+            {
+              "name": "Netflix",
+              "amount": 15.26
+            },
+            {
+              "name": "Lidl",
+              "amount": 30.35
+            },
+            {
+              "name": "Albert",
+              "amount": 36.59
+            }
+          ]
         },
         {
           "month": "2025-09",
           "label": "Sep 2025",
-          "spent": 708.96,
+          "spent": 985.63,
+          "received": 0.0,
+          "net": -985.63,
           "by_category": {
-            "food": 142.2,
-            "groceries": 109.14,
-            "entertainment": 76.51,
-            "transport": 101.35,
-            "health": 45.53,
-            "shopping": 170.65,
-            "travel": 63.58
-          }
+            "food": 256.66,
+            "groceries": 146.24,
+            "entertainment": 107.06,
+            "transport": 101.46,
+            "health": 58.33,
+            "shopping": 155.53,
+            "travel": 160.35
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Albert",
+              "amount": 23.15
+            },
+            {
+              "name": "Baggage",
+              "amount": 33.82
+            },
+            {
+              "name": "GVB",
+              "amount": 16.88
+            },
+            {
+              "name": "Caf\u00e9",
+              "amount": 7.38
+            },
+            {
+              "name": "Sushi",
+              "amount": 24.29
+            }
+          ]
         },
         {
           "month": "2025-10",
           "label": "Oct 2025",
-          "spent": 899.6,
+          "spent": 1193.66,
+          "received": 0.0,
+          "net": -1193.66,
           "by_category": {
-            "food": 250.76,
-            "groceries": 102.18,
-            "entertainment": 71.58,
-            "transport": 133.28,
-            "health": 112.18,
-            "shopping": 88.93,
-            "travel": 140.69
-          }
+            "food": 371.14,
+            "groceries": 182.35,
+            "entertainment": 195.5,
+            "transport": 120.56,
+            "health": 36.25,
+            "shopping": 162.23,
+            "travel": 125.63
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Lidl",
+              "amount": 38.71
+            },
+            {
+              "name": "Gym",
+              "amount": 28.76
+            },
+            {
+              "name": "Pizza",
+              "amount": 18.74
+            },
+            {
+              "name": "Steam",
+              "amount": 31.53
+            },
+            {
+              "name": "NS",
+              "amount": 8.86
+            }
+          ]
         },
         {
           "month": "2025-11",
           "label": "Nov 2025",
-          "spent": 1755.63,
+          "spent": 1388.16,
+          "received": 0.0,
+          "net": -1388.16,
           "by_category": {
-            "food": 508.44,
-            "groceries": 358.31,
-            "entertainment": 162.52,
-            "transport": 157.46,
-            "health": 103.29,
-            "shopping": 278.88,
-            "travel": 186.73
-          }
+            "food": 447.08,
+            "groceries": 186.05,
+            "entertainment": 199.04,
+            "transport": 129.2,
+            "health": 60.85,
+            "shopping": 220.63,
+            "travel": 145.31
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Uber",
+              "amount": 22.94
+            },
+            {
+              "name": "Dinner",
+              "amount": 8.58
+            },
+            {
+              "name": "Netflix",
+              "amount": 15.23
+            },
+            {
+              "name": "Airbnb",
+              "amount": 182.92
+            }
+          ]
         },
         {
           "month": "2025-12",
           "label": "Dec 2025",
-          "spent": 1919.58,
+          "spent": 1408.63,
+          "received": 0.0,
+          "net": -1408.63,
           "by_category": {
-            "food": 618.82,
-            "groceries": 288.42,
-            "entertainment": 296.13,
-            "transport": 96.56,
-            "health": 91.98,
-            "shopping": 350.89,
-            "travel": 176.78
-          }
+            "food": 260.95,
+            "groceries": 313.81,
+            "entertainment": 135.87,
+            "transport": 200.61,
+            "health": 161.15,
+            "shopping": 150.0,
+            "travel": 186.24
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Lidl",
+              "amount": 32.44
+            },
+            {
+              "name": "Booking.com",
+              "amount": 108.16
+            },
+            {
+              "name": "Steam",
+              "amount": 22.65
+            },
+            {
+              "name": "Albert",
+              "amount": 64.77
+            },
+            {
+              "name": "Uber",
+              "amount": 19.05
+            }
+          ]
         },
         {
           "month": "2026-01",
           "label": "Jan 2026",
-          "spent": 860.75,
+          "spent": 647.04,
+          "received": 0.0,
+          "net": -647.04,
           "by_category": {
-            "food": 250.96,
-            "groceries": 126.71,
-            "entertainment": 135.78,
-            "transport": 117.7,
-            "health": 55.15,
-            "shopping": 105.87,
-            "travel": 68.58
-          }
+            "food": 208.4,
+            "groceries": 90.84,
+            "entertainment": 79.51,
+            "transport": 61.3,
+            "health": 63.68,
+            "shopping": 80.1,
+            "travel": 63.21
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Gym",
+              "amount": 22.38
+            },
+            {
+              "name": "Jumbo",
+              "amount": 41.76
+            },
+            {
+              "name": "Ryanair",
+              "amount": 73.92
+            },
+            {
+              "name": "Booking.com",
+              "amount": 98.52
+            },
+            {
+              "name": "Sushi",
+              "amount": 55.68
+            }
+          ]
         },
         {
           "month": "2026-02",
           "label": "Feb 2026",
-          "spent": 811.32,
+          "spent": 898.98,
+          "received": 0.0,
+          "net": -898.98,
           "by_category": {
-            "food": 239.86,
-            "groceries": 155.69,
-            "entertainment": 141.82,
-            "transport": 75.48,
-            "health": 75.32,
-            "shopping": 69.89,
-            "travel": 53.26
-          }
+            "food": 224.07,
+            "groceries": 211.38,
+            "entertainment": 161.36,
+            "transport": 56.8,
+            "health": 39.29,
+            "shopping": 114.9,
+            "travel": 91.18
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Zara",
+              "amount": 43.66
+            },
+            {
+              "name": "Huisarts",
+              "amount": 27.93
+            },
+            {
+              "name": "Baggage",
+              "amount": 22.46
+            },
+            {
+              "name": "Caf\u00e9",
+              "amount": 5.52
+            },
+            {
+              "name": "Cinema",
+              "amount": 15.38
+            }
+          ]
         },
         {
           "month": "2026-03",
           "label": "Mar 2026",
-          "spent": 763.08,
+          "spent": 898.64,
+          "received": 0.0,
+          "net": -898.64,
           "by_category": {
-            "food": 188.94,
-            "groceries": 227.47,
-            "entertainment": 83.02,
-            "transport": 73.17,
-            "health": 34.28,
-            "shopping": 60.38,
-            "travel": 95.82
-          }
+            "food": 194.29,
+            "groceries": 133.65,
+            "entertainment": 190.27,
+            "transport": 84.06,
+            "health": 97.06,
+            "shopping": 140.42,
+            "travel": 58.89
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "IKEA",
+              "amount": 35.28
+            },
+            {
+              "name": "Baggage",
+              "amount": 21.41
+            },
+            {
+              "name": "Airbnb",
+              "amount": 116.15
+            },
+            {
+              "name": "Broodje",
+              "amount": 9.03
+            }
+          ]
         },
         {
           "month": "2026-04",
           "label": "Apr 2026",
-          "spent": 1336.27,
+          "spent": 1472.26,
+          "received": 0.0,
+          "net": -1472.26,
           "by_category": {
-            "food": 317.38,
-            "groceries": 317.27,
-            "entertainment": 228.92,
-            "transport": 162.72,
-            "health": 96.79,
-            "shopping": 128.42,
-            "travel": 84.77
-          }
+            "food": 268.64,
+            "groceries": 322.0,
+            "entertainment": 179.61,
+            "transport": 115.73,
+            "health": 146.18,
+            "shopping": 281.25,
+            "travel": 158.85
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Broodje",
+              "amount": 11.98
+            },
+            {
+              "name": "Netflix",
+              "amount": 14.23
+            },
+            {
+              "name": "Baggage",
+              "amount": 32.53
+            },
+            {
+              "name": "Shell",
+              "amount": 65.14
+            },
+            {
+              "name": "Uber",
+              "amount": 22.5
+            }
+          ]
         }
-      ]
+      ],
+      "dashboard_stats": {
+        "balance_total": 12130.0,
+        "balance_whole": "12,130",
+        "balance_cents": "00",
+        "balance_change": 573.62,
+        "balance_change_pct": 63.8,
+        "sparkline": [
+          11572,
+          11625,
+          11772,
+          11836,
+          11738,
+          11842,
+          11817,
+          11883,
+          12017,
+          11951,
+          12130
+        ],
+        "accounts": [
+          {
+            "label": "Main",
+            "amt": "\u20ac574",
+            "bg": "linear-gradient(135deg,#B45309,#F59E0B)"
+          },
+          {
+            "label": "Vacay",
+            "amt": "\u20ac5,250",
+            "bg": "linear-gradient(135deg,#0F766E,#14B8A6)"
+          },
+          {
+            "label": "Savings",
+            "amt": "\u20ac6,306",
+            "bg": "linear-gradient(135deg,#047857,#10B981)"
+          }
+        ],
+        "categories": [
+          {
+            "label": "Food & drink",
+            "value": 590,
+            "color": "#F59E0B"
+          },
+          {
+            "label": "Transport",
+            "value": 115,
+            "color": "#06B6D4"
+          },
+          {
+            "label": "Shopping",
+            "value": 607,
+            "color": "#FB7185"
+          },
+          {
+            "label": "Bills",
+            "value": 158,
+            "color": "#A78BFA"
+          },
+          {
+            "label": "Splits",
+            "value": 0,
+            "color": "#00E5A0"
+          }
+        ],
+        "weekly": [
+          {
+            "label": "M",
+            "value": 22
+          },
+          {
+            "label": "T",
+            "value": 37
+          },
+          {
+            "label": "W",
+            "value": 43
+          },
+          {
+            "label": "T",
+            "value": 115
+          },
+          {
+            "label": "F",
+            "value": 109
+          },
+          {
+            "label": "S",
+            "value": 109
+          },
+          {
+            "label": "S",
+            "value": 54
+          }
+        ],
+        "weekly_total": 489,
+        "cashflow_in": 1576.15,
+        "cashflow_out": 1472.26,
+        "cashflow_net": 103.89,
+        "cashflow_label": "APRIL",
+        "goals": [
+          {
+            "label": "\ud83c\udfdd\ufe0f Masters degree",
+            "cur": 5250,
+            "goal": 15000,
+            "color": "#14B8A6"
+          },
+          {
+            "label": "\ud83c\udfe0 Music equipment",
+            "cur": 1056,
+            "goal": 1200,
+            "color": "#A78BFA"
+          }
+        ],
+        "goals_on_track": 1,
+        "goals_total": 2
+      }
     },
     {
-      "name": "S. Evans",
-      "iban": "NL54BUNQ2106234201",
-      "avatar_color": "#6366F1",
-      "occupation": "Product Manager",
-      "bio": "Product thinking, shipped daily",
-      "spending_pattern": "daily-coffee",
+      "id": "nl90bunq2106261586",
+      "name": "B. Bondancer",
+      "iban": "NL90BUNQ2106261586",
+      "avatar_color": "#4ECDC4",
+      "occupation": "Software Engineer",
+      "bio": "Tech nerd who loves sushi. Always early for payments.",
+      "spending_pattern": "Weekend splurger",
       "top_categories": [
         "food",
-        "groceries",
+        "shopping",
         "travel"
       ],
       "transaction_count": 10,
-      "payments_out": 10,
-      "payments_in": 0,
-      "total_sent": 304.77,
+      "total_sent": 429.94,
       "total_received": 0.0,
-      "balance": 304.77,
+      "balance": 429.94,
       "portfolio": [
+        {
+          "symbol": "MSFT",
+          "name": "Microsoft",
+          "sector": "Technology",
+          "shares": 7,
+          "price": 378.5,
+          "avg_buy_price": 269.8,
+          "value": 2649.5,
+          "gain": 760.9,
+          "gain_pct": 40.29,
+          "change_1d_pct": 1.11
+        },
+        {
+          "symbol": "AMZN",
+          "name": "Amazon",
+          "sector": "E-commerce",
+          "shares": 12,
+          "price": 185.3,
+          "avg_buy_price": 154.69,
+          "value": 2223.6,
+          "gain": 367.32,
+          "gain_pct": 19.79,
+          "change_1d_pct": 0.27
+        },
         {
           "symbol": "PHIA",
-          "name": "Philips NV",
+          "name": "Philips",
           "sector": "Healthcare",
-          "shares": 34,
-          "price": 8.9,
-          "avg_buy_price": 7.7,
-          "value": 302.6,
-          "gain": 40.8,
-          "gain_pct": 15.58,
-          "change_1d_pct": -3.27
+          "shares": 16,
+          "price": 22.5,
+          "avg_buy_price": 19.17,
+          "value": 360.0,
+          "gain": 53.28,
+          "gain_pct": 17.37,
+          "change_1d_pct": 2.24
         },
         {
-          "symbol": "V",
-          "name": "Visa Inc.",
-          "sector": "Finance",
-          "shares": 1,
-          "price": 278.6,
-          "avg_buy_price": 245.83,
-          "value": 278.6,
-          "gain": 32.77,
-          "gain_pct": 13.33,
-          "change_1d_pct": -2.7
-        },
-        {
-          "symbol": "MSFT",
-          "name": "Microsoft Corp.",
-          "sector": "Technology",
-          "shares": 5,
-          "price": 415.8,
-          "avg_buy_price": 363.15,
-          "value": 2079.0,
-          "gain": 263.25,
-          "gain_pct": 14.5,
-          "change_1d_pct": -0.47
-        },
-        {
-          "symbol": "GOOGL",
-          "name": "Alphabet Inc.",
-          "sector": "Technology",
-          "shares": 4,
-          "price": 168.5,
-          "avg_buy_price": 152.3,
-          "value": 674.0,
-          "gain": 64.8,
-          "gain_pct": 10.64,
-          "change_1d_pct": 1.86
+          "symbol": "ADYEN",
+          "name": "Adyen N.V.",
+          "sector": "Fintech",
+          "shares": 2,
+          "price": 1420.0,
+          "avg_buy_price": 1345.16,
+          "value": 2840.0,
+          "gain": 149.68,
+          "gain_pct": 5.56,
+          "change_1d_pct": -1.2
         }
       ],
       "savings_goals": [
         {
-          "name": "Tokyo trip",
-          "target": 3500,
-          "saved": 1680.0,
-          "progress": 0.48,
-          "monthly_contribution": 78.0
-        },
-        {
-          "name": "Camera gear",
+          "name": "Gaming setup",
           "target": 1800,
-          "saved": 234.0,
-          "progress": 0.13,
-          "monthly_contribution": 73.66
+          "saved": 1566.0,
+          "progress": 0.87,
+          "monthly_contribution": 185.97
         },
         {
-          "name": "Festival season",
-          "target": 800,
-          "saved": 784.0,
-          "progress": 0.98,
-          "monthly_contribution": 76.93
+          "name": "Summer Vacation",
+          "target": 2000,
+          "saved": 1280.0,
+          "progress": 0.64,
+          "monthly_contribution": 287.61
         }
       ],
       "messages": [
         {
-          "from": "them",
-          "text": "Splitting the Airbnb?",
-          "time": "22:18",
+          "from": "me",
+          "text": "Hey, splitting the Uber from last night?",
+          "time": "9:05",
+          "date": "Mon"
+        },
+        {
+          "from": "friend",
+          "text": "Oh right! Sending now\u2026",
+          "time": "14:58",
           "date": "Today"
         },
         {
           "from": "me",
-          "text": "Yes! How much is my share?",
-          "time": "14:24",
-          "date": "Today"
+          "text": "No rush \ud83d\ude0a",
+          "time": "10:57",
+          "date": "Mon"
         },
         {
-          "from": "them",
-          "text": "\u20ac85 all in",
-          "time": "16:30",
-          "date": "Yesterday"
-        },
-        {
-          "from": "me",
-          "text": "Sending now \ud83c\udfe0",
-          "time": "12:08",
+          "from": "friend",
+          "text": "Done! Check your bunq \u2705",
+          "time": "11:01",
           "date": "Mon"
         }
       ],
-      "monthly_spending": [
+      "monthly_history": [
         {
           "month": "2025-05",
           "label": "May 2025",
-          "spent": 1199.68,
+          "spent": 756.51,
+          "received": 0.0,
+          "net": -756.51,
           "by_category": {
-            "food": 348.87,
-            "groceries": 106.08,
-            "entertainment": 213.83,
-            "transport": 115.16,
-            "health": 94.47,
-            "shopping": 181.34,
-            "travel": 139.93
-          }
+            "food": 232.15,
+            "groceries": 89.26,
+            "entertainment": 100.07,
+            "transport": 81.21,
+            "health": 71.69,
+            "shopping": 99.1,
+            "travel": 83.03
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Steam",
+              "amount": 28.4
+            },
+            {
+              "name": "Cinema",
+              "amount": 12.11
+            },
+            {
+              "name": "Booking.com",
+              "amount": 199.12
+            },
+            {
+              "name": "Uber",
+              "amount": 21.94
+            },
+            {
+              "name": "H&M",
+              "amount": 36.91
+            }
+          ]
         },
         {
           "month": "2025-06",
           "label": "Jun 2025",
-          "spent": 1196.64,
+          "spent": 852.77,
+          "received": 0.0,
+          "net": -852.77,
           "by_category": {
-            "food": 398.8,
-            "groceries": 188.86,
-            "entertainment": 158.16,
-            "transport": 103.56,
-            "health": 113.12,
-            "shopping": 105.98,
-            "travel": 128.16
-          }
+            "food": 213.88,
+            "groceries": 150.29,
+            "entertainment": 143.99,
+            "transport": 82.78,
+            "health": 60.76,
+            "shopping": 121.68,
+            "travel": 79.39
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Sushi",
+              "amount": 40.8
+            },
+            {
+              "name": "Airbnb",
+              "amount": 74.43
+            },
+            {
+              "name": "IKEA",
+              "amount": 107.01
+            },
+            {
+              "name": "Lidl",
+              "amount": 28.36
+            },
+            {
+              "name": "Booking.com",
+              "amount": 210.59
+            }
+          ]
         },
         {
           "month": "2025-07",
           "label": "Jul 2025",
-          "spent": 1522.93,
+          "spent": 1108.53,
+          "received": 0.0,
+          "net": -1108.53,
           "by_category": {
-            "food": 426.34,
-            "groceries": 368.16,
-            "entertainment": 206.17,
-            "transport": 181.41,
-            "health": 121.91,
-            "shopping": 143.69,
-            "travel": 75.25
-          }
+            "food": 169.36,
+            "groceries": 228.62,
+            "entertainment": 196.53,
+            "transport": 142.43,
+            "health": 67.71,
+            "shopping": 157.13,
+            "travel": 146.75
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "IKEA",
+              "amount": 46.74
+            },
+            {
+              "name": "Bol.com",
+              "amount": 60.34
+            },
+            {
+              "name": "Sushi",
+              "amount": 56.89
+            },
+            {
+              "name": "Shell",
+              "amount": 67.6
+            },
+            {
+              "name": "Spotify",
+              "amount": 9.34
+            }
+          ]
         },
         {
           "month": "2025-08",
           "label": "Aug 2025",
-          "spent": 1237.48,
+          "spent": 1087.46,
+          "received": 0.0,
+          "net": -1087.46,
           "by_category": {
-            "food": 327.3,
-            "groceries": 238.94,
-            "entertainment": 171.44,
-            "transport": 84.61,
-            "health": 125.06,
-            "shopping": 172.65,
-            "travel": 117.48
-          }
+            "food": 314.54,
+            "groceries": 255.6,
+            "entertainment": 160.08,
+            "transport": 47.54,
+            "health": 103.04,
+            "shopping": 145.15,
+            "travel": 61.51
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Caf\u00e9",
+              "amount": 11.23
+            },
+            {
+              "name": "Gym",
+              "amount": 24.43
+            },
+            {
+              "name": "Broodje",
+              "amount": 6.3
+            },
+            {
+              "name": "Bol.com",
+              "amount": 15.19
+            }
+          ]
         },
         {
           "month": "2025-09",
           "label": "Sep 2025",
-          "spent": 783.69,
+          "spent": 1140.36,
+          "received": 0.0,
+          "net": -1140.36,
           "by_category": {
-            "food": 128.86,
-            "groceries": 108.8,
-            "entertainment": 137.17,
-            "transport": 112.66,
-            "health": 75.8,
-            "shopping": 132.56,
-            "travel": 87.84
-          }
+            "food": 170.67,
+            "groceries": 241.07,
+            "entertainment": 218.09,
+            "transport": 137.06,
+            "health": 108.18,
+            "shopping": 122.67,
+            "travel": 142.62
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Airbnb",
+              "amount": 159.73
+            },
+            {
+              "name": "Huisarts",
+              "amount": 16.39
+            },
+            {
+              "name": "IKEA",
+              "amount": 48.55
+            },
+            {
+              "name": "Booking.com",
+              "amount": 211.12
+            },
+            {
+              "name": "Cinema",
+              "amount": 14.86
+            }
+          ]
         },
         {
           "month": "2025-10",
           "label": "Oct 2025",
-          "spent": 808.04,
+          "spent": 1031.77,
+          "received": 0.0,
+          "net": -1031.77,
           "by_category": {
-            "food": 293.05,
-            "groceries": 180.49,
-            "entertainment": 55.39,
-            "transport": 83.98,
-            "health": 83.06,
-            "shopping": 61.71,
-            "travel": 50.36
-          }
+            "food": 300.83,
+            "groceries": 151.89,
+            "entertainment": 162.76,
+            "transport": 141.08,
+            "health": 66.11,
+            "shopping": 126.9,
+            "travel": 82.2
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "IKEA",
+              "amount": 49.97
+            },
+            {
+              "name": "Zara",
+              "amount": 35.33
+            },
+            {
+              "name": "Baggage",
+              "amount": 21.5
+            },
+            {
+              "name": "Huisarts",
+              "amount": 20.76
+            },
+            {
+              "name": "Airbnb",
+              "amount": 198.54
+            }
+          ]
         },
         {
           "month": "2025-11",
           "label": "Nov 2025",
-          "spent": 987.73,
+          "spent": 867.42,
+          "received": 0.0,
+          "net": -867.42,
           "by_category": {
-            "food": 182.57,
-            "groceries": 196.79,
-            "entertainment": 169.87,
-            "transport": 130.53,
-            "health": 113.73,
-            "shopping": 80.85,
-            "travel": 113.39
-          }
+            "food": 238.8,
+            "groceries": 99.89,
+            "entertainment": 70.38,
+            "transport": 93.07,
+            "health": 79.26,
+            "shopping": 134.94,
+            "travel": 151.08
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Airbnb",
+              "amount": 81.65
+            },
+            {
+              "name": "Shell",
+              "amount": 40.31
+            },
+            {
+              "name": "Lidl",
+              "amount": 31.58
+            },
+            {
+              "name": "Pizza",
+              "amount": 16.24
+            },
+            {
+              "name": "H&M",
+              "amount": 48.01
+            }
+          ]
         },
         {
           "month": "2025-12",
           "label": "Dec 2025",
-          "spent": 2357.97,
+          "spent": 1023.68,
+          "received": 0.0,
+          "net": -1023.68,
           "by_category": {
-            "food": 716.79,
-            "groceries": 519.99,
-            "entertainment": 326.01,
-            "transport": 223.82,
-            "health": 115.34,
-            "shopping": 338.15,
-            "travel": 117.87
-          }
+            "food": 307.87,
+            "groceries": 122.36,
+            "entertainment": 156.2,
+            "transport": 98.46,
+            "health": 72.37,
+            "shopping": 113.01,
+            "travel": 153.41
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Albert",
+              "amount": 48.43
+            },
+            {
+              "name": "Sushi",
+              "amount": 24.65
+            },
+            {
+              "name": "Lidl",
+              "amount": 18.25
+            },
+            {
+              "name": "Huisarts",
+              "amount": 17.13
+            }
+          ]
         },
         {
           "month": "2026-01",
           "label": "Jan 2026",
-          "spent": 709.57,
+          "spent": 868.17,
+          "received": 0.0,
+          "net": -868.17,
           "by_category": {
-            "food": 188.24,
-            "groceries": 119.68,
-            "entertainment": 154.72,
-            "transport": 70.85,
-            "health": 48.78,
-            "shopping": 70.69,
-            "travel": 56.61
-          }
+            "food": 223.57,
+            "groceries": 186.77,
+            "entertainment": 96.55,
+            "transport": 95.68,
+            "health": 52.34,
+            "shopping": 120.49,
+            "travel": 92.77
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "H&M",
+              "amount": 43.31
+            },
+            {
+              "name": "Uber",
+              "amount": 17.78
+            },
+            {
+              "name": "IKEA",
+              "amount": 49.23
+            },
+            {
+              "name": "Apotheek",
+              "amount": 33.13
+            },
+            {
+              "name": "Zara",
+              "amount": 60.16
+            }
+          ]
         },
         {
           "month": "2026-02",
           "label": "Feb 2026",
-          "spent": 685.22,
+          "spent": 1008.74,
+          "received": 0.0,
+          "net": -1008.74,
           "by_category": {
-            "food": 248.93,
-            "groceries": 111.74,
-            "entertainment": 79.05,
-            "transport": 58.83,
-            "health": 38.61,
-            "shopping": 100.66,
-            "travel": 47.4
-          }
+            "food": 279.51,
+            "groceries": 94.71,
+            "entertainment": 82.31,
+            "transport": 124.67,
+            "health": 86.59,
+            "shopping": 190.07,
+            "travel": 150.88
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Baggage",
+              "amount": 29.58
+            },
+            {
+              "name": "Apotheek",
+              "amount": 20.48
+            },
+            {
+              "name": "Zara",
+              "amount": 41.35
+            },
+            {
+              "name": "GVB",
+              "amount": 10.13
+            },
+            {
+              "name": "Jumbo",
+              "amount": 32.71
+            }
+          ]
         },
         {
           "month": "2026-03",
           "label": "Mar 2026",
-          "spent": 1055.93,
+          "spent": 876.88,
+          "received": 0.0,
+          "net": -876.88,
           "by_category": {
-            "food": 296.51,
-            "groceries": 181.99,
-            "entertainment": 84.66,
-            "transport": 77.51,
-            "health": 83.41,
-            "shopping": 159.04,
-            "travel": 172.81
-          }
+            "food": 149.33,
+            "groceries": 217.61,
+            "entertainment": 107.38,
+            "transport": 72.14,
+            "health": 85.65,
+            "shopping": 149.93,
+            "travel": 94.84
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Bol.com",
+              "amount": 32.99
+            },
+            {
+              "name": "Jumbo",
+              "amount": 38.74
+            },
+            {
+              "name": "NS",
+              "amount": 14.43
+            },
+            {
+              "name": "Cinema",
+              "amount": 10.58
+            },
+            {
+              "name": "Baggage",
+              "amount": 20.45
+            }
+          ]
         },
         {
           "month": "2026-04",
           "label": "Apr 2026",
-          "spent": 1384.1,
+          "spent": 1439.44,
+          "received": 0.0,
+          "net": -1439.44,
           "by_category": {
-            "food": 488.24,
-            "groceries": 223.09,
-            "entertainment": 110.95,
-            "transport": 166.91,
-            "health": 81.1,
-            "shopping": 107.64,
-            "travel": 206.17
-          }
+            "food": 437.37,
+            "groceries": 172.97,
+            "entertainment": 123.37,
+            "transport": 174.35,
+            "health": 105.57,
+            "shopping": 221.15,
+            "travel": 204.66
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "GVB",
+              "amount": 17.62
+            },
+            {
+              "name": "Ryanair",
+              "amount": 114.58
+            },
+            {
+              "name": "Albert",
+              "amount": 24.28
+            },
+            {
+              "name": "Jumbo",
+              "amount": 48.33
+            },
+            {
+              "name": "Booking.com",
+              "amount": 123.17
+            }
+          ]
         }
-      ]
+      ],
+      "dashboard_stats": {
+        "balance_total": 5833.0,
+        "balance_whole": "5,833",
+        "balance_cents": "00",
+        "balance_change": 562.56,
+        "balance_change_pct": 64.2,
+        "sparkline": [
+          5249,
+          5342,
+          5252,
+          5180,
+          5156,
+          5074,
+          5192,
+          5259,
+          5361,
+          5426,
+          5833
+        ],
+        "accounts": [
+          {
+            "label": "Main",
+            "amt": "\u20ac1,421",
+            "bg": "linear-gradient(135deg,#B45309,#F59E0B)"
+          },
+          {
+            "label": "Vacay",
+            "amt": "\u20ac1,566",
+            "bg": "linear-gradient(135deg,#0F766E,#14B8A6)"
+          },
+          {
+            "label": "Savings",
+            "amt": "\u20ac2,846",
+            "bg": "linear-gradient(135deg,#047857,#10B981)"
+          }
+        ],
+        "categories": [
+          {
+            "label": "Food & drink",
+            "value": 610,
+            "color": "#F59E0B"
+          },
+          {
+            "label": "Transport",
+            "value": 174,
+            "color": "#06B6D4"
+          },
+          {
+            "label": "Shopping",
+            "value": 450,
+            "color": "#FB7185"
+          },
+          {
+            "label": "Bills",
+            "value": 204,
+            "color": "#A78BFA"
+          },
+          {
+            "label": "Splits",
+            "value": 0,
+            "color": "#00E5A0"
+          }
+        ],
+        "weekly": [
+          {
+            "label": "M",
+            "value": 36
+          },
+          {
+            "label": "T",
+            "value": 104
+          },
+          {
+            "label": "W",
+            "value": 58
+          },
+          {
+            "label": "T",
+            "value": 20
+          },
+          {
+            "label": "F",
+            "value": 81
+          },
+          {
+            "label": "S",
+            "value": 23
+          },
+          {
+            "label": "S",
+            "value": 108
+          }
+        ],
+        "weekly_total": 430,
+        "cashflow_in": 1641.49,
+        "cashflow_out": 1439.44,
+        "cashflow_net": 202.05,
+        "cashflow_label": "APRIL",
+        "goals": [
+          {
+            "label": "\ud83c\udfdd\ufe0f Gaming setup",
+            "cur": 1566,
+            "goal": 1800,
+            "color": "#14B8A6"
+          },
+          {
+            "label": "\ud83c\udfe0 Summer Vacation",
+            "cur": 1280,
+            "goal": 2000,
+            "color": "#A78BFA"
+          }
+        ],
+        "goals_on_track": 2,
+        "goals_total": 2
+      }
     },
     {
-      "name": "S. Bondancer",
-      "iban": "NL49BUNQ2106236328",
-      "avatar_color": "#EC4899",
-      "occupation": "Data Scientist",
-      "bio": "Turning data into decisions",
-      "spending_pattern": "binge-shopper",
-      "top_categories": [
-        "food",
-        "groceries",
-        "entertainment"
-      ],
-      "transaction_count": 10,
-      "payments_out": 10,
-      "payments_in": 0,
-      "total_sent": 422.97,
-      "total_received": 0.0,
-      "balance": 422.97,
-      "portfolio": [
-        {
-          "symbol": "ADYEN",
-          "name": "Adyen NV",
-          "sector": "Fintech",
-          "shares": 2,
-          "price": 1180.0,
-          "avg_buy_price": 965.9,
-          "value": 2360.0,
-          "gain": 428.2,
-          "gain_pct": 22.17,
-          "change_1d_pct": -2.92
-        },
-        {
-          "symbol": "ING",
-          "name": "ING Groep NV",
-          "sector": "Finance",
-          "shares": 20,
-          "price": 15.8,
-          "avg_buy_price": 12.97,
-          "value": 316.0,
-          "gain": 56.6,
-          "gain_pct": 21.82,
-          "change_1d_pct": 2.96
-        },
-        {
-          "symbol": "NVDA",
-          "name": "Nvidia Corp.",
-          "sector": "Technology",
-          "shares": 5,
-          "price": 875.4,
-          "avg_buy_price": 649.69,
-          "value": 4377.0,
-          "gain": 1128.55,
-          "gain_pct": 34.74,
-          "change_1d_pct": 1.69
-        },
-        {
-          "symbol": "MSFT",
-          "name": "Microsoft Corp.",
-          "sector": "Technology",
-          "shares": 2,
-          "price": 415.8,
-          "avg_buy_price": 305.09,
-          "value": 831.6,
-          "gain": 221.42,
-          "gain_pct": 36.29,
-          "change_1d_pct": 2.86
-        }
-      ],
-      "savings_goals": [
-        {
-          "name": "New bike",
-          "target": 1200,
-          "saved": 408.0,
-          "progress": 0.34,
-          "monthly_contribution": 152.03
-        },
-        {
-          "name": "Car fund",
-          "target": 8000,
-          "saved": 1840.0,
-          "progress": 0.23,
-          "monthly_contribution": 280.74
-        }
-      ],
-      "messages": [
-        {
-          "from": "them",
-          "text": "Did you get the Uber split?",
-          "time": "14:16",
-          "date": "Mon"
-        },
-        {
-          "from": "me",
-          "text": "Yes! Thanks a lot",
-          "time": "21:46",
-          "date": "Mon"
-        },
-        {
-          "from": "them",
-          "text": "\ud83d\udc4d",
-          "time": "10:26",
-          "date": "Today"
-        }
-      ],
-      "monthly_spending": [
-        {
-          "month": "2025-05",
-          "label": "May 2025",
-          "spent": 718.47,
-          "by_category": {
-            "food": 140.54,
-            "groceries": 155.56,
-            "entertainment": 108.97,
-            "transport": 86.93,
-            "health": 49.95,
-            "shopping": 94.22,
-            "travel": 82.3
-          }
-        },
-        {
-          "month": "2025-06",
-          "label": "Jun 2025",
-          "spent": 981.02,
-          "by_category": {
-            "food": 324.94,
-            "groceries": 145.62,
-            "entertainment": 168.43,
-            "transport": 95.82,
-            "health": 67.47,
-            "shopping": 102.76,
-            "travel": 75.98
-          }
-        },
-        {
-          "month": "2025-07",
-          "label": "Jul 2025",
-          "spent": 1108.64,
-          "by_category": {
-            "food": 233.94,
-            "groceries": 270.05,
-            "entertainment": 154.47,
-            "transport": 79.12,
-            "health": 78.92,
-            "shopping": 147.12,
-            "travel": 145.02
-          }
-        },
-        {
-          "month": "2025-08",
-          "label": "Aug 2025",
-          "spent": 984.87,
-          "by_category": {
-            "food": 269.74,
-            "groceries": 102.11,
-            "entertainment": 138.37,
-            "transport": 127.47,
-            "health": 81.73,
-            "shopping": 142.2,
-            "travel": 123.25
-          }
-        },
-        {
-          "month": "2025-09",
-          "label": "Sep 2025",
-          "spent": 815.13,
-          "by_category": {
-            "food": 218.49,
-            "groceries": 127.43,
-            "entertainment": 72.96,
-            "transport": 74.34,
-            "health": 68.76,
-            "shopping": 195.59,
-            "travel": 57.56
-          }
-        },
-        {
-          "month": "2025-10",
-          "label": "Oct 2025",
-          "spent": 1260.33,
-          "by_category": {
-            "food": 394.49,
-            "groceries": 260.01,
-            "entertainment": 166.37,
-            "transport": 81.36,
-            "health": 71.61,
-            "shopping": 129.33,
-            "travel": 157.16
-          }
-        },
-        {
-          "month": "2025-11",
-          "label": "Nov 2025",
-          "spent": 1184.3,
-          "by_category": {
-            "food": 258.24,
-            "groceries": 134.23,
-            "entertainment": 284.7,
-            "transport": 139.61,
-            "health": 77.61,
-            "shopping": 186.9,
-            "travel": 103.01
-          }
-        },
-        {
-          "month": "2025-12",
-          "label": "Dec 2025",
-          "spent": 1057.81,
-          "by_category": {
-            "food": 176.36,
-            "groceries": 132.37,
-            "entertainment": 200.1,
-            "transport": 165.34,
-            "health": 115.88,
-            "shopping": 111.37,
-            "travel": 156.39
-          }
-        },
-        {
-          "month": "2026-01",
-          "label": "Jan 2026",
-          "spent": 1112.39,
-          "by_category": {
-            "food": 278.15,
-            "groceries": 223.01,
-            "entertainment": 172.72,
-            "transport": 94.53,
-            "health": 51.14,
-            "shopping": 156.22,
-            "travel": 136.62
-          }
-        },
-        {
-          "month": "2026-02",
-          "label": "Feb 2026",
-          "spent": 627.94,
-          "by_category": {
-            "food": 183.25,
-            "groceries": 67.65,
-            "entertainment": 78.6,
-            "transport": 72.82,
-            "health": 75.14,
-            "shopping": 87.58,
-            "travel": 62.9
-          }
-        },
-        {
-          "month": "2026-03",
-          "label": "Mar 2026",
-          "spent": 1053.51,
-          "by_category": {
-            "food": 266.53,
-            "groceries": 232.58,
-            "entertainment": 191.24,
-            "transport": 125.98,
-            "health": 73.6,
-            "shopping": 66.57,
-            "travel": 97.01
-          }
-        },
-        {
-          "month": "2026-04",
-          "label": "Apr 2026",
-          "spent": 950.09,
-          "by_category": {
-            "food": 285.54,
-            "groceries": 205.07,
-            "entertainment": 109.67,
-            "transport": 98.68,
-            "health": 70.53,
-            "shopping": 83.12,
-            "travel": 97.48
-          }
-        }
-      ]
-    },
-    {
-      "name": "N. Carter",
-      "iban": "NL29BUNQ2106251432",
-      "avatar_color": "#F59E0B",
+      "id": "nl73bunq2106262086",
+      "name": "J. Casey",
+      "iban": "NL73BUNQ2106262086",
+      "avatar_color": "#FFD93D",
       "occupation": "Marketing Lead",
-      "bio": "Stories that move people and products",
-      "spending_pattern": "travel-focused",
+      "bio": "Foodie and amateur chef. Lives for concert weekends.",
+      "spending_pattern": "Frugal weekdays",
       "top_categories": [
-        "food",
-        "entertainment",
-        "shopping"
+        "groceries",
+        "shopping",
+        "food"
       ],
       "transaction_count": 10,
-      "payments_out": 10,
-      "payments_in": 0,
-      "total_sent": 598.31,
+      "total_sent": 270.25,
       "total_received": 0.0,
-      "balance": 598.31,
+      "balance": 270.25,
       "portfolio": [
         {
-          "symbol": "ADYEN",
-          "name": "Adyen NV",
-          "sector": "Fintech",
+          "symbol": "AMZN",
+          "name": "Amazon",
+          "sector": "E-commerce",
           "shares": 3,
-          "price": 1180.0,
-          "avg_buy_price": 1181.09,
-          "value": 3540.0,
-          "gain": -3.27,
-          "gain_pct": -0.09,
-          "change_1d_pct": -1.67
+          "price": 185.3,
+          "avg_buy_price": 147.77,
+          "value": 555.9,
+          "gain": 112.59,
+          "gain_pct": 25.4,
+          "change_1d_pct": -2.53
         },
         {
           "symbol": "AAPL",
           "name": "Apple Inc.",
           "sector": "Technology",
-          "shares": 11,
+          "shares": 10,
           "price": 175.2,
-          "avg_buy_price": 137.52,
-          "value": 1927.2,
-          "gain": 414.48,
-          "gain_pct": 27.4,
-          "change_1d_pct": 0.8
+          "avg_buy_price": 141.84,
+          "value": 1752.0,
+          "gain": 333.6,
+          "gain_pct": 23.52,
+          "change_1d_pct": 3.62
         },
         {
-          "symbol": "AMZN",
-          "name": "Amazon.com Inc.",
-          "sector": "E-Commerce",
+          "symbol": "ASML",
+          "name": "ASML Holding",
+          "sector": "Technology",
           "shares": 1,
-          "price": 183.0,
-          "avg_buy_price": 120.45,
-          "value": 183.0,
-          "gain": 62.55,
-          "gain_pct": 51.93,
-          "change_1d_pct": 2.77
+          "price": 850.0,
+          "avg_buy_price": 698.34,
+          "value": 850.0,
+          "gain": 151.66,
+          "gain_pct": 21.72,
+          "change_1d_pct": 4.2
+        },
+        {
+          "symbol": "HEIA",
+          "name": "Heineken",
+          "sector": "Consumer",
+          "shares": 6,
+          "price": 82.0,
+          "avg_buy_price": 72.79,
+          "value": 492.0,
+          "gain": 55.26,
+          "gain_pct": 12.65,
+          "change_1d_pct": 0.92
         }
       ],
       "savings_goals": [
         {
-          "name": "New MacBook Pro",
-          "target": 2499,
-          "saved": 1774.29,
-          "progress": 0.71,
-          "monthly_contribution": 123.83
+          "name": "Music equipment",
+          "target": 1200,
+          "saved": 1056.0,
+          "progress": 0.88,
+          "monthly_contribution": 132.98
+        },
+        {
+          "name": "Gaming setup",
+          "target": 1800,
+          "saved": 1368.0,
+          "progress": 0.76,
+          "monthly_contribution": 270.93
+        },
+        {
+          "name": "Summer Vacation",
+          "target": 2000,
+          "saved": 1340.0,
+          "progress": 0.67,
+          "monthly_contribution": 57.51
+        }
+      ],
+      "messages": [
+        {
+          "from": "friend",
+          "text": "Hey! I just sent the money for dinner \ud83d\udcb8",
+          "time": "15:01",
+          "date": "Today"
+        },
+        {
+          "from": "me",
+          "text": "Got it, thanks! That was a fun night",
+          "time": "10:56",
+          "date": "Yesterday"
+        },
+        {
+          "from": "friend",
+          "text": "Definitely! We should do it again soon",
+          "time": "19:38",
+          "date": "Fri"
+        },
+        {
+          "from": "me",
+          "text": "100% \u2014 how about next Friday?",
+          "time": "17:44",
+          "date": "Today"
+        }
+      ],
+      "monthly_history": [
+        {
+          "month": "2025-05",
+          "label": "May 2025",
+          "spent": 764.9,
+          "received": 0.0,
+          "net": -764.9,
+          "by_category": {
+            "food": 238.92,
+            "groceries": 223.07,
+            "entertainment": 83.12,
+            "transport": 59.38,
+            "health": 34.66,
+            "shopping": 75.75,
+            "travel": 50.0
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "GVB",
+              "amount": 15.37
+            },
+            {
+              "name": "Baggage",
+              "amount": 24.78
+            },
+            {
+              "name": "Huisarts",
+              "amount": 16.1
+            },
+            {
+              "name": "Cinema",
+              "amount": 17.41
+            }
+          ]
+        },
+        {
+          "month": "2025-06",
+          "label": "Jun 2025",
+          "spent": 709.24,
+          "received": 0.0,
+          "net": -709.24,
+          "by_category": {
+            "food": 121.36,
+            "groceries": 90.42,
+            "entertainment": 166.39,
+            "transport": 46.21,
+            "health": 68.45,
+            "shopping": 167.6,
+            "travel": 48.81
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "NS",
+              "amount": 6.79
+            },
+            {
+              "name": "Ryanair",
+              "amount": 135.95
+            },
+            {
+              "name": "Albert",
+              "amount": 56.39
+            },
+            {
+              "name": "Jumbo",
+              "amount": 16.51
+            }
+          ]
+        },
+        {
+          "month": "2025-07",
+          "label": "Jul 2025",
+          "spent": 1251.01,
+          "received": 0.0,
+          "net": -1251.01,
+          "by_category": {
+            "food": 357.17,
+            "groceries": 237.88,
+            "entertainment": 128.17,
+            "transport": 137.19,
+            "health": 93.26,
+            "shopping": 168.59,
+            "travel": 128.75
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "NS",
+              "amount": 19.43
+            },
+            {
+              "name": "Bol.com",
+              "amount": 18.27
+            },
+            {
+              "name": "Huisarts",
+              "amount": 17.36
+            },
+            {
+              "name": "Spotify",
+              "amount": 9.67
+            },
+            {
+              "name": "IKEA",
+              "amount": 31.31
+            }
+          ]
+        },
+        {
+          "month": "2025-08",
+          "label": "Aug 2025",
+          "spent": 1054.58,
+          "received": 0.0,
+          "net": -1054.58,
+          "by_category": {
+            "food": 311.22,
+            "groceries": 202.22,
+            "entertainment": 217.3,
+            "transport": 83.03,
+            "health": 54.2,
+            "shopping": 88.9,
+            "travel": 97.71
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Apotheek",
+              "amount": 24.73
+            },
+            {
+              "name": "Sushi",
+              "amount": 52.08
+            },
+            {
+              "name": "Steam",
+              "amount": 38.2
+            }
+          ]
+        },
+        {
+          "month": "2025-09",
+          "label": "Sep 2025",
+          "spent": 734.01,
+          "received": 0.0,
+          "net": -734.01,
+          "by_category": {
+            "food": 241.26,
+            "groceries": 116.17,
+            "entertainment": 57.19,
+            "transport": 58.22,
+            "health": 71.52,
+            "shopping": 127.12,
+            "travel": 62.53
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "IKEA",
+              "amount": 76.1
+            },
+            {
+              "name": "Lidl",
+              "amount": 27.3
+            },
+            {
+              "name": "Airbnb",
+              "amount": 143.96
+            },
+            {
+              "name": "Sushi",
+              "amount": 39.56
+            }
+          ]
+        },
+        {
+          "month": "2025-10",
+          "label": "Oct 2025",
+          "spent": 881.8,
+          "received": 0.0,
+          "net": -881.8,
+          "by_category": {
+            "food": 190.3,
+            "groceries": 153.47,
+            "entertainment": 133.46,
+            "transport": 122.6,
+            "health": 38.93,
+            "shopping": 95.86,
+            "travel": 147.18
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Caf\u00e9",
+              "amount": 10.6
+            },
+            {
+              "name": "Steam",
+              "amount": 44.22
+            },
+            {
+              "name": "Gym",
+              "amount": 22.79
+            },
+            {
+              "name": "Ryanair",
+              "amount": 117.01
+            }
+          ]
+        },
+        {
+          "month": "2025-11",
+          "label": "Nov 2025",
+          "spent": 945.44,
+          "received": 0.0,
+          "net": -945.44,
+          "by_category": {
+            "food": 301.81,
+            "groceries": 190.23,
+            "entertainment": 77.12,
+            "transport": 69.24,
+            "health": 65.5,
+            "shopping": 86.08,
+            "travel": 155.46
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Jumbo",
+              "amount": 34.86
+            },
+            {
+              "name": "Apotheek",
+              "amount": 32.55
+            },
+            {
+              "name": "Uber",
+              "amount": 9.34
+            },
+            {
+              "name": "Netflix",
+              "amount": 17.75
+            }
+          ]
+        },
+        {
+          "month": "2025-12",
+          "label": "Dec 2025",
+          "spent": 1751.2,
+          "received": 0.0,
+          "net": -1751.2,
+          "by_category": {
+            "food": 528.52,
+            "groceries": 255.63,
+            "entertainment": 317.9,
+            "transport": 180.02,
+            "health": 137.56,
+            "shopping": 206.26,
+            "travel": 125.31
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Zara",
+              "amount": 32.11
+            },
+            {
+              "name": "Dinner",
+              "amount": 9.88
+            },
+            {
+              "name": "Netflix",
+              "amount": 14.06
+            },
+            {
+              "name": "Uber",
+              "amount": 10.05
+            },
+            {
+              "name": "Albert",
+              "amount": 36.39
+            }
+          ]
+        },
+        {
+          "month": "2026-01",
+          "label": "Jan 2026",
+          "spent": 845.47,
+          "received": 0.0,
+          "net": -845.47,
+          "by_category": {
+            "food": 239.17,
+            "groceries": 121.29,
+            "entertainment": 70.71,
+            "transport": 106.57,
+            "health": 67.95,
+            "shopping": 132.7,
+            "travel": 107.08
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Apotheek",
+              "amount": 29.48
+            },
+            {
+              "name": "Netflix",
+              "amount": 14.47
+            },
+            {
+              "name": "Gym",
+              "amount": 20.16
+            },
+            {
+              "name": "IKEA",
+              "amount": 36.77
+            },
+            {
+              "name": "Dinner",
+              "amount": 13.62
+            }
+          ]
+        },
+        {
+          "month": "2026-02",
+          "label": "Feb 2026",
+          "spent": 1110.1,
+          "received": 0.0,
+          "net": -1110.1,
+          "by_category": {
+            "food": 364.97,
+            "groceries": 120.29,
+            "entertainment": 127.43,
+            "transport": 131.86,
+            "health": 101.51,
+            "shopping": 181.93,
+            "travel": 82.11
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Broodje",
+              "amount": 7.38
+            },
+            {
+              "name": "Lidl",
+              "amount": 17.0
+            },
+            {
+              "name": "Cinema",
+              "amount": 15.41
+            },
+            {
+              "name": "Bol.com",
+              "amount": 81.78
+            },
+            {
+              "name": "Gym",
+              "amount": 24.72
+            }
+          ]
+        },
+        {
+          "month": "2026-03",
+          "label": "Mar 2026",
+          "spent": 1242.96,
+          "received": 0.0,
+          "net": -1242.96,
+          "by_category": {
+            "food": 341.62,
+            "groceries": 282.86,
+            "entertainment": 153.39,
+            "transport": 90.11,
+            "health": 78.63,
+            "shopping": 200.45,
+            "travel": 95.9
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "IKEA",
+              "amount": 50.25
+            },
+            {
+              "name": "NS",
+              "amount": 12.87
+            },
+            {
+              "name": "Gym",
+              "amount": 20.33
+            },
+            {
+              "name": "Broodje",
+              "amount": 8.18
+            },
+            {
+              "name": "Sushi",
+              "amount": 55.95
+            }
+          ]
+        },
+        {
+          "month": "2026-04",
+          "label": "Apr 2026",
+          "spent": 976.43,
+          "received": 0.0,
+          "net": -976.43,
+          "by_category": {
+            "food": 144.6,
+            "groceries": 266.64,
+            "entertainment": 123.09,
+            "transport": 68.87,
+            "health": 93.18,
+            "shopping": 178.81,
+            "travel": 101.24
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Booking.com",
+              "amount": 120.92
+            },
+            {
+              "name": "Spotify",
+              "amount": 10.96
+            },
+            {
+              "name": "GVB",
+              "amount": 16.37
+            },
+            {
+              "name": "Dinner",
+              "amount": 11.41
+            },
+            {
+              "name": "Shell",
+              "amount": 73.36
+            }
+          ]
+        }
+      ],
+      "dashboard_stats": {
+        "balance_total": 4004.0,
+        "balance_whole": "4,004",
+        "balance_cents": "00",
+        "balance_change": -266.53,
+        "balance_change_pct": -21.4,
+        "sparkline": [
+          3624,
+          3576,
+          3539,
+          3508,
+          3466,
+          3569,
+          3603,
+          3525,
+          3552,
+          3626,
+          4004
+        ],
+        "accounts": [
+          {
+            "label": "Main",
+            "amt": "\u20ac524",
+            "bg": "linear-gradient(135deg,#B45309,#F59E0B)"
+          },
+          {
+            "label": "Vacay",
+            "amt": "\u20ac1,056",
+            "bg": "linear-gradient(135deg,#0F766E,#14B8A6)"
+          },
+          {
+            "label": "Savings",
+            "amt": "\u20ac2,424",
+            "bg": "linear-gradient(135deg,#047857,#10B981)"
+          }
+        ],
+        "categories": [
+          {
+            "label": "Food & drink",
+            "value": 411,
+            "color": "#F59E0B"
+          },
+          {
+            "label": "Transport",
+            "value": 68,
+            "color": "#06B6D4"
+          },
+          {
+            "label": "Shopping",
+            "value": 395,
+            "color": "#FB7185"
+          },
+          {
+            "label": "Bills",
+            "value": 101,
+            "color": "#A78BFA"
+          },
+          {
+            "label": "Splits",
+            "value": 0,
+            "color": "#00E5A0"
+          }
+        ],
+        "weekly": [
+          {
+            "label": "M",
+            "value": 37
+          },
+          {
+            "label": "T",
+            "value": 76
+          },
+          {
+            "label": "W",
+            "value": 52
+          },
+          {
+            "label": "T",
+            "value": 57
+          },
+          {
+            "label": "F",
+            "value": 76
+          },
+          {
+            "label": "S",
+            "value": 80
+          },
+          {
+            "label": "S",
+            "value": 47
+          }
+        ],
+        "weekly_total": 425,
+        "cashflow_in": 1000.33,
+        "cashflow_out": 976.43,
+        "cashflow_net": 23.9,
+        "cashflow_label": "APRIL",
+        "goals": [
+          {
+            "label": "\ud83c\udfdd\ufe0f Music equipment",
+            "cur": 1056,
+            "goal": 1200,
+            "color": "#14B8A6"
+          },
+          {
+            "label": "\ud83c\udfe0 Gaming setup",
+            "cur": 1368,
+            "goal": 1800,
+            "color": "#A78BFA"
+          }
+        ],
+        "goals_on_track": 2,
+        "goals_total": 2
+      }
+    },
+    {
+      "id": "nl94bunq2106260350",
+      "name": "E. Patel",
+      "iban": "NL94BUNQ2106260350",
+      "avatar_color": "#A8DADC",
+      "occupation": "Data Analyst",
+      "bio": "Numbers person by day, DJ by night. Very punctual.",
+      "spending_pattern": "Subscription heavy",
+      "top_categories": [
+        "food",
+        "groceries",
+        "shopping"
+      ],
+      "transaction_count": 10,
+      "total_sent": 346.0,
+      "total_received": 0.0,
+      "balance": 346.0,
+      "portfolio": [
+        {
+          "symbol": "AMZN",
+          "name": "Amazon",
+          "sector": "E-commerce",
+          "shares": 2,
+          "price": 185.3,
+          "avg_buy_price": 146.63,
+          "value": 370.6,
+          "gain": 77.34,
+          "gain_pct": 26.37,
+          "change_1d_pct": 0.3
+        },
+        {
+          "symbol": "ADYEN",
+          "name": "Adyen N.V.",
+          "sector": "Fintech",
+          "shares": 3,
+          "price": 1420.0,
+          "avg_buy_price": 1267.89,
+          "value": 4260.0,
+          "gain": 456.33,
+          "gain_pct": 12.0,
+          "change_1d_pct": 0.76
+        },
+        {
+          "symbol": "NVDA",
+          "name": "NVIDIA",
+          "sector": "Technology",
+          "shares": 5,
+          "price": 875.0,
+          "avg_buy_price": 454.5,
+          "value": 4375.0,
+          "gain": 2102.5,
+          "gain_pct": 92.52,
+          "change_1d_pct": 1.14
+        }
+      ],
+      "savings_goals": [
+        {
+          "name": "Masters degree",
+          "target": 15000,
+          "saved": 6600.0,
+          "progress": 0.44,
+          "monthly_contribution": 245.15
+        },
+        {
+          "name": "Summer Vacation",
+          "target": 2000,
+          "saved": 1640.0,
+          "progress": 0.82,
+          "monthly_contribution": 148.33
         },
         {
           "name": "Emergency fund",
           "target": 5000,
-          "saved": 3600.0,
-          "progress": 0.72,
-          "monthly_contribution": 228.32
+          "saved": 4300.0,
+          "progress": 0.86,
+          "monthly_contribution": 275.24
         }
       ],
       "messages": [
         {
           "from": "me",
-          "text": "Groceries split?",
-          "time": "10:25",
-          "date": "Fri"
+          "text": "Hey, splitting the Uber from last night?",
+          "time": "13:53",
+          "date": "Today"
         },
         {
-          "from": "them",
-          "text": "\u20ac32.50 my half",
-          "time": "14:09",
+          "from": "friend",
+          "text": "Oh right! Sending now\u2026",
+          "time": "11:53",
           "date": "Fri"
         },
         {
           "from": "me",
-          "text": "Done \u2713",
-          "time": "16:53",
-          "date": "Today"
+          "text": "No rush \ud83d\ude0a",
+          "time": "14:48",
+          "date": "Yesterday"
         },
         {
-          "from": "them",
-          "text": "You're the best \ud83d\ude4c",
-          "time": "16:47",
-          "date": "Today"
+          "from": "friend",
+          "text": "Done! Check your bunq \u2705",
+          "time": "18:28",
+          "date": "Fri"
         }
       ],
-      "monthly_spending": [
+      "monthly_history": [
         {
           "month": "2025-05",
           "label": "May 2025",
-          "spent": 895.59,
+          "spent": 624.63,
+          "received": 0.0,
+          "net": -624.63,
           "by_category": {
-            "food": 191.07,
-            "groceries": 153.99,
-            "entertainment": 148.82,
-            "transport": 53.29,
-            "health": 71.43,
-            "shopping": 168.43,
-            "travel": 108.56
-          }
+            "food": 213.69,
+            "groceries": 89.89,
+            "entertainment": 97.18,
+            "transport": 44.21,
+            "health": 31.58,
+            "shopping": 90.82,
+            "travel": 57.26
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "H&M",
+              "amount": 53.16
+            },
+            {
+              "name": "Dinner",
+              "amount": 10.11
+            },
+            {
+              "name": "Apotheek",
+              "amount": 30.9
+            },
+            {
+              "name": "Pizza",
+              "amount": 26.91
+            },
+            {
+              "name": "Bol.com",
+              "amount": 20.62
+            }
+          ]
         },
         {
           "month": "2025-06",
           "label": "Jun 2025",
-          "spent": 996.95,
+          "spent": 1031.11,
+          "received": 0.0,
+          "net": -1031.11,
           "by_category": {
-            "food": 222.89,
-            "groceries": 155.31,
-            "entertainment": 112.9,
-            "transport": 112.13,
-            "health": 93.42,
-            "shopping": 142.77,
-            "travel": 157.53
-          }
+            "food": 291.4,
+            "groceries": 246.72,
+            "entertainment": 87.41,
+            "transport": 65.18,
+            "health": 88.43,
+            "shopping": 190.2,
+            "travel": 61.77
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "H&M",
+              "amount": 48.95
+            },
+            {
+              "name": "Netflix",
+              "amount": 17.47
+            },
+            {
+              "name": "Cinema",
+              "amount": 18.78
+            },
+            {
+              "name": "Booking.com",
+              "amount": 193.43
+            }
+          ]
         },
         {
           "month": "2025-07",
           "label": "Jul 2025",
-          "spent": 1197.39,
+          "spent": 1008.27,
+          "received": 0.0,
+          "net": -1008.27,
           "by_category": {
-            "food": 362.25,
-            "groceries": 174.8,
-            "entertainment": 202.28,
-            "transport": 140.81,
-            "health": 74.62,
-            "shopping": 109.97,
-            "travel": 132.66
-          }
+            "food": 154.47,
+            "groceries": 277.81,
+            "entertainment": 208.67,
+            "transport": 83.89,
+            "health": 88.79,
+            "shopping": 76.4,
+            "travel": 118.24
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Lidl",
+              "amount": 14.42
+            },
+            {
+              "name": "Steam",
+              "amount": 26.07
+            },
+            {
+              "name": "IKEA",
+              "amount": 109.43
+            },
+            {
+              "name": "Pizza",
+              "amount": 25.02
+            },
+            {
+              "name": "NS",
+              "amount": 6.46
+            }
+          ]
         },
         {
           "month": "2025-08",
           "label": "Aug 2025",
-          "spent": 1153.98,
+          "spent": 1022.04,
+          "received": 0.0,
+          "net": -1022.04,
           "by_category": {
-            "food": 307.54,
-            "groceries": 257.28,
-            "entertainment": 176.7,
-            "transport": 66.57,
-            "health": 69.08,
-            "shopping": 179.8,
-            "travel": 97.01
-          }
+            "food": 326.35,
+            "groceries": 205.38,
+            "entertainment": 119.01,
+            "transport": 80.58,
+            "health": 54.97,
+            "shopping": 169.37,
+            "travel": 66.38
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Caf\u00e9",
+              "amount": 7.51
+            },
+            {
+              "name": "Apotheek",
+              "amount": 16.89
+            },
+            {
+              "name": "Shell",
+              "amount": 88.58
+            },
+            {
+              "name": "Spotify",
+              "amount": 10.93
+            },
+            {
+              "name": "Lidl",
+              "amount": 26.52
+            }
+          ]
         },
         {
           "month": "2025-09",
           "label": "Sep 2025",
-          "spent": 1141.89,
+          "spent": 841.67,
+          "received": 0.0,
+          "net": -841.67,
           "by_category": {
-            "food": 280.95,
-            "groceries": 237.34,
-            "entertainment": 175.42,
-            "transport": 77.34,
-            "health": 79.45,
-            "shopping": 187.0,
-            "travel": 104.39
-          }
+            "food": 243.07,
+            "groceries": 113.33,
+            "entertainment": 68.49,
+            "transport": 128.42,
+            "health": 93.95,
+            "shopping": 77.98,
+            "travel": 116.43
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Ryanair",
+              "amount": 56.17
+            },
+            {
+              "name": "Sushi",
+              "amount": 47.05
+            },
+            {
+              "name": "Pizza",
+              "amount": 27.58
+            },
+            {
+              "name": "Cinema",
+              "amount": 15.36
+            },
+            {
+              "name": "Apotheek",
+              "amount": 30.92
+            }
+          ]
         },
         {
           "month": "2025-10",
           "label": "Oct 2025",
-          "spent": 998.17,
+          "spent": 1018.18,
+          "received": 0.0,
+          "net": -1018.18,
           "by_category": {
-            "food": 206.58,
-            "groceries": 155.4,
-            "entertainment": 228.2,
-            "transport": 60.89,
-            "health": 79.59,
-            "shopping": 107.55,
-            "travel": 159.96
-          }
+            "food": 331.79,
+            "groceries": 156.79,
+            "entertainment": 120.27,
+            "transport": 77.95,
+            "health": 86.01,
+            "shopping": 184.35,
+            "travel": 61.02
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "IKEA",
+              "amount": 49.42
+            },
+            {
+              "name": "Huisarts",
+              "amount": 29.31
+            },
+            {
+              "name": "Jumbo",
+              "amount": 30.67
+            },
+            {
+              "name": "Spotify",
+              "amount": 10.56
+            },
+            {
+              "name": "Booking.com",
+              "amount": 179.14
+            }
+          ]
         },
         {
           "month": "2025-11",
           "label": "Nov 2025",
-          "spent": 1279.67,
+          "spent": 1301.59,
+          "received": 0.0,
+          "net": -1301.59,
           "by_category": {
-            "food": 388.15,
-            "groceries": 159.9,
-            "entertainment": 178.66,
-            "transport": 89.95,
-            "health": 122.12,
-            "shopping": 198.4,
-            "travel": 142.49
-          }
+            "food": 327.46,
+            "groceries": 293.33,
+            "entertainment": 183.45,
+            "transport": 151.89,
+            "health": 98.81,
+            "shopping": 175.0,
+            "travel": 71.65
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Jumbo",
+              "amount": 47.54
+            },
+            {
+              "name": "Sushi",
+              "amount": 55.9
+            },
+            {
+              "name": "Apotheek",
+              "amount": 29.68
+            },
+            {
+              "name": "Spotify",
+              "amount": 11.52
+            }
+          ]
         },
         {
           "month": "2025-12",
           "label": "Dec 2025",
-          "spent": 1116.91,
+          "spent": 1423.79,
+          "received": 0.0,
+          "net": -1423.79,
           "by_category": {
-            "food": 308.85,
-            "groceries": 152.56,
-            "entertainment": 131.37,
-            "transport": 77.79,
-            "health": 132.9,
-            "shopping": 146.0,
-            "travel": 167.44
-          }
+            "food": 199.15,
+            "groceries": 326.42,
+            "entertainment": 288.35,
+            "transport": 123.81,
+            "health": 143.93,
+            "shopping": 205.54,
+            "travel": 136.59
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Sushi",
+              "amount": 35.99
+            },
+            {
+              "name": "Spotify",
+              "amount": 9.66
+            },
+            {
+              "name": "Huisarts",
+              "amount": 21.09
+            },
+            {
+              "name": "Caf\u00e9",
+              "amount": 9.95
+            },
+            {
+              "name": "Uber",
+              "amount": 19.39
+            }
+          ]
         },
         {
           "month": "2026-01",
           "label": "Jan 2026",
-          "spent": 831.38,
+          "spent": 905.09,
+          "received": 0.0,
+          "net": -905.09,
           "by_category": {
-            "food": 254.81,
-            "groceries": 146.76,
-            "entertainment": 122.28,
-            "transport": 69.53,
-            "health": 71.71,
-            "shopping": 107.21,
-            "travel": 59.08
-          }
+            "food": 277.76,
+            "groceries": 141.4,
+            "entertainment": 125.99,
+            "transport": 46.6,
+            "health": 72.15,
+            "shopping": 136.12,
+            "travel": 105.07
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Baggage",
+              "amount": 33.81
+            },
+            {
+              "name": "Zara",
+              "amount": 61.82
+            },
+            {
+              "name": "Gym",
+              "amount": 21.46
+            },
+            {
+              "name": "Lidl",
+              "amount": 27.82
+            }
+          ]
         },
         {
           "month": "2026-02",
           "label": "Feb 2026",
-          "spent": 756.14,
+          "spent": 851.38,
+          "received": 0.0,
+          "net": -851.38,
           "by_category": {
-            "food": 175.62,
-            "groceries": 158.62,
-            "entertainment": 125.6,
-            "transport": 76.36,
-            "health": 40.01,
-            "shopping": 105.25,
-            "travel": 74.68
-          }
+            "food": 225.67,
+            "groceries": 213.19,
+            "entertainment": 99.02,
+            "transport": 38.9,
+            "health": 37.26,
+            "shopping": 116.65,
+            "travel": 120.69
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Steam",
+              "amount": 46.06
+            },
+            {
+              "name": "Spotify",
+              "amount": 11.61
+            },
+            {
+              "name": "Apotheek",
+              "amount": 32.23
+            },
+            {
+              "name": "GVB",
+              "amount": 6.89
+            }
+          ]
         },
         {
           "month": "2026-03",
           "label": "Mar 2026",
-          "spent": 1331.77,
+          "spent": 1010.94,
+          "received": 0.0,
+          "net": -1010.94,
           "by_category": {
-            "food": 303.57,
-            "groceries": 303.35,
-            "entertainment": 192.08,
-            "transport": 87.98,
-            "health": 96.42,
-            "shopping": 166.23,
-            "travel": 182.14
-          }
+            "food": 192.27,
+            "groceries": 111.31,
+            "entertainment": 199.69,
+            "transport": 108.17,
+            "health": 71.37,
+            "shopping": 177.16,
+            "travel": 150.97
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Caf\u00e9",
+              "amount": 8.16
+            },
+            {
+              "name": "Ryanair",
+              "amount": 162.14
+            },
+            {
+              "name": "GVB",
+              "amount": 18.98
+            },
+            {
+              "name": "Steam",
+              "amount": 14.63
+            },
+            {
+              "name": "Albert",
+              "amount": 23.61
+            }
+          ]
         },
         {
           "month": "2026-04",
           "label": "Apr 2026",
-          "spent": 808.83,
+          "spent": 1502.57,
+          "received": 0.0,
+          "net": -1502.57,
           "by_category": {
-            "food": 274.49,
-            "groceries": 95.88,
-            "entertainment": 146.39,
-            "transport": 81.69,
-            "health": 42.06,
-            "shopping": 97.34,
-            "travel": 70.98
-          }
+            "food": 360.04,
+            "groceries": 284.96,
+            "entertainment": 225.18,
+            "transport": 114.67,
+            "health": 89.91,
+            "shopping": 258.39,
+            "travel": 169.42
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Sushi",
+              "amount": 47.58
+            },
+            {
+              "name": "IKEA",
+              "amount": 61.24
+            },
+            {
+              "name": "Apotheek",
+              "amount": 17.88
+            },
+            {
+              "name": "H&M",
+              "amount": 35.4
+            },
+            {
+              "name": "GVB",
+              "amount": 9.41
+            }
+          ]
         }
-      ]
+      ],
+      "dashboard_stats": {
+        "balance_total": 15534.0,
+        "balance_whole": "15,534",
+        "balance_cents": "00",
+        "balance_change": 491.63,
+        "balance_change_pct": 48.6,
+        "sparkline": [
+          15164,
+          15252,
+          15374,
+          15492,
+          15437,
+          15555,
+          15691,
+          15824,
+          15745,
+          15827,
+          15534
+        ],
+        "accounts": [
+          {
+            "label": "Main",
+            "amt": "\u20ac694",
+            "bg": "linear-gradient(135deg,#B45309,#F59E0B)"
+          },
+          {
+            "label": "Vacay",
+            "amt": "\u20ac6,600",
+            "bg": "linear-gradient(135deg,#0F766E,#14B8A6)"
+          },
+          {
+            "label": "Savings",
+            "amt": "\u20ac8,240",
+            "bg": "linear-gradient(135deg,#047857,#10B981)"
+          }
+        ],
+        "categories": [
+          {
+            "label": "Food & drink",
+            "value": 645,
+            "color": "#F59E0B"
+          },
+          {
+            "label": "Transport",
+            "value": 114,
+            "color": "#06B6D4"
+          },
+          {
+            "label": "Shopping",
+            "value": 573,
+            "color": "#FB7185"
+          },
+          {
+            "label": "Bills",
+            "value": 169,
+            "color": "#A78BFA"
+          },
+          {
+            "label": "Splits",
+            "value": 0,
+            "color": "#00E5A0"
+          }
+        ],
+        "weekly": [
+          {
+            "label": "M",
+            "value": 57
+          },
+          {
+            "label": "T",
+            "value": 71
+          },
+          {
+            "label": "W",
+            "value": 99
+          },
+          {
+            "label": "T",
+            "value": 95
+          },
+          {
+            "label": "F",
+            "value": 57
+          },
+          {
+            "label": "S",
+            "value": 69
+          },
+          {
+            "label": "S",
+            "value": 45
+          }
+        ],
+        "weekly_total": 493,
+        "cashflow_in": 1893.69,
+        "cashflow_out": 1502.57,
+        "cashflow_net": 391.12,
+        "cashflow_label": "APRIL",
+        "goals": [
+          {
+            "label": "\ud83c\udfdd\ufe0f Masters degree",
+            "cur": 6600,
+            "goal": 15000,
+            "color": "#14B8A6"
+          },
+          {
+            "label": "\ud83c\udfe0 Summer Vacation",
+            "cur": 1640,
+            "goal": 2000,
+            "color": "#A78BFA"
+          }
+        ],
+        "goals_on_track": 1,
+        "goals_total": 2
+      }
+    },
+    {
+      "id": "nl66bunq2106246498",
+      "name": "J.W. Singh",
+      "iban": "NL66BUNQ2106246498",
+      "avatar_color": "#B388EB",
+      "occupation": "Product Manager",
+      "bio": "Outdoor enthusiast. Venmo? No \u2014 bunq only.",
+      "spending_pattern": "Impulse buyer",
+      "top_categories": [
+        "groceries",
+        "shopping",
+        "food"
+      ],
+      "transaction_count": 10,
+      "total_sent": 481.72,
+      "total_received": 0.0,
+      "balance": 481.72,
+      "portfolio": [
+        {
+          "symbol": "TSLA",
+          "name": "Tesla",
+          "sector": "Automotive",
+          "shares": 7,
+          "price": 185.6,
+          "avg_buy_price": 116.81,
+          "value": 1299.2,
+          "gain": 481.53,
+          "gain_pct": 58.89,
+          "change_1d_pct": -2.47
+        },
+        {
+          "symbol": "META",
+          "name": "Meta Platforms",
+          "sector": "Social Media",
+          "shares": 5,
+          "price": 495.0,
+          "avg_buy_price": 369.31,
+          "value": 2475.0,
+          "gain": 628.45,
+          "gain_pct": 34.03,
+          "change_1d_pct": -3.2
+        },
+        {
+          "symbol": "ING",
+          "name": "ING Groep",
+          "sector": "Finance",
+          "shares": 64,
+          "price": 14.5,
+          "avg_buy_price": 12.89,
+          "value": 928.0,
+          "gain": 103.04,
+          "gain_pct": 12.49,
+          "change_1d_pct": 0.78
+        },
+        {
+          "symbol": "NVDA",
+          "name": "NVIDIA",
+          "sector": "Technology",
+          "shares": 3,
+          "price": 875.0,
+          "avg_buy_price": 572.96,
+          "value": 2625.0,
+          "gain": 906.12,
+          "gain_pct": 52.72,
+          "change_1d_pct": 4.0
+        }
+      ],
+      "savings_goals": [
+        {
+          "name": "Car down payment",
+          "target": 4000,
+          "saved": 2200.0,
+          "progress": 0.55,
+          "monthly_contribution": 205.95
+        },
+        {
+          "name": "Home renovation",
+          "target": 10000,
+          "saved": 3100.0,
+          "progress": 0.31,
+          "monthly_contribution": 273.49
+        },
+        {
+          "name": "Masters degree",
+          "target": 15000,
+          "saved": 4350.0,
+          "progress": 0.29,
+          "monthly_contribution": 59.34
+        }
+      ],
+      "messages": [
+        {
+          "from": "friend",
+          "text": "Did you get my bunq payment?",
+          "time": "14:54",
+          "date": "Today"
+        },
+        {
+          "from": "me",
+          "text": "Yes! Just saw it, all good \ud83d\udc4c",
+          "time": "11:19",
+          "date": "Mon"
+        },
+        {
+          "from": "friend",
+          "text": "Great. Worth every cent \ud83d\ude04",
+          "time": "9:38",
+          "date": "Today"
+        },
+        {
+          "from": "me",
+          "text": "Haha agreed. The pizza was amazing",
+          "time": "14:27",
+          "date": "Yesterday"
+        }
+      ],
+      "monthly_history": [
+        {
+          "month": "2025-05",
+          "label": "May 2025",
+          "spent": 1143.1,
+          "received": 0.0,
+          "net": -1143.1,
+          "by_category": {
+            "food": 247.47,
+            "groceries": 213.81,
+            "entertainment": 200.3,
+            "transport": 71.54,
+            "health": 79.8,
+            "shopping": 159.64,
+            "travel": 170.54
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Sushi",
+              "amount": 55.1
+            },
+            {
+              "name": "Netflix",
+              "amount": 16.11
+            },
+            {
+              "name": "IKEA",
+              "amount": 114.11
+            },
+            {
+              "name": "Pizza",
+              "amount": 15.67
+            }
+          ]
+        },
+        {
+          "month": "2025-06",
+          "label": "Jun 2025",
+          "spent": 1003.57,
+          "received": 0.0,
+          "net": -1003.57,
+          "by_category": {
+            "food": 293.44,
+            "groceries": 140.51,
+            "entertainment": 155.09,
+            "transport": 61.5,
+            "health": 106.98,
+            "shopping": 167.75,
+            "travel": 78.3
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "GVB",
+              "amount": 6.04
+            },
+            {
+              "name": "Bol.com",
+              "amount": 40.17
+            },
+            {
+              "name": "Lidl",
+              "amount": 36.41
+            },
+            {
+              "name": "Caf\u00e9",
+              "amount": 5.47
+            },
+            {
+              "name": "Spotify",
+              "amount": 9.91
+            }
+          ]
+        },
+        {
+          "month": "2025-07",
+          "label": "Jul 2025",
+          "spent": 932.03,
+          "received": 0.0,
+          "net": -932.03,
+          "by_category": {
+            "food": 207.62,
+            "groceries": 129.59,
+            "entertainment": 118.26,
+            "transport": 117.0,
+            "health": 102.15,
+            "shopping": 186.01,
+            "travel": 71.4
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Pizza",
+              "amount": 24.48
+            },
+            {
+              "name": "Shell",
+              "amount": 45.03
+            },
+            {
+              "name": "Spotify",
+              "amount": 10.63
+            },
+            {
+              "name": "H&M",
+              "amount": 22.96
+            }
+          ]
+        },
+        {
+          "month": "2025-08",
+          "label": "Aug 2025",
+          "spent": 943.7,
+          "received": 0.0,
+          "net": -943.7,
+          "by_category": {
+            "food": 189.94,
+            "groceries": 100.81,
+            "entertainment": 183.49,
+            "transport": 68.97,
+            "health": 64.46,
+            "shopping": 162.18,
+            "travel": 173.85
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Gym",
+              "amount": 23.92
+            },
+            {
+              "name": "Dinner",
+              "amount": 14.51
+            },
+            {
+              "name": "H&M",
+              "amount": 26.11
+            },
+            {
+              "name": "Spotify",
+              "amount": 10.14
+            },
+            {
+              "name": "Caf\u00e9",
+              "amount": 10.24
+            }
+          ]
+        },
+        {
+          "month": "2025-09",
+          "label": "Sep 2025",
+          "spent": 972.89,
+          "received": 0.0,
+          "net": -972.89,
+          "by_category": {
+            "food": 317.98,
+            "groceries": 179.61,
+            "entertainment": 167.17,
+            "transport": 60.02,
+            "health": 65.37,
+            "shopping": 112.6,
+            "travel": 70.14
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Sushi",
+              "amount": 48.1
+            },
+            {
+              "name": "Baggage",
+              "amount": 41.93
+            },
+            {
+              "name": "Cinema",
+              "amount": 20.94
+            },
+            {
+              "name": "Netflix",
+              "amount": 14.23
+            },
+            {
+              "name": "Gym",
+              "amount": 22.47
+            }
+          ]
+        },
+        {
+          "month": "2025-10",
+          "label": "Oct 2025",
+          "spent": 1008.28,
+          "received": 0.0,
+          "net": -1008.28,
+          "by_category": {
+            "food": 200.66,
+            "groceries": 187.71,
+            "entertainment": 98.82,
+            "transport": 124.32,
+            "health": 58.89,
+            "shopping": 185.83,
+            "travel": 152.05
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Lidl",
+              "amount": 13.71
+            },
+            {
+              "name": "Sushi",
+              "amount": 49.42
+            },
+            {
+              "name": "Baggage",
+              "amount": 23.81
+            },
+            {
+              "name": "Ryanair",
+              "amount": 103.97
+            },
+            {
+              "name": "GVB",
+              "amount": 19.7
+            }
+          ]
+        },
+        {
+          "month": "2025-11",
+          "label": "Nov 2025",
+          "spent": 1307.28,
+          "received": 0.0,
+          "net": -1307.28,
+          "by_category": {
+            "food": 440.57,
+            "groceries": 134.16,
+            "entertainment": 201.79,
+            "transport": 128.97,
+            "health": 113.6,
+            "shopping": 90.34,
+            "travel": 197.85
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Dinner",
+              "amount": 10.3
+            },
+            {
+              "name": "Gym",
+              "amount": 25.45
+            },
+            {
+              "name": "Zara",
+              "amount": 65.68
+            },
+            {
+              "name": "Caf\u00e9",
+              "amount": 4.12
+            }
+          ]
+        },
+        {
+          "month": "2025-12",
+          "label": "Dec 2025",
+          "spent": 1274.9,
+          "received": 0.0,
+          "net": -1274.9,
+          "by_category": {
+            "food": 286.44,
+            "groceries": 241.13,
+            "entertainment": 140.86,
+            "transport": 142.76,
+            "health": 86.56,
+            "shopping": 242.08,
+            "travel": 135.07
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Netflix",
+              "amount": 16.57
+            },
+            {
+              "name": "Lidl",
+              "amount": 39.51
+            },
+            {
+              "name": "Baggage",
+              "amount": 29.71
+            },
+            {
+              "name": "Shell",
+              "amount": 63.76
+            }
+          ]
+        },
+        {
+          "month": "2026-01",
+          "label": "Jan 2026",
+          "spent": 750.85,
+          "received": 0.0,
+          "net": -750.85,
+          "by_category": {
+            "food": 141.17,
+            "groceries": 191.9,
+            "entertainment": 100.25,
+            "transport": 78.63,
+            "health": 78.03,
+            "shopping": 105.28,
+            "travel": 55.59
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Bol.com",
+              "amount": 74.13
+            },
+            {
+              "name": "Airbnb",
+              "amount": 66.14
+            },
+            {
+              "name": "Steam",
+              "amount": 46.13
+            },
+            {
+              "name": "Pizza",
+              "amount": 29.07
+            },
+            {
+              "name": "Huisarts",
+              "amount": 16.04
+            }
+          ]
+        },
+        {
+          "month": "2026-02",
+          "label": "Feb 2026",
+          "spent": 771.39,
+          "received": 0.0,
+          "net": -771.39,
+          "by_category": {
+            "food": 142.27,
+            "groceries": 170.69,
+            "entertainment": 79.21,
+            "transport": 90.04,
+            "health": 52.21,
+            "shopping": 124.22,
+            "travel": 112.75
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "NS",
+              "amount": 9.3
+            },
+            {
+              "name": "Broodje",
+              "amount": 13.86
+            },
+            {
+              "name": "Netflix",
+              "amount": 15.4
+            },
+            {
+              "name": "Steam",
+              "amount": 8.07
+            },
+            {
+              "name": "Spotify",
+              "amount": 9.74
+            }
+          ]
+        },
+        {
+          "month": "2026-03",
+          "label": "Mar 2026",
+          "spent": 1002.61,
+          "received": 0.0,
+          "net": -1002.61,
+          "by_category": {
+            "food": 349.06,
+            "groceries": 198.44,
+            "entertainment": 83.89,
+            "transport": 85.31,
+            "health": 115.37,
+            "shopping": 98.03,
+            "travel": 72.51
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Dinner",
+              "amount": 17.78
+            },
+            {
+              "name": "Ryanair",
+              "amount": 148.4
+            },
+            {
+              "name": "IKEA",
+              "amount": 99.6
+            },
+            {
+              "name": "Broodje",
+              "amount": 6.96
+            },
+            {
+              "name": "Booking.com",
+              "amount": 113.24
+            }
+          ]
+        },
+        {
+          "month": "2026-04",
+          "label": "Apr 2026",
+          "spent": 1142.03,
+          "received": 0.0,
+          "net": -1142.03,
+          "by_category": {
+            "food": 200.13,
+            "groceries": 277.55,
+            "entertainment": 138.84,
+            "transport": 118.83,
+            "health": 74.53,
+            "shopping": 229.28,
+            "travel": 102.87
+          },
+          "budgets": {
+            "food": 280,
+            "groceries": 200,
+            "entertainment": 150,
+            "transport": 100,
+            "health": 80,
+            "shopping": 150,
+            "travel": 120
+          },
+          "top_merchants": [
+            {
+              "name": "Booking.com",
+              "amount": 91.34
+            },
+            {
+              "name": "Gym",
+              "amount": 28.56
+            },
+            {
+              "name": "Sushi",
+              "amount": 28.6
+            },
+            {
+              "name": "Airbnb",
+              "amount": 64.54
+            },
+            {
+              "name": "Broodje",
+              "amount": 12.93
+            }
+          ]
+        }
+      ],
+      "dashboard_stats": {
+        "balance_total": 8296.0,
+        "balance_whole": "8,296",
+        "balance_cents": "00",
+        "balance_change": 139.42,
+        "balance_change_pct": 13.9,
+        "sparkline": [
+          7658,
+          7651,
+          7687,
+          7821,
+          7763,
+          7834,
+          7972,
+          8040,
+          7967,
+          8066,
+          8296
+        ],
+        "accounts": [
+          {
+            "label": "Main",
+            "amt": "\u20ac796",
+            "bg": "linear-gradient(135deg,#B45309,#F59E0B)"
+          },
+          {
+            "label": "Vacay",
+            "amt": "\u20ac2,200",
+            "bg": "linear-gradient(135deg,#0F766E,#14B8A6)"
+          },
+          {
+            "label": "Savings",
+            "amt": "\u20ac5,300",
+            "bg": "linear-gradient(135deg,#047857,#10B981)"
+          }
+        ],
+        "categories": [
+          {
+            "label": "Food & drink",
+            "value": 477,
+            "color": "#F59E0B"
+          },
+          {
+            "label": "Transport",
+            "value": 118,
+            "color": "#06B6D4"
+          },
+          {
+            "label": "Shopping",
+            "value": 442,
+            "color": "#FB7185"
+          },
+          {
+            "label": "Bills",
+            "value": 102,
+            "color": "#A78BFA"
+          },
+          {
+            "label": "Splits",
+            "value": 0,
+            "color": "#00E5A0"
+          }
+        ],
+        "weekly": [
+          {
+            "label": "M",
+            "value": 61
+          },
+          {
+            "label": "T",
+            "value": 14
+          },
+          {
+            "label": "W",
+            "value": 68
+          },
+          {
+            "label": "T",
+            "value": 41
+          },
+          {
+            "label": "F",
+            "value": 23
+          },
+          {
+            "label": "S",
+            "value": 64
+          },
+          {
+            "label": "S",
+            "value": 47
+          }
+        ],
+        "weekly_total": 318,
+        "cashflow_in": 1612.08,
+        "cashflow_out": 1142.03,
+        "cashflow_net": 470.05,
+        "cashflow_label": "APRIL",
+        "goals": [
+          {
+            "label": "\ud83c\udfdd\ufe0f Car down payment",
+            "cur": 2200,
+            "goal": 4000,
+            "color": "#14B8A6"
+          },
+          {
+            "label": "\ud83c\udfe0 Home renovation",
+            "cur": 3100,
+            "goal": 10000,
+            "color": "#A78BFA"
+          }
+        ],
+        "goals_on_track": 1,
+        "goals_total": 2
+      }
     }
-  ]
+  ],
+  "generated_at": "2026-04-25T06:44:10.380281"
 }
