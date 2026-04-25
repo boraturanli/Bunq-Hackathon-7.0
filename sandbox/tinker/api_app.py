@@ -100,6 +100,24 @@ def get_aliases():
     return [{"type": a.type_, "value": a.value} for a in aliases]
 
 
+_SYSTEM_CONTACT_NAMES = {"sugar daddy", "sugardaddy"}
+
+# bunq sandbox top-up account appears as IBAN NL32BUNQ... or email alias nl32bunq...@bunq.demo
+_SYSTEM_IBAN_PREFIX = "nl32bunq"
+
+
+def _is_system_contact(name: str, iban: str | None) -> bool:
+    name_l = name.lower().strip()
+    if name_l in _SYSTEM_CONTACT_NAMES:
+        return True
+    # Catch when display_name is the IBAN-email alias itself (e.g. nl32bunq2025313705@bunq.demo)
+    if name_l.startswith(_SYSTEM_IBAN_PREFIX):
+        return True
+    if iban and iban.lower().replace(" ", "").startswith(_SYSTEM_IBAN_PREFIX):
+        return True
+    return False
+
+
 def _derive_contacts_from_history(limit: int) -> dict:
     """
     Build a {key: contact} dict from payment + request history.
@@ -117,6 +135,8 @@ def _derive_contacts_from_history(limit: int) -> dict:
         iban = getattr(lma, "iban", None)
         key  = iban or name
         if key == "Unknown":
+            return
+        if _is_system_contact(name, iban):
             return
         if key not in seen:
             seen[key] = {
@@ -141,14 +161,29 @@ def _derive_contacts_from_history(limit: int) -> dict:
     return seen
 
 
+def _is_system_pointer(pv: str) -> bool:
+    pv_l = pv.lower().replace(" ", "")
+    if "sugardaddy" in pv_l:
+        return True
+    if pv_l.startswith(_SYSTEM_IBAN_PREFIX):
+        return True
+    return False
+
+
 @app.get("/api/contacts/top")
 def get_top_contacts(n: int = 5, limit: int = 100):
     """Top N contacts by transaction frequency. Includes id/email/color for inbox navigation."""
     seen = _derive_contacts_from_history(limit)
     ranked = sorted(seen.values(), key=lambda c: c["transaction_count"], reverse=True)
     result = []
-    for c in ranked[:n]:
+    for c in ranked:
+        if len(result) >= n:
+            break
         pv = c["pointer_value"] or ""
+        if _is_system_pointer(pv):
+            continue
+        if _is_system_contact(c.get("name", ""), c.get("iban")):
+            continue
         contact_id = _slugify(pv)
         if not contact_id:
             continue
@@ -560,6 +595,18 @@ def _restore_main_context():
     BunqContext.load_api_context(ctx)
 
 
+def _bump_daily_limit(account_id: int, limit: str = "10000.00") -> bool:
+    """PUT daily_limit on the main monetary account. Cap is 10 000 EUR in sandbox."""
+    try:
+        MonetaryAccountBank.update(
+            account_id,
+            daily_limit=Amount(limit, "EUR"),
+        )
+        return True
+    except Exception:
+        return False
+
+
 def _get_friend_iban(api_key: str, index: int) -> tuple[str, str | None]:
     """Switch to friend context, grab name + IBAN, then return."""
     tmp = f"tmp_seed_friend_{index}.conf"
@@ -818,6 +865,10 @@ def seed_demo_friends(count: int = 5, payments_each: int = 10, incoming_each: in
             main_balance    = float(accounts[0].balance.value)
             yield _emit("balance", eur=main_balance)
 
+            # Raise daily limit to 10 000 EUR so bulk payments don't hit the 1 000 EUR cap
+            limit_ok = _bump_daily_limit(main_account_id)
+            yield _emit("daily_limit", ok=limit_ok, value="10000" if limit_ok else "unchanged")
+
             main_iban = None; main_name = "Demo User"
             try:
                 for alias in bunq.get_all_user_alias():
@@ -920,6 +971,19 @@ def sandbox_topup(req: TopupRequest = None):
         return {"status": "success", "message": f"Requested {req.amount} EUR — funds arrive within seconds."}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/api/sandbox/bump-daily-limit")
+def bump_daily_limit():
+    """Raise the main account's daily payment limit to 10 000 EUR (sandbox cap)."""
+    _restore_main_context()
+    accounts = bunq.get_all_monetary_account_active(1)
+    if not accounts:
+        raise HTTPException(status_code=400, detail="No active account found.")
+    ok = _bump_daily_limit(accounts[0].id_)
+    if not ok:
+        raise HTTPException(status_code=500, detail="Failed to update daily limit.")
+    return {"status": "ok", "daily_limit": "10000.00 EUR"}
 
 
 # ── Demo-data read endpoints ───────────────────────────────────────────────────

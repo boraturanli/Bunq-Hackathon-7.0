@@ -242,7 +242,7 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
             {session.receipt.merchant ?? 'a receipt'}
           </h1>
           <p style={{ fontSize: 13, color: TOK.textDim, marginTop: 8 }}>
-            Tap items you had. Tap again to share with more people.
+            Tap an item to claim it. Use +/– to share it with others.
           </p>
 
           {/* Total summary */}
@@ -297,82 +297,86 @@ export default function InviteePage({ params }: { params: { sessionId: string; i
           <div style={{ marginTop: 16 }}>
             {visibleItems.map((item: LineItem) => {
               const share = claims[item.id] ?? 0;
-              const myCost = share > 0 ? item.line_total / share : 0;
+              const claimed = share > 0;
+              const myCost = claimed ? item.line_total / share : 0;
               return (
                 <div
                   key={item.id}
+                  onClick={() => updateShare(item.id, claimed ? 0 : 1)}
                   style={{
-                    width: '100%', padding: 16, marginBottom: 10,
-                    borderRadius: 18,
-                    border: `1px solid ${share > 0 ? TOK.accent : TOK.border}`,
-                    background: share > 0 ? `${TOK.accent}08` : TOK.surface,
+                    padding: '14px 16px', marginBottom: 10,
+                    borderRadius: 18, cursor: 'pointer',
+                    border: `1.5px solid ${claimed ? TOK.accent : TOK.border}`,
+                    background: claimed ? `${TOK.accent}08` : TOK.surface,
+                    transition: 'border-color 0.15s, background 0.15s',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
-                    <div style={{ minWidth: 0 }}>
-                      <span style={{ fontSize: 15, fontWeight: 700, display: 'block', marginBottom: 4 }}>
-                        {item.description}
-                      </span>
-                      <div style={{ fontSize: 12, color: TOK.textDim }}>
-                        {item.quantity > 1 ? `×${item.quantity} · ${formatAmount(item.line_total, session.receipt.currency)}` : formatAmount(item.line_total, session.receipt.currency)}
-                      </div>
+                  {/* Top row: checkbox · name/qty · price */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{
+                      width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+                      border: `1.5px solid ${claimed ? TOK.accent : TOK.borderHi}`,
+                      background: claimed ? TOK.accent : 'transparent',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {claimed && ICN.check(TOK.accentInk)}
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: share > 0 ? TOK.accent : TOK.textFaint }}>
-                        {share === 0 ? 'Not claimed' : share === 1 ? 'Solo' : `Shared ${share} ways`}
-                      </div>
-                      {share > 0 && (
-                        <div style={{ fontSize: 12, color: TOK.text, marginTop: 4 }}>
-                          Your share: <strong>{formatAmount(myCost, session.receipt.currency)}</strong>
-                        </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.2 }}>{item.description}</p>
+                      <p style={{ fontSize: 12, color: TOK.textDim, marginTop: 2 }}>
+                        {item.quantity > 1 ? `×${item.quantity} · ` : ''}{formatAmount(item.line_total, session.receipt.currency)}
+                      </p>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      {claimed ? (
+                        <>
+                          <p style={{ fontFamily: FONT_DISPLAY, fontSize: 15, fontWeight: 700, color: TOK.accent }}>
+                            {formatAmount(myCost, session.receipt.currency)}
+                          </p>
+                          <p style={{ fontSize: 10, color: TOK.textDim, marginTop: 2 }}>
+                            {share === 1 ? 'yours' : `÷${share}`}
+                          </p>
+                        </>
+                      ) : (
+                        <p style={{ fontSize: 12, color: TOK.textFaint }}>tap to claim</p>
                       )}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, gap: 12 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+
+                  {/* Share controls — only when claimed, stops click propagation */}
+                  {claimed && (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        marginTop: 12, paddingTop: 12,
+                        borderTop: `1px solid ${TOK.accent}30`,
+                      }}
+                    >
+                      <span style={{ fontSize: 11, color: TOK.textDim, flex: 1 }}>
+                        {share === 1 ? 'Only you' : `${share} people sharing`}
+                      </span>
                       <button
                         onClick={() => updateShare(item.id, Math.max(0, share - 1))}
-                        disabled={share <= 0}
                         style={{
-                          width: 34, height: 34,
-                          borderRadius: 12,
-                          border: `1px solid ${TOK.border}`,
-                          background: TOK.surface,
-                          color: share > 0 ? TOK.text : TOK.textFaint,
-                          fontSize: 18, fontWeight: 700,
-                          cursor: share > 0 ? 'pointer' : 'not-allowed',
+                          width: 32, height: 32, borderRadius: 10,
+                          border: `1px solid ${TOK.border}`, background: TOK.surface2,
+                          color: TOK.text, fontSize: 18, fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
                         }}
-                        aria-label={`Decrease share count for ${item.description}`}
-                      >
-                        –
-                      </button>
-                      <div style={{ minWidth: 32, textAlign: 'center', fontSize: 15, fontWeight: 700 }}>
-                        {share}
-                      </div>
+                      >–</button>
+                      <span style={{ minWidth: 20, textAlign: 'center', fontSize: 15, fontWeight: 700 }}>{share}</span>
                       <button
                         onClick={() => updateShare(item.id, Math.min(MAX_SHARE, share + 1))}
                         style={{
-                          width: 34, height: 34,
-                          borderRadius: 12,
-                          border: `1px solid ${TOK.border}`,
-                          background: TOK.surface,
-                          color: TOK.text,
-                          fontSize: 18, fontWeight: 700,
-                          cursor: 'pointer',
+                          width: 32, height: 32, borderRadius: 10,
+                          border: `1px solid ${TOK.border}`, background: TOK.surface2,
+                          color: TOK.text, fontSize: 18, fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
                         }}
-                        aria-label={`Increase share count for ${item.description}`}
-                      >
-                        +
-                      </button>
+                      >+</button>
                     </div>
-                    <div style={{ fontSize: 11, color: TOK.textDim, textAlign: 'right' }}>
-                      {share === 0
-                        ? 'Tap + to claim this item'
-                        : share === 1
-                          ? '1 person pays for this item'
-                          : `${share} people share this item`}
-                    </div>
-                  </div>
+                  )}
                 </div>
               );
             })}

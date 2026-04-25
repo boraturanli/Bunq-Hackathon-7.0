@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Receipt } from '@/lib/types/receipt';
 import { TOK, FONT_DISPLAY, FONT_MONO } from '@/lib/design/tokens';
 import { ICN } from '@/lib/design/icons';
@@ -49,6 +50,7 @@ function hashColor(s: string): string {
 // ─── page ──────────────────────────────────────────────────────────────────
 
 export default function Home() {
+  const router = useRouter();
   const [screen, setScreen] = useState<Screen>('capture');
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [hostName, setHostName] = useState('');
@@ -68,8 +70,10 @@ export default function Home() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
+  const [customPeople, setCustomPeople] = useState<PickedPerson[]>([]);
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (screen !== 'tracking' || !sessionId) return;
@@ -130,12 +134,27 @@ export default function Home() {
     });
   };
   const addCustom = () => {
-    if (!newName.trim() || !newEmail.trim()) return;
-    setPicked((prev) => {
-      if (prev.find((p) => p.email === newEmail.trim())) return prev;
-      return [...prev, { name: newName.trim(), email: newEmail.trim(), color: '', source: 'custom' }];
-    });
+    const name = newName.trim();
+    const email = newEmail.trim();
+    if (!name || !email) return;
+    // Skip if already a top friend with the same email
+    if (topFriends.some((f) => f.email === email)) {
+      const tf = topFriends.find((f) => f.email === email)!;
+      if (tf) toggleFriend(tf);
+      setNewName(''); setNewEmail(''); setShowAddForm(false);
+      return;
+    }
+    const person: PickedPerson = { name, email, color: hashColor(email), source: 'custom' };
+    setCustomPeople((prev) => prev.find((p) => p.email === email) ? prev : [...prev, person]);
+    setPicked((prev) => prev.find((p) => p.email === email) ? prev : [...prev, person]);
     setNewName(''); setNewEmail(''); setShowAddForm(false);
+  };
+  const toggleCustomPerson = (p: PickedPerson) => {
+    setPicked((prev) =>
+      prev.find((x) => x.email === p.email)
+        ? prev.filter((x) => x.email !== p.email)
+        : [...prev, p]
+    );
   };
   const removePicked = (email: string) => setPicked((prev) => prev.filter((p) => p.email !== email));
 
@@ -176,140 +195,189 @@ export default function Home() {
 
   // ─── CAPTURE ─────────────────────────────────────────────────────────────
 
+  const recents = [
+    { name: 'Bistro Lumière', sub: '3 friends · 1 paid', total: '€82.40', color: TOK.plum,  paid: 33,  when: '2h' },
+    { name: 'Sushi Kaito',    sub: 'Settled · 4/4',      total: '€58.00', color: TOK.teal,  paid: 100, when: 'Yest.' },
+    { name: 'Coffee Run',     sub: '2 friends · 0 paid', total: '€14.20', color: TOK.amber, paid: 0,   when: '3d' },
+  ];
+
   if (screen === 'capture') return (
-    <main style={{ ...page, position: 'relative', overflow: 'hidden' }}>
-      {/* Atmospheric blobs */}
-      <div style={{ position: 'absolute', top: -100, left: -80,  width: 280, height: 280, borderRadius: '50%', background: TOK.accent, opacity: 0.18, filter: 'blur(80px)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', top: 200,  right: -100, width: 240, height: 240, borderRadius: '50%', background: TOK.plum,   opacity: 0.25, filter: 'blur(80px)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: 160, left: -60, width: 220, height: 220, borderRadius: '50%', background: TOK.rose,   opacity: 0.18, filter: 'blur(80px)', pointerEvents: 'none' }} />
+    <main style={{ ...page, display: 'flex', flexDirection: 'column', maxWidth: 440, margin: '0 auto' }}>
 
-      <div style={{ maxWidth: 440, margin: '0 auto', padding: 20, position: 'relative' }}>
-        {/* Top bar */}
-        <div style={{ paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: 8, background: TOK.accent,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: FONT_DISPLAY, fontWeight: 800, fontSize: 14, color: TOK.accentInk,
-            }}>S</div>
-            <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, letterSpacing: '-0.02em' }}>SnapSplit</span>
-          </div>
-          <a href="/inbox" style={{
-            padding: '6px 12px', borderRadius: 999,
-            background: TOK.surface, border: `1px solid ${TOK.border}`,
-            color: TOK.text, fontSize: 11, fontWeight: 700,
-          }}>Demo lobby →</a>
-        </div>
-
-        {/* Hero */}
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          padding: '5px 10px', borderRadius: 999,
-          background: `${TOK.accent}18`, border: `1px solid ${TOK.accent}55`,
-          marginBottom: 18,
+      {/* App-style header */}
+      <div style={{
+        position: 'relative', padding: '16px 16px 14px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        borderBottom: `1px solid ${TOK.border}`, flexShrink: 0,
+      }}>
+        <button onClick={() => router.back()} style={{
+          width: 36, height: 36, borderRadius: 12,
+          background: TOK.surface, border: `1px solid ${TOK.border}`,
+          color: TOK.text, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer',
         }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ color: TOK.accent }}>{ICN.sparkle(TOK.accent)}</div>
-          <span style={{ fontSize: 10.5, fontWeight: 800, color: TOK.accent, letterSpacing: '0.06em', fontFamily: FONT_MONO }}>
-            AI · LIVE
-          </span>
+          <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 16, letterSpacing: '-0.02em' }}>SnapSplit</span>
         </div>
-        <h1 style={{
-          fontFamily: FONT_DISPLAY, fontSize: 52, fontWeight: 700,
-          letterSpacing: '-0.045em', lineHeight: 0.92,
-        }}>
-          Snap the<br />receipt.<br />
-          <span style={{ color: TOK.accent, fontStyle: 'italic' }}>They</span> pay<br />you back.
-        </h1>
-        <p style={{ fontSize: 14, color: TOK.textDim, marginTop: 16, lineHeight: 1.5, maxWidth: 360 }}>
-          AI reads your bill in seconds. Friends tap what they had — money lands in your account.
-        </p>
+        <button style={{
+          width: 36, height: 36, borderRadius: 12,
+          background: TOK.surface, border: `1px solid ${TOK.border}`,
+          color: TOK.textDim, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: FONT_DISPLAY, fontSize: 18, fontWeight: 700, cursor: 'pointer',
+        }}>?</button>
+      </div>
+
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 16px 32px' }}>
+
+        {/* Compact intro */}
+        <div style={{ marginBottom: 18 }}>
+          <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: TOK.textDim, fontFamily: FONT_MONO, marginBottom: 8 }}>
+            NEW SPLIT
+          </p>
+          <h1 style={{
+            fontFamily: FONT_DISPLAY, fontSize: 26, fontWeight: 700,
+            letterSpacing: '-0.025em', lineHeight: 1.1,
+          }}>
+            Capture a receipt to start.
+          </h1>
+          <p style={{ fontSize: 13, color: TOK.textDim, marginTop: 6, lineHeight: 1.5 }}>
+            We&apos;ll parse the items so friends can claim what they had.
+          </p>
+        </div>
 
         {error && (
-          <div style={{ marginTop: 16, padding: '10px 14px', background: `${TOK.scarlet}20`, border: `1px solid ${TOK.scarlet}55`, borderRadius: 12, color: TOK.scarlet, fontSize: 13 }}>
+          <div style={{ marginBottom: 16, padding: '10px 14px', background: `${TOK.scarlet}20`, border: `1px solid ${TOK.scarlet}55`, borderRadius: 12, color: TOK.scarlet, fontSize: 13 }}>
             {error}
           </div>
         )}
 
-        {/* Big CTA */}
-        <button
-          onClick={() => fileRef.current?.click()}
-          disabled={loading}
-          style={{
-            width: '100%', marginTop: 24, padding: '18px 20px',
-            background: TOK.accent, border: 'none', borderRadius: 18,
-            color: TOK.accentInk, fontFamily: FONT_DISPLAY, fontSize: 17, fontWeight: 700,
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            cursor: 'pointer', opacity: loading ? 0.6 : 1,
-            boxShadow: `0 16px 40px ${TOK.accent}40`,
-          }}
-        >
-          <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={TOK.accentInk} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 4h-4l-2 2H4a1 1 0 00-1 1v12a1 1 0 001 1h16a1 1 0 001-1V7a1 1 0 00-1-1h-4z" /><circle cx="12" cy="13" r="4" />
-            </svg>
-            {loading ? 'Reading receipt…' : 'Scan a receipt'}
-          </span>
-          <div style={{
-            width: 32, height: 32, borderRadius: '50%',
-            background: TOK.accentInk, color: TOK.accent,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>{ICN.arrow(TOK.accent)}</div>
+        {/* Two action cards side-by-side */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+          <button
+            onClick={() => fileRef.current?.click()}
+            disabled={loading}
+            style={{
+              padding: '18px 14px', textAlign: 'left',
+              background: loading ? `${TOK.accent}80` : TOK.accent,
+              border: 'none', borderRadius: 18,
+              color: TOK.accentInk, cursor: loading ? 'wait' : 'pointer',
+              display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+              minHeight: 130,
+            }}
+          >
+            <div style={{
+              width: 36, height: 36, borderRadius: 10,
+              background: TOK.accentInk, color: TOK.accent,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 4h-4l-2 2H4a1 1 0 00-1 1v12a1 1 0 001 1h16a1 1 0 001-1V7a1 1 0 00-1-1h-4z" /><circle cx="12" cy="13" r="4" />
+              </svg>
+            </div>
+            <div>
+              <p style={{ fontFamily: FONT_DISPLAY, fontSize: 15, fontWeight: 700, lineHeight: 1.1 }}>
+                {loading ? 'Reading…' : 'Scan\nreceipt'}
+              </p>
+              <p style={{ fontSize: 11, opacity: 0.7, marginTop: 4 }}>Use camera</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => galleryRef.current?.click()}
+            disabled={loading}
+            style={{
+              padding: '18px 14px', textAlign: 'left',
+              background: TOK.surface, border: `1px solid ${TOK.border}`, borderRadius: 18,
+              color: TOK.text, cursor: loading ? 'wait' : 'pointer',
+              display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+              minHeight: 130,
+            }}
+          >
+            <div style={{
+              width: 36, height: 36, borderRadius: 10,
+              background: TOK.surface2, color: TOK.text,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.6-3.6a2 2 0 00-2.8 0L4 22" />
+              </svg>
+            </div>
+            <div>
+              <p style={{ fontFamily: FONT_DISPLAY, fontSize: 15, fontWeight: 700, lineHeight: 1.1 }}>Upload<br />image</p>
+              <p style={{ fontSize: 11, color: TOK.textDim, marginTop: 4 }}>From gallery</p>
+            </div>
+          </button>
+        </div>
+
+        {/* Manual entry tertiary option */}
+        <button style={{
+          width: '100%', padding: '12px 14px',
+          background: 'transparent', border: `1px dashed ${TOK.border}`, borderRadius: 14,
+          color: TOK.textDim, fontSize: 12.5, fontWeight: 600,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          marginBottom: 28, cursor: 'pointer',
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Enter amount manually
         </button>
-        <button
-          onClick={() => fileRef.current?.click()}
-          disabled={loading}
-          style={{
-            width: '100%', marginTop: 10, padding: '14px 20px',
-            background: TOK.surface, border: `1px solid ${TOK.border}`, borderRadius: 18,
-            color: TOK.text, fontSize: 14, fontWeight: 600, cursor: 'pointer',
-          }}
-        >
-          Upload an image instead
-        </button>
+
+        {/* Hidden file inputs */}
         <input
           ref={fileRef}
           type="file" accept="image/*" capture="environment"
           style={{ display: 'none' }}
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; }}
+        />
+        <input
+          ref={galleryRef}
+          type="file" accept="image/*"
+          style={{ display: 'none' }}
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; }}
         />
 
-        {/* Live feed strip */}
-        <div style={{ marginTop: 28 }}>
-          <div style={{
-            background: TOK.surface, border: `1px solid ${TOK.border}`,
-            borderRadius: 22, padding: 16,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: TOK.textDim, fontFamily: FONT_MONO }}>RECENT · 2 ACTIVE</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: TOK.mint, fontFamily: FONT_MONO }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: TOK.mint }} />
-                LIVE
-              </span>
-            </div>
-            {[
-              { name: 'Bistro Lumière', sub: '3 friends · 1 paid', total: '€82.40', color: TOK.plum, paid: 33 },
-              { name: 'Sushi Kaito',    sub: 'Settled · 4/4',     total: '€58.00', color: TOK.teal, paid: 100 },
-            ].map((r, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                padding: '10px 0', borderTop: i ? `1px solid ${TOK.border}` : 'none',
-              }}>
-                <div style={{
-                  width: 36, height: 36, borderRadius: 10,
-                  background: `${r.color}30`, border: `1px solid ${r.color}55`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>{ICN.receipt(r.color)}</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700 }}>{r.name}</p>
-                  <p style={{ fontSize: 11, color: TOK.textDim }}>{r.sub}</p>
-                  <div style={{ marginTop: 6, height: 3, background: TOK.surface2, borderRadius: 2, overflow: 'hidden' }}>
-                    <div style={{ width: `${r.paid}%`, height: '100%', background: r.paid === 100 ? TOK.mint : TOK.accent }} />
-                  </div>
+        {/* Recent splits */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: TOK.textDim, fontFamily: FONT_MONO }}>
+            RECENT SPLITS
+          </span>
+          <button style={{ fontSize: 11, color: TOK.accent, fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
+            See all
+          </button>
+        </div>
+        <div style={{ background: TOK.surface, border: `1px solid ${TOK.border}`, borderRadius: 16, overflow: 'hidden' }}>
+          {recents.map((r, i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '12px 14px', borderTop: i ? `1px solid ${TOK.border}` : 'none',
+            }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 10,
+                background: `${r.color}28`, border: `1px solid ${r.color}55`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}>{ICN.receipt(r.color)}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</p>
+                  <span style={{ fontFamily: FONT_DISPLAY, fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{r.total}</span>
                 </div>
-                <span style={{ fontFamily: FONT_DISPLAY, fontSize: 14, fontWeight: 700 }}>{r.total}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 3 }}>
+                  <p style={{ fontSize: 11, color: TOK.textDim }}>{r.sub}</p>
+                  <span style={{ fontSize: 10, color: TOK.textDim, fontFamily: FONT_MONO }}>{r.when}</span>
+                </div>
+                <div style={{ marginTop: 6, height: 3, background: TOK.surface2, borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ width: `${r.paid}%`, height: '100%', background: r.paid === 100 ? TOK.mint : TOK.accent }} />
+                </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </main>
@@ -508,6 +576,38 @@ export default function Home() {
                   );
                 })}
               </div>
+
+              {/* Custom people already added */}
+              {customPeople.length > 0 && (
+                <>
+                  <div style={{ height: 1, background: TOK.border, margin: '20px 0' }} />
+                  <p style={mono10}>ADDED MANUALLY</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 }}>
+                    {customPeople.map((p) => {
+                      const selected = picked.some((x) => x.email === p.email);
+                      return (
+                        <div key={p.email} onClick={() => toggleCustomPerson(p)} style={{
+                          display: 'flex', alignItems: 'center', gap: 14,
+                          padding: '12px 14px', borderRadius: 14, cursor: 'pointer',
+                          background: selected ? `${TOK.accent}15` : TOK.surface2,
+                          border: `1.5px solid ${selected ? TOK.accent : TOK.border}`,
+                        }}>
+                          <Avatar name={p.name} color={p.color || hashColor(p.email)} size={42} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{ fontWeight: 700, fontSize: 14 }}>{p.name}</p>
+                            <p style={{ fontSize: 11, color: TOK.textFaint, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.email}</p>
+                          </div>
+                          {selected && (
+                            <div style={{ width: 20, height: 20, borderRadius: '50%', background: TOK.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              {ICN.check(TOK.accentInk)}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
 
               <div style={{ height: 1, background: TOK.border, margin: '20px 0' }} />
 

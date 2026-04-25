@@ -92,6 +92,12 @@ def main():
         elif kind == "balance":
             print(f"  💰 Account balance: €{ev['eur']:.2f}")
 
+        elif kind == "daily_limit":
+            if ev.get("ok"):
+                print(f"  🔓 Daily limit raised to €{ev['value']}")
+            else:
+                print(f"  ⚠  Daily limit unchanged (update failed — payments may hit €1 000 cap)")
+
         elif kind == "main_user":
             iban_str = f"  IBAN: …{ev['iban'][-10:]}" if ev.get("iban") else ""
             print(f"  👤 Main user: {ev['name']}{iban_str}\n")

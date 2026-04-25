@@ -1,9 +1,9 @@
 {
   "friends": [
     {
-      "id": "nl66bunq2106258720",
-      "name": "A. Doyle",
-      "iban": "NL66BUNQ2106258720",
+      "id": "nl65bunq2106264461",
+      "name": "M. Cooper",
+      "iban": "NL65BUNQ2106264461",
       "avatar_color": "#FF6B6B",
       "occupation": "UX Designer",
       "bio": "Coffee addict & weekend hiker. Splits everything fairly.",
@@ -760,9 +760,9 @@
       }
     },
     {
-      "id": "nl90bunq2106261586",
-      "name": "B. Bondancer",
-      "iban": "NL90BUNQ2106261586",
+      "id": "nl13bunq2106266367",
+      "name": "F. Carter",
+      "iban": "NL13BUNQ2106266367",
       "avatar_color": "#4ECDC4",
       "occupation": "Software Engineer",
       "bio": "Tech nerd who loves sushi. Always early for payments.",
@@ -1543,9 +1543,9 @@
       }
     },
     {
-      "id": "nl73bunq2106262086",
-      "name": "J. Casey",
-      "iban": "NL73BUNQ2106262086",
+      "id": "nl65bunq2106264364",
+      "name": "M. Roberts",
+      "iban": "NL65BUNQ2106264364",
       "avatar_color": "#FFD93D",
       "occupation": "Marketing Lead",
       "bio": "Foodie and amateur chef. Lives for concert weekends.",
@@ -2313,9 +2313,9 @@
       }
     },
     {
-      "id": "nl94bunq2106260350",
-      "name": "E. Patel",
-      "iban": "NL94BUNQ2106260350",
+      "id": "nl68bunq2106253931",
+      "name": "A. Ellis",
+      "iban": "NL68BUNQ2106253931",
       "avatar_color": "#A8DADC",
       "occupation": "Data Analyst",
       "bio": "Numbers person by day, DJ by night. Very punctual.",
@@ -3083,9 +3083,9 @@
       }
     },
     {
-      "id": "nl66bunq2106246498",
-      "name": "J.W. Singh",
-      "iban": "NL66BUNQ2106246498",
+      "id": "nl87bunq2106244568",
+      "name": "C. Iverson",
+      "iban": "NL87BUNQ2106244568",
       "avatar_color": "#B388EB",
       "occupation": "Product Manager",
       "bio": "Outdoor enthusiast. Venmo? No \u2014 bunq only.",
@@ -3865,5 +3865,5 @@
       }
     }
   ],
-  "generated_at": "2026-04-25T06:44:10.380281"
+  "generated_at": "2026-04-25T08:47:21.234905"
 }

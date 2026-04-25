@@ -24,8 +24,28 @@ interface InboxItem {
   amountPaid?: number;
 }
 
+interface DashboardStats {
+  balance_total: number;
+  balance_whole: string;
+  balance_cents: string;
+  balance_change: number;
+  balance_change_pct: number;
+  sparkline: number[];
+  accounts: { label: string; amt: string; bg: string }[];
+  categories: { label: string; value: number; color: string }[];
+  weekly: { label: string; value: number }[];
+  weekly_total: number;
+  cashflow_in: number;
+  cashflow_out: number;
+  cashflow_net: number;
+  cashflow_label: string;
+  goals: { label: string; cur: number; goal: number; color: string }[];
+  goals_on_track: number;
+  goals_total: number;
+}
+
 interface User { id: string; name: string; email: string; color: string }
-interface InboxResponse { user: User; items: InboxItem[] }
+interface InboxResponse { user: User; items: InboxItem[]; stats?: DashboardStats; lifetime_paid?: number }
 
 type View = NavTab | 'snap-inbox';
 
@@ -151,7 +171,7 @@ export default function DashboardPage({ params }: { params: { userId: string } }
       maxWidth: 440, margin: '0 auto', position: 'relative',
       paddingBottom: 100,
     }}>
-      {view === 'home'         && <HomeView user={data.user} pendingCount={pendingCount} onSplit={() => router.push('/')} onOpenSnap={() => setView('snap-inbox')} />}
+      {view === 'home'         && <HomeView user={data.user} pendingCount={pendingCount} onSplit={() => router.push('/')} onOpenSnap={() => setView('snap-inbox')} stats={data.stats} lifetimePaid={data.lifetime_paid} />}
       {view === 'msgs'         && <MessagesView user={data.user} items={data.items} onOpenSnap={() => setView('snap-inbox')} onOpenItem={openSplit} />}
       {view === 'snap-inbox'   && <SnapInboxView user={data.user} items={data.items} onBack={() => setView('msgs')} onOpen={openSplit} />}
       {view === 'stats'        && <PlaceholderView title="Insights" />}
@@ -167,19 +187,20 @@ export default function DashboardPage({ params }: { params: { userId: string } }
 
 // ─── HOME VIEW ──────────────────────────────────────────────────────────────
 
-function HomeView({ user, pendingCount, onSplit, onOpenSnap }: {
+function HomeView({ user, pendingCount, onSplit, onOpenSnap, stats, lifetimePaid }: {
   user: User; pendingCount: number; onSplit: () => void; onOpenSnap: () => void;
+  stats?: DashboardStats; lifetimePaid?: number;
 }) {
   const accent = TOK.accent;
-  const sparkData = [2010, 2120, 2055, 2180, 2240, 2190, 2310, 2280, 2375, 2420, 2433];
-  const categories = [
+  const sparkData = stats?.sparkline ?? [2010, 2120, 2055, 2180, 2240, 2190, 2310, 2280, 2375, 2420, 2433];
+  const categories = stats?.categories ?? [
     { label: 'Food & drink', value: 412, color: TOK.amber },
     { label: 'Transport',    value: 188, color: TOK.ocean },
     { label: 'Shopping',     value: 256, color: TOK.rose },
     { label: 'Bills',        value: 320, color: TOK.plum },
     { label: 'Splits',       value: 94,  color: accent },
   ];
-  const weekly = [
+  const weekly = stats?.weekly ?? [
     { label: 'M', value: 32 }, { label: 'T', value: 58 }, { label: 'W', value: 41 },
     { label: 'T', value: 89 }, { label: 'F', value: 67 }, { label: 'S', value: 124 }, { label: 'S', value: 48 },
   ];
@@ -227,12 +248,19 @@ function HomeView({ user, pendingCount, onSplit, onOpenSnap }: {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative' }}>
             <div>
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: TOK.textDim, fontFamily: FONT_MONO }}>TOTAL · 3 ACCOUNTS</p>
-              <Money whole="2,433" cents="00" size={36} />
+              <Money whole={stats?.balance_whole ?? '2,433'} cents={stats?.balance_cents ?? '00'} size={36} />
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                <span style={{ fontSize: 11, color: TOK.mint, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}>
-                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 8l4-4 4 4" stroke={TOK.mint} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  +€423 (21%)
-                </span>
+                {(() => {
+                  const chg = stats?.balance_change ?? 423;
+                  const pct = stats?.balance_change_pct ?? 21;
+                  const up  = chg >= 0;
+                  return (
+                    <span style={{ fontSize: 11, color: up ? TOK.mint : TOK.scarlet, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d={up ? 'M2 8l4-4 4 4' : 'M2 4l4 4 4-4'} stroke={up ? TOK.mint : TOK.scarlet} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      {up ? '+' : ''}€{Math.abs(chg)} ({Math.abs(pct)}%)
+                    </span>
+                  );
+                })()}
                 <span style={{ fontSize: 11, color: TOK.textFaint }}>vs last month</span>
               </div>
             </div>
@@ -246,11 +274,11 @@ function HomeView({ user, pendingCount, onSplit, onOpenSnap }: {
 
       {/* Account tiles */}
       <div style={{ padding: '12px 20px 0', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-        {[
+        {(stats?.accounts ?? [
           { label: 'Main',    amt: '€900',   bg: 'linear-gradient(135deg,#B45309,#F59E0B)' },
           { label: 'Vacay',   amt: '€1,210', bg: 'linear-gradient(135deg,#0F766E,#14B8A6)' },
           { label: 'Savings', amt: '€310',   bg: 'linear-gradient(135deg,#047857,#10B981)' },
-        ].map((a) => (
+        ]).map((a) => (
           <div key={a.label} style={{ background: a.bg, borderRadius: 14, padding: 10, height: 64, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <span style={{ fontSize: 10, fontWeight: 600, opacity: 0.9 }}>{a.label}</span>
             <span style={{ fontFamily: FONT_DISPLAY, fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em' }}>{a.amt}</span>
@@ -278,7 +306,7 @@ function HomeView({ user, pendingCount, onSplit, onOpenSnap }: {
         <div style={{ background: TOK.surface, border: `1px solid ${TOK.border}`, borderRadius: 18, padding: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
             <p style={mono10}>THIS WEEK</p>
-            <span style={{ fontSize: 10, color: TOK.textFaint, fontFamily: FONT_MONO }}>€459</span>
+            <span style={{ fontSize: 10, color: TOK.textFaint, fontFamily: FONT_MONO }}>€{stats?.weekly_total ?? 459}</span>
           </div>
           <div style={{ marginTop: 18 }}>
             <BarChart data={weekly} accent={accent} height={70} budget={80} />
@@ -289,18 +317,30 @@ function HomeView({ user, pendingCount, onSplit, onOpenSnap }: {
       {/* Cashflow */}
       <div style={{ padding: '12px 20px 0' }}>
         <div style={{ background: TOK.surface, border: `1px solid ${TOK.border}`, borderRadius: 18, padding: 14 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
-            <p style={mono10}>CASHFLOW · APRIL</p>
-            <span style={{ fontSize: 10, color: TOK.mint, fontFamily: FONT_MONO, fontWeight: 700 }}>+€874 NET</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ flex: 3.2, height: 28, borderRadius: 8, background: `linear-gradient(90deg, ${TOK.mint}, ${TOK.mint}aa)`, display: 'flex', alignItems: 'center', paddingLeft: 10 }}>
-              <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 13, color: '#000' }}>€3,210 in</span>
-            </div>
-            <div style={{ flex: 2.4, height: 28, borderRadius: 8, background: 'rgba(239,68,68,0.7)', display: 'flex', alignItems: 'center', paddingLeft: 10 }}>
-              <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 13, color: '#fff' }}>€2,336 out</span>
-            </div>
-          </div>
+          {(() => {
+            const cfIn  = stats?.cashflow_in  ?? 3210;
+            const cfOut = stats?.cashflow_out ?? 2336;
+            const cfNet = stats?.cashflow_net ?? 874;
+            const cfLbl = stats?.cashflow_label ?? 'APRIL';
+            const inFlex  = Math.max(1.5, cfIn / Math.max(cfOut, 1) * 2);
+            const outFlex = Math.max(1, 2);
+            return (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+                  <p style={mono10}>CASHFLOW · {cfLbl}</p>
+                  <span style={{ fontSize: 10, color: cfNet >= 0 ? TOK.mint : TOK.scarlet, fontFamily: FONT_MONO, fontWeight: 700 }}>{cfNet >= 0 ? '+' : ''}€{Math.abs(Math.round(cfNet))} NET</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ flex: inFlex, height: 28, borderRadius: 8, background: `linear-gradient(90deg, ${TOK.mint}, ${TOK.mint}aa)`, display: 'flex', alignItems: 'center', paddingLeft: 10 }}>
+                    <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 13, color: '#000' }}>€{Math.round(cfIn)} in</span>
+                  </div>
+                  <div style={{ flex: outFlex, height: 28, borderRadius: 8, background: 'rgba(239,68,68,0.7)', display: 'flex', alignItems: 'center', paddingLeft: 10 }}>
+                    <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 13, color: '#fff' }}>€{Math.round(cfOut)} out</span>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
           <div style={{ display: 'flex', gap: 10, marginTop: 10, fontSize: 10, color: TOK.textDim }}>
             <span>↓ Salary, refunds</span>
             <span style={{ marginLeft: 'auto' }}>↑ Bills, food, splits</span>
@@ -331,7 +371,10 @@ function HomeView({ user, pendingCount, onSplit, onOpenSnap }: {
             <div style={{ width: 1, background: TOK.border }} />
             <div style={{ flex: 1 }}>
               <p style={{ fontSize: 10, color: TOK.textDim, fontFamily: FONT_MONO }}>LIFETIME PAID</p>
-              <Money whole="142" cents="80" size={20} color={TOK.text} />
+              {(() => {
+                const lp = lifetimePaid ?? 0;
+                return <Money whole={Math.floor(lp).toLocaleString()} cents={String(Math.round((lp % 1) * 100)).padStart(2, '0')} size={20} color={TOK.text} />;
+              })()}
             </div>
           </div>
           <p style={{ fontSize: 10, color: TOK.textFaint, marginTop: 10 }}>
@@ -345,12 +388,12 @@ function HomeView({ user, pendingCount, onSplit, onOpenSnap }: {
         <div style={{ background: TOK.surface, border: `1px solid ${TOK.border}`, borderRadius: 18, padding: 14 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
             <p style={mono10}>SAVINGS GOALS</p>
-            <span style={{ fontSize: 10, color: TOK.textFaint }}>2 of 3 on track</span>
+            <span style={{ fontSize: 10, color: TOK.textFaint }}>{stats?.goals_on_track ?? 2} of {stats?.goals_total ?? 3} on track</span>
           </div>
-          {[
+          {(stats?.goals ?? [
             { label: '🏝️ Summer Vacay',  cur: 1210, goal: 2000,  color: TOK.teal },
             { label: '🏠 House deposit', cur: 4400, goal: 12000, color: TOK.plum },
-          ].map((g) => (
+          ]).map((g) => (
             <div key={g.label} style={{ marginBottom: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
                 <span style={{ fontSize: 12, fontWeight: 600 }}>{g.label}</span>
@@ -395,7 +438,6 @@ function MessagesView({ user, items, onOpenSnap, onOpenItem }: {
 }) {
   const [filter, setFilter] = useState<'all' | 'snapsplit' | 'payment' | 'chat'>('all');
 
-  // Compose unified feed: real SnapSplit invites + mock messages, sorted by recency
   const snapMsgs = items.map((i) => ({
     id: 'snap-' + i.sessionId,
     kind: 'snapsplit' as const,
@@ -476,7 +518,6 @@ function MessagesView({ user, items, onOpenSnap, onOpenItem }: {
         ))}
       </div>
 
-      {/* SnapSplit summary banner — if there are pending splits, prompt action */}
       {pendingSnaps.length > 0 && (
         <div style={{ padding: '0 20px 8px' }}>
           <button onClick={onOpenSnap} style={{
@@ -491,16 +532,13 @@ function MessagesView({ user, items, onOpenSnap, onOpenItem }: {
               <p style={{ fontSize: 12.5, fontWeight: 700, color: TOK.text }}>
                 {pendingSnaps.length} split{pendingSnaps.length === 1 ? '' : 's'} need{pendingSnaps.length === 1 ? 's' : ''} your action
               </p>
-              <p style={{ fontSize: 11, color: TOK.textDim, marginTop: 1 }}>
-                Tap to review and pay
-              </p>
+              <p style={{ fontSize: 11, color: TOK.textDim, marginTop: 1 }}>Tap to review and pay</p>
             </div>
             <span style={{ color: TOK.accent, fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 3 }}>VIEW {ICN.chevR(TOK.accent)}</span>
           </button>
         </div>
       )}
 
-      {/* Feed */}
       <div>
         {visible.map((m) => (
           <MessageRow key={m.id} m={m as never} onClick={() => {
@@ -568,7 +606,7 @@ function MessageRow({ m, onClick }: { m: FeedItem; onClick?: () => void }) {
   );
 }
 
-// ─── SNAP-INBOX VIEW (drilled in from Messages) ─────────────────────────────
+// ─── SNAP-INBOX VIEW ────────────────────────────────────────────────────────
 
 function SnapInboxView({ user, items, onBack, onOpen }: {
   user: User; items: InboxItem[]; onBack: () => void; onOpen: (i: InboxItem) => void;
@@ -599,7 +637,6 @@ function SnapInboxView({ user, items, onBack, onOpen }: {
         </p>
       </div>
 
-      {/* Featured pending card */}
       {featured && (
         <div style={{ padding: '20px 20px 0' }}>
           <div style={{
@@ -635,7 +672,6 @@ function SnapInboxView({ user, items, onBack, onOpen }: {
         </div>
       )}
 
-      {/* Other pending */}
       {pending.length > 1 && (
         <>
           <div style={{ padding: '18px 20px 8px' }}>
@@ -660,7 +696,6 @@ function SnapInboxView({ user, items, onBack, onOpen }: {
         </>
       )}
 
-      {/* Earlier */}
       {settled.length > 0 && (
         <>
           <div style={{ padding: '14px 20px 8px' }}>
@@ -693,7 +728,7 @@ function SnapInboxView({ user, items, onBack, onOpen }: {
   );
 }
 
-// ─── PLACEHOLDER VIEWS for nav tabs we don't need to build ─────────────────
+// ─── PLACEHOLDER VIEWS ──────────────────────────────────────────────────────
 
 function PlaceholderView({ title, user }: { title: string; user?: User }) {
   return (
@@ -706,7 +741,7 @@ function PlaceholderView({ title, user }: { title: string; user?: User }) {
   );
 }
 
-// ─── NOTIFICATION POPUP ────────────────────────────────────────────────────
+// ─── NOTIFICATION POPUP ─────────────────────────────────────────────────────
 
 function NotificationPopup({ item, onDismiss, onOpen }: {
   item: InboxItem; onDismiss: () => void; onOpen: () => void;
