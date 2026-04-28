@@ -1,3 +1,5 @@
+https://www.youtube.com/watch?v=CX4Yl_2-ClI
+
 # bunqShare
 
 bunqShare is an add-on platform for bunq that makes splitting a bill as smooth as possible — especially for the person picking up the tab.
